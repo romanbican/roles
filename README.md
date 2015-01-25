@@ -39,7 +39,7 @@ Now you can create roles and attach them to a user.
 ```php
 $role = \Bican\Roles\Role::create(['name' => 'admin']);
 
-$user = App\User::find(1)->attach($role); // you can pass whole object or just id
+$user = App\User::find(1)->attachRole($role); // you can pass whole object or just id
 ```
 
 HasRole trait contains couple of methods:
@@ -54,6 +54,6 @@ if ($check)
   return 'admin';
 }
 
-$user->attach($role); // you can use whole object or just id
-$user->detach($role); // you can use whole object or just id
+$user->attachRole($role); // you can use whole object or just id
+$user->detachRole($role); // you can use whole object or just id
 ```
