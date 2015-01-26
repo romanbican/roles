@@ -13,12 +13,36 @@ trait HasRole {
     }
 
     /**
+     * Check if a user has any of the provided roles
+     *
+     * @param int|string|array $providedRoles
+     * @return bool
+     */
+    public function hasRole($providedRoles)
+    {
+        if(!is_array($providedRoles))
+        {
+            $providedRoles = array($providedRoles);
+        }
+        
+        foreach($providedRoles as $role)
+        {
+            if($this->hasSingleRole($role))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
      * Check if a user has provided role.
      *
      * @param int|string $providedRole
      * @return bool
      */
-    public function hasRole($providedRole)
+    public function hasSingleRole($providedRole)
     {
         foreach ($this->roles()->get() as $role)
         {
