@@ -3,75 +3,106 @@
 trait HasRole {
 
     /**
-     * User belongs to many roles.
+     * User has one role.
      *
      * @return mixed
      */
-    public function roles()
+    public function role()
     {
-        return $this->belongsToMany('Bican\Roles\Role');
+        return $this->belongsTo('Bican\Roles\Role')->first();
     }
 
     /**
-     * Check if a user has any of the provided roles
+     * User has many permissions.
      *
-     * @param int|string|array $providedRoles
-     * @return bool
+     * @return mixed
      */
-    public function hasRole($providedRoles)
+    public function permissions()
     {
-        if(!is_array($providedRoles))
-        {
-            $providedRoles = array($providedRoles);
-        }
-        
-        foreach($providedRoles as $role)
-        {
-            if($this->hasSingleRole($role))
-            {
-                return true;
-            }
-        }
-        
-        return false;
+        return Permission::join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')
+                    ->join('roles', 'roles.id', '=', 'permission_role.role_id')
+                    ->where('roles.id', '=', $this->role_id)
+                    ->orWhere('roles.level', '<=', $this->role()->level)
+                    ->where('permissions.unique', '=', 0)
+                    ->groupBy('permissions.id')
+                    ->get(['permissions.id', 'permissions.label', 'permissions.name']);
     }
-    
+
     /**
-     * Check if a user has provided role.
+     * Check if a user has role.
      *
      * @param int|string $providedRole
      * @return bool
      */
-    public function hasSingleRole($providedRole)
+    public function hasRole($providedRole)
     {
-        foreach ($this->roles()->get() as $role)
+        if ($this->role_id === $providedRole || $this->role()->label === $providedRole)
         {
-            if ($role->id === $providedRole || $role->name === $providedRole) return true;
+            return true;
         }
 
         return false;
     }
 
     /**
-     * Attach role.
+     * Change role.
      *
      * @param int|Role $role
      * @return mixed
      */
-    public function attachRole($role)
+    public function changeRole($role)
     {
-        return $this->roles()->attach($role);
+        if (is_object($role))
+        {
+            $role = $role->getKey();
+        }
+
+        $this->role_id = $role;
+
+        return $this->save();
     }
 
     /**
-     * Detach role.
+     * Check if a user has any of the provided permissions.
      *
-     * @param int|Role $role
-     * @return mixed
+     * @param int|string|array $providedPermissions
+     * @return bool
      */
-    public function detachRole($role)
+    public function hasPermission($providedPermissions)
     {
-        return $this->roles()->detach($role);
+        if ( ! is_array($providedPermissions))
+        {
+            $providedPermissions = [$providedPermissions];
+        }
+
+        foreach ($providedPermissions as $permission)
+        {
+            if ($this->hasSinglePermission($permission))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a user has provided permission.
+     *
+     * @param int|string $providedPermission
+     * @return bool
+     */
+    public function hasSinglePermission($providedPermission)
+    {
+        foreach ($this->permissions() as $permission)
+        {
+            if ($permission->id === $providedPermission || $permission->label === $providedPermission)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
