@@ -1,7 +1,7 @@
 {
 	"name": "bican/roles",
-	"description": "Simple package for handling user roles for Laravel 5",
-	"keywords": ["roles", "laravel", "laravel5"],
+	"description": "Simple package for handling roles and permissions in Laravel 5.",
+	"keywords": ["roles", "permissions", "laravel", "laravel5"],
 	"license": "MIT",
 	"authors": [
 		{
