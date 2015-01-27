@@ -127,6 +127,16 @@ trait HasRole {
     }
 
     /**
+     * Get level.
+     *
+     * @return int
+     */
+    public function level()
+    {
+        return $this->role()->level;
+    }
+
+    /**
      * Assign (change) role.
      *
      * @param int|Role $role

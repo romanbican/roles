@@ -120,4 +120,8 @@ User has a level 1 (it can be set inside `roles table`), moderator level 2 and a
 
 So role with higher level inherits permissions from lower level if `unique` is set to null.
 
+Check users level:
 
+```php
+$level = $user->level();
+```

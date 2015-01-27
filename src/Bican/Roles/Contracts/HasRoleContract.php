@@ -59,6 +59,13 @@ interface HasRoleContract {
     public function hasPermission($providedPermission);
 
     /**
+     * Get level.
+     *
+     * @return int
+     */
+    public function level();
+
+    /**
      * Assign (change) role.
      *
      * @param int|Role $role
