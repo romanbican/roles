@@ -197,7 +197,14 @@ trait HasRole {
             return false;
         }
 
-        throw new BadMethodCallException('Method [' . $method . '] does not exist.');
+        if (in_array($method, array('increment', 'decrement')))
+        {
+            return call_user_func_array(array($this, $method), $parameters);
+        }
+
+        $query = $this->newQuery();
+
+        return call_user_func_array(array($query, $method), $parameters);
     }
 
 }
