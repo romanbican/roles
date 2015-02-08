@@ -1,7 +1,6 @@
 <?php namespace Bican\Roles;
 
 use Bican\Roles\Exceptions\RoleNotFoundException;
-use Bican\Roles\Exceptions\BadMethodCallException;
 
 trait HasRole {
 
@@ -174,7 +173,6 @@ trait HasRole {
      * @param string $method
      * @param array $parameters
      * @return mixed
-     * @throws BadMethodCallException
      */
     public function __call($method, $parameters)
     {
@@ -197,14 +195,7 @@ trait HasRole {
             return false;
         }
 
-        if (in_array($method, array('increment', 'decrement')))
-        {
-            return call_user_func_array(array($this, $method), $parameters);
-        }
-
-        $query = $this->newQuery();
-
-        return call_user_func_array(array($query, $method), $parameters);
+        return parent::__call($method, $parameters);
     }
 
 }
