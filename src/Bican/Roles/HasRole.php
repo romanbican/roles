@@ -1,6 +1,7 @@
 <?php namespace Bican\Roles;
 
 use Illuminate\Database\Eloquent\Collection;
+use Bican\Roles\Exceptions\RoleNotFoundException;
 use Bican\Roles\Exceptions\InvalidArgumentException;
 
 trait HasRole {
@@ -128,10 +129,16 @@ trait HasRole {
      * Get users level.
      *
      * @return int
+     * @throws RoleNotFoundException
      */
     public function level()
     {
-        return $this->roles()->orderBy('level', 'desc')->first()->level;
+        if ( $role = $this->roles()->orderBy('level', 'desc')->first())
+        {
+            return $role->level;
+        }
+
+        throw new RoleNotFoundException('This user has no role.');
     }
 
     /**

@@ -39,6 +39,7 @@ interface HasRoleContract {
      * Get users level.
      *
      * @return int
+     * @throws RoleNotFoundException
      */
     public function level();
 
