@@ -161,7 +161,7 @@ trait HasRole {
     {
         if (ucwords($methodName) != 'One' && ucwords($methodName) != 'All')
         {
-            throw new InvalidArgumentException('You can pass only strings [one] or [all] as second parametr in [is] method.');
+            throw new InvalidArgumentException('You can pass only strings [one] or [all] as a second parameter in [is] or [can] method.');
         }
     }
 
