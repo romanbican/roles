@@ -9,7 +9,7 @@ class Permission extends Model {
      *
      * @var array
      */
-    protected $fillable = ['label', 'name', 'unique'];
+    protected $fillable = ['label', 'name', 'model', 'unique'];
 
     /**
      * Permission belongs to many roles.

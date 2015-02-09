@@ -1,66 +1,35 @@
 <?php namespace Bican\Roles;
 
-use Bican\Roles\Exceptions\RoleNotFoundException;
+use Illuminate\Database\Eloquent\Collection;
+use Bican\Roles\Exceptions\InvalidArgumentException;
 
 trait HasRole {
 
     /**
-     * User has one role.
+     * User belongs to many roles.
      *
-     * @return mixed
-     * @throws RoleNotFoundException
+     * @return BelongsToMany
      */
-    public function role()
+    public function roles()
     {
-        if ( ! $role = $this->belongsTo('Bican\Roles\Role')->first())
-        {
-            throw new RoleNotFoundException('Role [' . $this->role_id . '] doest not exist.');
-        }
-
-        return $role;
+        return $this->belongsToMany('Bican\Roles\Role');
     }
 
     /**
-     * User has many permissions.
+     * Check if the user has a provided role or roles.
      *
-     * @return mixed
-     */
-    public function permissions()
-    {
-        return Permission::join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')
-                        ->join('roles', 'roles.id', '=', 'permission_role.role_id')
-                        ->where('roles.id', '=', $this->role_id)->orWhere('roles.level', '<=', $this->role()->level)->where('permissions.unique', '=', 0)
-                        ->groupBy('permissions.id')->get(['permissions.*']);
-    }
-
-    /**
-     * Check if a user has role.
-     *
-     * @param int|string $role
-     * @return bool
-     */
-    public function is($role)
-    {
-        if ($this->role_id === $role || $this->role()->label === $role)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if a user has provided permission or permissions.
-     *
-     * @param int|string|array $permissions
+     * @param int|string|array $role
      * @param string $methodName
      * @return bool
+     * @throws InvalidArgumentException
      */
-    public function can($permissions, $methodName = 'One')
+    public function is($role, $methodName = 'One')
     {
-        $permissions = $this->getPermissionsArray($permissions);
+        $this->checkMethodNameArgument($methodName);
 
-        if ($this->{'can' . ucwords($methodName)}($permissions))
+        $roles = $this->getArrayFrom($role);
+
+        if ($this->{'is' . ucwords($methodName)}($roles, $this->roles()->get()))
         {
             return true;
         }
@@ -69,16 +38,17 @@ trait HasRole {
     }
 
     /**
-     * Check if user has at least one of provided permissions.
+     * Check if the user has at least one of provided roles.
      *
-     * @param array $permissions
+     * @param array $roles
+     * @param Collection $userRoles
      * @return bool
      */
-    public function canOne(array $permissions)
+    private function isOne(array $roles, Collection $userRoles)
     {
-        foreach ($permissions as $permission)
+        foreach ($roles as $role)
         {
-            if ($this->hasPermission($permission))
+            if ($this->hasRole($role, $userRoles))
             {
                 return true;
             }
@@ -88,16 +58,17 @@ trait HasRole {
     }
 
     /**
-     * Check if user has all provided permissions.
+     * Check if the user has all provided roles.
      *
-     * @param array $permissions
+     * @param array $roles
+     * @param Collection $userRoles
      * @return bool
      */
-    public function canAll(array $permissions)
+    private function isAll(array $roles, Collection $userRoles)
     {
-        foreach ($permissions as $permission)
+        foreach ($roles as $role)
         {
-            if ( ! $this->hasPermission($permission))
+            if ( ! $this->hasRole($role, $userRoles))
             {
                 return false;
             }
@@ -107,16 +78,17 @@ trait HasRole {
     }
 
     /**
-     * Check if a user has provided permission.
+     * Check if the user has provided role.
      *
-     * @param int|string $providedPermission
+     * @param int|string $providedRole
+     * @param Collection $userRoles
      * @return bool
      */
-    public function hasPermission($providedPermission)
+    private function hasRole($providedRole, Collection $userRoles)
     {
-        foreach ($this->permissions() as $permission)
+        foreach ($userRoles as $role)
         {
-            if ($permission->id == $providedPermission || $permission->label === $providedPermission)
+            if ($role->id == $providedRole || $role->label === $providedRole)
             {
                 return true;
             }
@@ -126,47 +98,71 @@ trait HasRole {
     }
 
     /**
-     * Get level.
+     * Attach role.
+     *
+     * @param int|Role $role
+     * @return mixed
+     */
+    public function attachRole($role)
+    {
+        if ( ! $this->roles()->get()->contains($role))
+        {
+            return $this->roles()->attach($role);
+        }
+
+        return true;
+    }
+
+    /**
+     * Detach role.
+     *
+     * @param int|Role $role
+     * @return mixed
+     */
+    public function detachRole($role)
+    {
+        return $this->roles()->detach($role);
+    }
+
+    /**
+     * Get users level.
      *
      * @return int
      */
     public function level()
     {
-        return $this->role()->level;
+        return $this->roles()->orderBy('level', 'desc')->first()->level;
     }
 
     /**
-     * Assign (change) role.
+     * Get an array from provided parameter.
      *
-     * @param int|Role $role
-     * @return mixed
-     */
-    public function assignRole($role)
-    {
-        if (is_object($role))
-        {
-            $role = $role->id;
-        }
-
-        $this->role_id = $role;
-
-        return $this->save();
-    }
-
-    /**
-     * Get permissions as an array.
-     *
-     * @param int|string|array $permissions
+     * @param int|string|array $value
      * @return array
      */
-    private function getPermissionsArray($permissions)
+    private function getArrayFrom($value)
     {
-        if ( ! is_array($permissions))
+        if ( ! is_array($value))
         {
-            $permissions = preg_split('/ ?[,|] ?/', $permissions);
+            return preg_split('/ ?[,|] ?/', $value);
         }
 
-        return $permissions;
+        return $value;
+    }
+
+    /**
+     * Check methodName argument.
+     *
+     * @param string $methodName
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
+    private function checkMethodNameArgument($methodName)
+    {
+        if (ucwords($methodName) != 'One' && ucwords($methodName) != 'All')
+        {
+            throw new InvalidArgumentException('You can pass only strings [one] or [all] as second parametr in [is] method.');
+        }
     }
 
     /**
@@ -178,7 +174,7 @@ trait HasRole {
     {
         if (starts_with($method, 'is'))
         {
-            if($this->is(snake_case(substr($method, 2))))
+            if ($this->is(snake_case(substr($method, 2))))
             {
                 return true;
             }
@@ -187,7 +183,16 @@ trait HasRole {
         }
         elseif (starts_with($method, 'can'))
         {
-            if($this->can(snake_case(substr($method, 3))))
+            if ($this->can(snake_case(substr($method, 3))))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        elseif (starts_with($method, 'allowed'))
+        {
+            if ($this->allowed(snake_case(substr($method, 7)), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true))
             {
                 return true;
             }

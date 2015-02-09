@@ -1,6 +1,6 @@
 # Roles and permissions for Laravel 5
 
-Simple package for handling roles and permissions in Laravel 5.
+Powerful package for handling roles and permissions in Laravel 5.
 
 ## Install
 
@@ -9,31 +9,33 @@ Pull this package in through Composer.
 ```js
 {
     "require": {
-        "bican/roles": "~1.1"
+        "bican/roles": "1.2.0"
     }
 }
 ```
 
     $ composer update
 
-Then create and run migrations. You can copy them from `src/migrations` directory. Migration for users table is in Laravel 5 out of the box.
+Copy migrations from `src/migrations` directory.
 
     $ php artisan migrate
 
-## Simple usage (roles only)
+## Usage
 
-First of all, include `HasRole` trait and `HasRoleContract` interface inside your `User` model.
+First of all, include `HasRole`, `HasPermission` traits and also implement their interfaces `HasRoleContract` and `HasPermissionContract` inside your `User` model.
 
 ```php
 use Bican\Roles\Contracts\HasRoleContract;
+use Bican\Roles\Contracts\HasPermissionContract;
 use Bican\Roles\HasRole;
+use Bican\Roles\HasPermission;
 
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleContract {
+class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleContract, HasPermissionContract {
 
-	use Authenticatable, CanResetPassword, HasRole;
+	use Authenticatable, CanResetPassword, HasRole, HasPermission;
 ```
 
-Now you can create role and assign it to a user.
+You're set to go. You can create your first role and attach it to a user.
 
 ```php
 use Bican\Roles\Role;
@@ -44,13 +46,13 @@ $role = Role::create([
     'name' => 'Administrator'
 ]);
 
-$user = User::find($id)->assignRole($role); // you can pass whole object, or just id
+$user = User::find($id)->attachRole($role); // you can pass whole object, or just id
 ```
 
-Then you can simply check if the current user has required role.
+You can simply check if the current user has required role.
 
 ```php
-if ($user->is('admin')) // or you can pass id
+if ($user->is('admin')) // or you can pass an id
 {
     return 'admin';
 }
@@ -63,13 +65,39 @@ if ($user->isAdmin())
 {
     return 'admin';
 }
+
 ```
-But remember, `label` must start with lowercase letter and if role has multiple words, it must look like this: "word_and_another".
 
-## Advanced usage (with permissions)
+But remember, `label` must start with lowercase letter and if role has multiple words, it must look like this: `word_and_another`.
 
-If you are building more complex application, you can also use permissions and attach them to a role (and of course detach as well).
-You need to set `unique` parameter to "1", if you don't want to use "levels" (about it later).
+And of course there is a way to check for multiple roles:
+
+```php
+if ($user->is('admin|moderator'))
+{
+    // if user has at least one role
+}
+
+if ($user->is('admin|moderator', 'all'))
+{
+    // if user has all roles
+}
+```
+
+When you are creating roles, there is also optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can make checks like this:
+ 
+```php
+if ($user->level() > 4)
+{
+    // code
+}
+```
+
+If user has multiple roles, method `level` returns the highest one.
+
+`Level` has also big effect on inheriting permissions. About it later.
+
+Let's talk about permissions. You can attach permission to a role or directly to a specific user (and of course detach them as well).
 
 ```php
 use Bican\Roles\Permission;
@@ -77,51 +105,59 @@ use Bican\Roles\Role;
 
 $permission = Permission::create([
     'label' => 'edit_articles',
-    'name' => 'Edit articles',
-    'unique' => 1
+    'name' => 'Edit articles'
 ]);
 
 Role::find($id)->attachPermission($permission);
+
+$user->attachPermission($anotherPermission);
 
 if ($user->can('edit_articles') // or you can pass id
 {
     return 'he has permission!';
 }
 
-if ($user->canEditArticles())
+if ($user->canAnotherPermission())
 {
     //
 }
 
-Role::find($id)->detachPermission($permission);
 ```
 
-You can also check for multiple permission in one method.
+You can check for multiple permissions the same way as roles.
+
+Permissions attach to a specific user are unique by default. Role permissions not, but you can do it by passing optional parameter `unique` when creating and set it to `1`.
+
+Anyways, role with higher level is inheriting permission from roles with lower level.
+
+There is an example of this `magic`: You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. If you don't set column `unique` in permissions table to value `1`, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
+
+## Entity check
+
+Let's say you have an article and you want to edit it. This article belongs to a user (`user_id` in database).
 
 ```php
-if ($user->can('edit_articles|manage_comments')
-{
-    // if he has at least one permission, this code will be executed.
-}
+$user->attachPermission([
+    'label' => 'edit',
+    'name' => 'Edit articles',
+    'model' => 'App\Article'
+]);
 
-if ($user->can('edit_articles|manage_comments', 'all')
+$article = App\Article::find(1);
+
+if ($user->allowed('edit', $article)) // $user->allowedEdit($article)
 {
-    // if he has all provided permissions, this code will be executed.
+    $article->save();
 }
 ```
 
-## Advanced usage (with levels = inheriting permissions)
-
-Now, this package is aware of `role levels`. There is an example:
-
-You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles.
-
-User has a level 1 (it can be set inside `roles table`), moderator level 2 and admin level 3. If you don't set column `unique` in permissions table to value "1", moderator and administrator has also permission to read articles, but administrator can also manage comments as well.
-
-So role with higher level inherits permissions from lower level if `unique` is set to null.
-
-Check users level:
+This condition checks if the current user is the owner of provided article. If not, it will be looking inside user permissions for a row we created before.
 
 ```php
-$level = $user->level();
+if ($user->allowed('edit', $article, false)) // now owner check is disabled
+{
+    $article->save();
+}
 ```
+
+

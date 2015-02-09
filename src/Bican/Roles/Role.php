@@ -36,7 +36,10 @@ class Role extends Model {
 
         foreach ($permission as $perm)
         {
-            $this->permissions()->attach($perm);
+            if ( ! $this->permissions()->get()->contains($perm))
+            {
+                $this->permissions()->attach($perm);
+            }
         }
 
         return true;
