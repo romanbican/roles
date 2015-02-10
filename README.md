@@ -9,7 +9,7 @@ Pull this package in through Composer.
 ```js
 {
     "require": {
-        "bican/roles": "1.2.1"
+        "bican/roles": "1.2.2"
     }
 }
 ```
