@@ -16,9 +16,14 @@ Pull this package in through Composer.
 
     $ composer update
 
-Copy migrations from `src/migrations` directory.
+Add the package to your application service providers in `app/config/app.php`
+```
+'Bican\Roles\RolesServiceProvider'
+```
 
-    $ php artisan migrate
+Publish the package migrations to your application.
+
+    $ php artisan vendor:publish
 
 ## Usage
 
