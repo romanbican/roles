@@ -25,6 +25,10 @@ Publish the package migrations to your application.
 
     $ php artisan vendor:publish
 
+Run migrations.
+
+    $ php artisan migrate
+
 ## Usage
 
 First of all, include `HasRole`, `HasPermission` traits and also implement their interfaces `HasRoleContract` and `HasPermissionContract` inside your `User` model.
