@@ -31,7 +31,7 @@ class Role extends Model {
      */
     public function users()
     {
-        return $this->belongsToMany($this->getAppNamespace().'User');
+        return $this->belongsToMany($this->getAppNamespace() . 'User');
     }
 
     /**
