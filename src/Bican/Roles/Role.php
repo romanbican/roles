@@ -1,8 +1,11 @@
 <?php namespace Bican\Roles;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Console\AppNamespaceDetectorTrait;
 
 class Role extends Model {
+
+    use AppNamespaceDetectorTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -19,6 +22,16 @@ class Role extends Model {
     public function permissions()
     {
         return $this->belongsToMany('Bican\Roles\Permission');
+    }
+
+    /**
+     * Role belongs to many users.
+     *
+     * @return mixed
+     */
+    public function users()
+    {
+        return $this->belongsToMany($this->getAppNamespace().'User');
     }
 
     /**
