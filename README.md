@@ -17,8 +17,17 @@ Pull this package in through Composer.
     $ composer update
 
 Add the package to your application service providers in `app/config/app.php`
-```
-'Bican\Roles\RolesServiceProvider'
+
+```php
+'providers' => [
+    
+    'Illuminate\Foundation\Providers\ArtisanServiceProvider',
+    'Illuminate\Auth\AuthServiceProvider',
+    ...
+    
+    'Bican\Roles\RolesServiceProvider',
+
+],
 ```
 
 Publish the package migrations to your application.
