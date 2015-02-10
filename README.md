@@ -126,6 +126,8 @@ if ($user->canAnotherPermission())
 
 You can check for multiple permissions the same way as roles.
 
+## Permissions inheriting
+
 Permissions attach to a specific user are unique by default. Role permissions not, but you can do it by passing optional parameter `unique` when creating and set it to `1`.
 
 Anyways, role with higher level is inheriting permission from roles with lower level.
