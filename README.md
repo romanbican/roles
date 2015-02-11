@@ -16,7 +16,7 @@ Pull this package in through Composer.
 
     $ composer update
 
-Add the package to your application service providers in `app/config/app.php`
+Add the package to your application service providers in `config/app.php`
 
 ```php
 'providers' => [
