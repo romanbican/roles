@@ -12,7 +12,7 @@ class Role extends Model {
      *
      * @var array
      */
-    protected $fillable = ['label', 'name', 'level'];
+    protected $fillable = ['name', 'label', 'description', 'level'];
 
     /**
      * Role belongs to many permissions.

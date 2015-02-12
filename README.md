@@ -60,11 +60,12 @@ use Bican\Roles\Role;
 use App\User;
 
 $role = Role::create([
-    'label' => 'admin',
-    'name' => 'Administrator'
+    'name' => 'Administrator',
+    'label' => str_slug('Administrator', '_'), // administrator
+    'description' => '' // optional
 ]);
 
-$user = User::find($id)->attachRole($role); // you can pass whole object, or just id
+$user = User::find($id)->attachRole($role); // you can pass whole object, array or just id
 ```
 
 You can simply check if the current user has required role.
@@ -122,8 +123,9 @@ use Bican\Roles\Permission;
 use Bican\Roles\Role;
 
 $permission = Permission::create([
-    'label' => 'edit_articles',
-    'name' => 'Edit articles'
+    'name' => 'Edit articles',
+    'label' => str_slug('Edit articles', '_'), // edit_articles
+    'description' => '' // optional
 ]);
 
 Role::find($id)->attachPermission($permission);
