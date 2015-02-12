@@ -101,7 +101,7 @@ trait HasRole {
     /**
      * Attach role.
      *
-     * @param int|Role $role
+     * @param int|array|Role $role
      * @return mixed
      */
     public function attachRole($role)
