@@ -117,7 +117,7 @@ trait HasRole {
     /**
      * Detach role.
      *
-     * @param int|Role $role
+     * @param int|array|Role $role
      * @return mixed
      */
     public function detachRole($role)

@@ -171,7 +171,7 @@ trait HasPermission {
     /**
      * Detach permission.
      *
-     * @param int|Permission $permission
+     * @param int|array|Permission $permission
      * @return mixed
      */
     public function detachPermission($permission)
