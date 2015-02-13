@@ -172,42 +172,4 @@ trait HasRole {
         }
     }
 
-    /**
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        if (starts_with($method, 'is'))
-        {
-            if ($this->is(snake_case(substr($method, 2))))
-            {
-                return true;
-            }
-
-            return false;
-        }
-        elseif (starts_with($method, 'can'))
-        {
-            if ($this->can(snake_case(substr($method, 3))))
-            {
-                return true;
-            }
-
-            return false;
-        }
-        elseif (starts_with($method, 'allowed'))
-        {
-            if ($this->allowed(snake_case(substr($method, 7)), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        return parent::__call($method, $parameters);
-    }
-
 }
