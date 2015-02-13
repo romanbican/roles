@@ -155,7 +155,7 @@ trait HasPermission {
     /**
      * Attach permission.
      *
-     * @param int|Permission $permission
+     * @param int|array|Permission $permission
      * @return mixed
      */
     public function attachPermission($permission)
