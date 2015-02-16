@@ -1,4 +1,4 @@
-<?php namespace Bican\Roles;
+<?php namespace Bican\Roles\Traits;
 
 use Illuminate\Database\Eloquent\Collection;
 use Bican\Roles\Exceptions\RoleNotFoundException;
@@ -9,11 +9,11 @@ trait HasRole {
     /**
      * User belongs to many roles.
      *
-     * @return BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function roles()
     {
-        return $this->belongsToMany('Bican\Roles\Role');
+        return $this->belongsToMany('Bican\Roles\Models\Role')->withTimestamps();
     }
 
     /**
@@ -22,7 +22,7 @@ trait HasRole {
      * @param int|string|array $role
      * @param string $methodName
      * @return bool
-     * @throws InvalidArgumentException
+     * @throws \Bican\Roles\Exceptions\InvalidArgumentException
      */
     public function is($role, $methodName = 'One')
     {
@@ -42,10 +42,10 @@ trait HasRole {
      * Check if the user has at least one of provided roles.
      *
      * @param array $roles
-     * @param Collection $userRoles
+     * @param \Illuminate\Database\Eloquent\Collection $userRoles
      * @return bool
      */
-    private function isOne(array $roles, Collection $userRoles)
+    protected function isOne(array $roles, Collection $userRoles)
     {
         foreach ($roles as $role)
         {
@@ -62,10 +62,10 @@ trait HasRole {
      * Check if the user has all provided roles.
      *
      * @param array $roles
-     * @param Collection $userRoles
+     * @param \Illuminate\Database\Eloquent\Collection $userRoles
      * @return bool
      */
-    private function isAll(array $roles, Collection $userRoles)
+    protected function isAll(array $roles, Collection $userRoles)
     {
         foreach ($roles as $role)
         {
@@ -82,14 +82,14 @@ trait HasRole {
      * Check if the user has provided role.
      *
      * @param int|string $providedRole
-     * @param Collection $userRoles
+     * @param \Illuminate\Database\Eloquent\Collection $userRoles
      * @return bool
      */
-    private function hasRole($providedRole, Collection $userRoles)
+    protected function hasRole($providedRole, Collection $userRoles)
     {
         foreach ($userRoles as $role)
         {
-            if ($role->id == $providedRole || $role->label === $providedRole)
+            if ($role->id == $providedRole || $role->slug === $providedRole)
             {
                 return true;
             }
@@ -101,7 +101,7 @@ trait HasRole {
     /**
      * Attach role.
      *
-     * @param int|array|Role $role
+     * @param int|\Bican\Roles\Models\Role $role
      * @return mixed
      */
     public function attachRole($role)
@@ -117,7 +117,7 @@ trait HasRole {
     /**
      * Detach role.
      *
-     * @param int|array|Role $role
+     * @param int|\Bican\Roles\Models\Role $role
      * @return mixed
      */
     public function detachRole($role)
@@ -126,10 +126,20 @@ trait HasRole {
     }
 
     /**
+     * Detach all roles.
+     *
+     * @return mixed
+     */
+    public function detachAllRoles()
+    {
+        return $this->roles()->detach();
+    }
+
+    /**
      * Get users level.
      *
      * @return int
-     * @throws RoleNotFoundException
+     * @throws \Bican\Roles\Exceptions\RoleNotFoundException
      */
     public function level()
     {
@@ -162,7 +172,7 @@ trait HasRole {
      *
      * @param string $methodName
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws \Bican\Roles\Exceptions\InvalidArgumentException
      */
     private function checkMethodNameArgument($methodName)
     {

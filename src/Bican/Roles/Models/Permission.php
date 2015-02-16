@@ -1,15 +1,18 @@
-<?php namespace Bican\Roles;
+<?php namespace Bican\Roles\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Bican\Roles\Traits\SlugableTrait;
 
 class Permission extends Model {
+
+    use SlugableTrait;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['name', 'label', 'description', 'model', 'unique'];
+    protected $fillable = ['name', 'slug', 'description', 'model', 'unique'];
 
     /**
      * Permission belongs to many roles.
@@ -18,7 +21,7 @@ class Permission extends Model {
      */
     public function roles()
     {
-        return $this->belongsToMany('Bican\Roles\Role');
+        return $this->belongsToMany('Bican\Roles\Models\Role')->withTimestamps();
     }
 
 }

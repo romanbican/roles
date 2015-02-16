@@ -5,22 +5,22 @@ interface HasPermissionContract {
     /**
      * Get all role permissions.
      *
-     * @return Collection
-     * @throws RoleNotFoundException
+     * @return \Illuminate\Database\Eloquent\Collection
+     * @throws \Bican\Roles\Exceptions\RoleNotFoundException
      */
     public function rolePermissions();
 
     /**
      * User belongs to many permissions.
      *
-     * @return BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function userPermissions();
 
     /**
      * Merge role permissions and user permissions.
      *
-     * @return Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function permissions();
 
@@ -30,7 +30,7 @@ interface HasPermissionContract {
      * @param int|string|array $permission
      * @param string $methodName
      * @return bool
-     * @throws InvalidArgumentException
+     * @throws \Bican\Roles\Exceptions\InvalidArgumentException
      */
     public function can($permission, $methodName = 'One');
 
@@ -47,7 +47,7 @@ interface HasPermissionContract {
     /**
      * Attach permission.
      *
-     * @param int|Permission $permission
+     * @param int|\Bican\Roles\Models\Permission $permission
      * @return mixed
      */
     public function attachPermission($permission);
@@ -55,9 +55,16 @@ interface HasPermissionContract {
     /**
      * Detach permission.
      *
-     * @param int|Permission $permission
+     * @param int|\Bican\Roles\Models\Permission $permission
      * @return mixed
      */
     public function detachPermission($permission);
+
+    /**
+     * Detach all permissions.
+     *
+     * @return int
+     */
+    public function detachAllPermissions();
 
 }

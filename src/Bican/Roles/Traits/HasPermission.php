@@ -1,5 +1,6 @@
-<?php namespace Bican\Roles;
+<?php namespace Bican\Roles\Traits;
 
+use Bican\Roles\Models\Permission;
 use Illuminate\Database\Eloquent\Collection;
 use Bican\Roles\Exceptions\RoleNotFoundException;
 
@@ -8,8 +9,8 @@ trait HasPermission {
     /**
      * Get all role permissions.
      *
-     * @return Collection
-     * @throws RoleNotFoundException
+     * @return \Illuminate\Database\Eloquent\Collection
+     * @throws \Bican\Roles\Exceptions\RoleNotFoundException
      */
     public function rolePermissions()
     {
@@ -21,23 +22,23 @@ trait HasPermission {
         return Permission::join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')
                 ->join('roles', 'roles.id', '=', 'permission_role.role_id')
                 ->whereIn('roles.id', $rolesList)->orWhere('roles.level', '<', $this->level())->where('permissions.unique', '=', 0)
-                ->groupBy('permissions.id')->get(['permissions.*']);
+                ->groupBy('permissions.id')->get(['permissions.*', 'permission_role.created_at as pivot_created_at', 'permission_role.updated_at as pivot_updated_at']);
     }
 
     /**
      * User belongs to many permissions.
      *
-     * @return BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function userPermissions()
     {
-        return $this->belongsToMany('Bican\Roles\Permission');
+        return $this->belongsToMany('Bican\Roles\Models\Permission')->withTimestamps();
     }
 
     /**
      * Merge role permissions and user permissions.
      *
-     * @return Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function permissions()
     {
@@ -50,7 +51,7 @@ trait HasPermission {
      * @param int|string|array $permission
      * @param string $methodName
      * @return bool
-     * @throws InvalidArgumentException
+     * @throws \Bican\Roles\Exceptions\InvalidArgumentException
      */
     public function can($permission, $methodName = 'One')
     {
@@ -70,10 +71,10 @@ trait HasPermission {
      * Check if the user has at least one of provided permissions.
      *
      * @param array $permissions
-     * @param Collection $userPermissions
+     * @param \Illuminate\Database\Eloquent\Collection $userPermissions
      * @return bool
      */
-    private function canOne(array $permissions, Collection $userPermissions)
+    protected function canOne(array $permissions, Collection $userPermissions)
     {
         foreach ($permissions as $permission)
         {
@@ -90,10 +91,10 @@ trait HasPermission {
      * Check if the user has all provided permissions.
      *
      * @param array $permissions
-     * @param Collection $userPermissions
+     * @param \Illuminate\Database\Eloquent\Collection $userPermissions
      * @return bool
      */
-    private function canAll(array $permissions, Collection $userPermissions)
+    protected function canAll(array $permissions, Collection $userPermissions)
     {
         foreach ($permissions as $permission)
         {
@@ -110,14 +111,14 @@ trait HasPermission {
      * Check if the user has a provided permission.
      *
      * @param int|string $providedPermission
-     * @param Collection $userPermissions
+     * @param \Illuminate\Database\Eloquent\Collection $userPermissions
      * @return bool
      */
-    private function hasPermission($providedPermission, Collection $userPermissions)
+    protected function hasPermission($providedPermission, Collection $userPermissions)
     {
         foreach ($userPermissions as $permission)
         {
-            if ($permission->id == $providedPermission || $permission->label === $providedPermission)
+            if ($permission->id == $providedPermission || $permission->slug === $providedPermission)
             {
                 return true;
             }
@@ -143,7 +144,7 @@ trait HasPermission {
 
         foreach ($this->permissions() as $permission)
         {
-            if ($permission->model != '' && get_class($entity) == $permission->model && ($permission->id == $providedPermission || $permission->label === $providedPermission))
+            if ($permission->model != '' && get_class($entity) == $permission->model && ($permission->id == $providedPermission || $permission->slug === $providedPermission))
             {
                 return true;
             }
@@ -155,7 +156,7 @@ trait HasPermission {
     /**
      * Attach permission.
      *
-     * @param int|array|Permission $permission
+     * @param int|\Bican\Roles\Models\Permission $permission
      * @return mixed
      */
     public function attachPermission($permission)
@@ -171,12 +172,22 @@ trait HasPermission {
     /**
      * Detach permission.
      *
-     * @param int|array|Permission $permission
+     * @param int|\Bican\Roles\Models\Permission $permission
      * @return mixed
      */
     public function detachPermission($permission)
     {
         return $this->userPermissions()->detach($permission);
+    }
+
+    /**
+     * Detach all permissions.
+     *
+     * @return int
+     */
+    public function detachAllPermissions()
+    {
+        return $this->userPermissions()->detach();
     }
 
     /**

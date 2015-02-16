@@ -9,7 +9,7 @@ Pull this package in through Composer.
 ```js
 {
     "require": {
-        "bican/roles": "1.2.*"
+        "bican/roles": "1.3.*"
     }
 }
 ```
@@ -45,8 +45,8 @@ First of all, include `HasRole`, `HasPermission` traits and also implement their
 ```php
 use Bican\Roles\Contracts\HasRoleContract;
 use Bican\Roles\Contracts\HasPermissionContract;
-use Bican\Roles\HasRole;
-use Bican\Roles\HasPermission;
+use Bican\Roles\Traits\HasRole;
+use Bican\Roles\Traits\HasPermission;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleContract, HasPermissionContract {
 
@@ -56,16 +56,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 You're set to go. You can create your first role and attach it to a user.
 
 ```php
-use Bican\Roles\Role;
+use Bican\Roles\Models\Role;
 use App\User;
 
 $role = Role::create([
     'name' => 'Administrator',
-    'label' => str_slug('Administrator', '_'), // administrator
+    'slug' => 'administrator',
     'description' => '' // optional
 ]);
 
-$user = User::find($id)->attachRole($role); // you can pass whole object, array or just id
+$user = User::find($id)->attachRole($role); // you can pass whole object, or just id
 ```
 
 You can simply check if the current user has required role.
@@ -87,9 +87,7 @@ if ($user->isAdmin())
 
 ```
 
-But remember, `label` must start with lowercase letter and if role has multiple words, it must look like this: `word_and_another`.
-
-And of course there is a way to check for multiple roles:
+And of course, there is a way to check for multiple roles:
 
 ```php
 if ($user->is('admin|moderator'))
@@ -119,12 +117,12 @@ If user has multiple roles, method `level` returns the highest one.
 Let's talk about permissions. You can attach permission to a role or directly to a specific user (and of course detach them as well).
 
 ```php
-use Bican\Roles\Permission;
-use Bican\Roles\Role;
+use Bican\Roles\Models\Permission;
+use Bican\Roles\Models\Role;
 
 $permission = Permission::create([
     'name' => 'Edit articles',
-    'label' => str_slug('Edit articles', '_'), // edit_articles
+    'slug' => 'edit_articles',
     'description' => '' // optional
 ]);
 
@@ -160,12 +158,12 @@ Let's say you have an article and you want to edit it. This article belongs to a
 
 ```php
 $user->attachPermission([
-    'label' => 'edit',
+    'slug' => 'edit',
     'name' => 'Edit articles',
     'model' => 'App\Article'
 ]);
 
-$article = App\Article::find(1);
+$article = \App\Article::find(1);
 
 if ($user->allowed('edit', $article)) // $user->allowedEdit($article)
 {
