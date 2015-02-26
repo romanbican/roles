@@ -195,6 +195,10 @@ There are two Blade extensions. Basically, it is replacement for classic if stat
     // user can edit articles
 @endpermission
 
+@allowed('edit', $article)
+    // show edit button
+@endallowed
+
 @role('admin|moderator', 'all')
     // user is admin and also moderator
 @else

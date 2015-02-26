@@ -64,5 +64,19 @@ class RolesServiceProvider extends ServiceProvider {
 
             return preg_replace($pattern, '<?php endif; ?>', $view);
         });
+
+        $blade->extend(function($view, $compiler)
+        {
+            $pattern = $compiler->createMatcher('allowed');
+
+            return preg_replace($pattern, '<?php if (Auth::check() && Auth::user()->allowed$2): ?> ', $view);
+        });
+
+        $blade->extend(function($view, $compiler)
+        {
+            $pattern = $compiler->createPlainMatcher('endallowed');
+
+            return preg_replace($pattern, '<?php endif; ?>', $view);
+        });
     }
 }
