@@ -71,7 +71,7 @@ $user = User::find($id)->attachRole($role); // you can pass whole object, or jus
 You can simply check if the current user has required role.
 
 ```php
-if ($user->is('admin')) // or you can pass an id
+if ($user->is('admin')) // you can pass an id or slug
 {
     return 'admin';
 }
@@ -130,7 +130,7 @@ Role::find($id)->attachPermission($permission);
 
 $user->attachPermission($anotherPermission);
 
-if ($user->can('edit_articles') // or you can pass id
+if ($user->can('edit_articles') // you can pass an id or slug
 {
     return 'he has permission!';
 }
