@@ -61,7 +61,7 @@ use App\User;
 
 $role = Role::create([
     'name' => 'Administrator',
-    'slug' => 'administrator',
+    'slug' => 'admin',
     'description' => '' // optional
 ]);
 
@@ -71,7 +71,7 @@ $user = User::find($id)->attachRole($role); // you can pass whole object, or jus
 You can simply check if the current user has required role.
 
 ```php
-if ($user->is('admin')) // you can pass an id or slug
+if ($user->is('admin')) // here checking by slug. You can pass an id or slug
 {
     return 'admin';
 }
