@@ -14,7 +14,9 @@ class RolesServiceProvider extends ServiceProvider {
 		$this->publishes([
 			__DIR__.'/../../migrations/' => base_path('/database/migrations')
 		], 'migrations');
-	}
+
+        $this->registerBladeExtensions();
+    }
 
 	/**
 	 * Register any application services.
@@ -25,4 +27,42 @@ class RolesServiceProvider extends ServiceProvider {
 	{
 		//
 	}
+
+    /**
+     * Register Blade extensions.
+     *
+     * @return void
+     */
+    protected function registerBladeExtensions()
+    {
+        $blade = $this->app['view']->getEngineResolver()->resolve('blade')->getCompiler();
+
+        $blade->extend(function($view, $compiler)
+        {
+            $pattern = $compiler->createMatcher('role');
+
+            return preg_replace($pattern, '<?php if (Auth::check() && Auth::user()->is$2): ?> ', $view);
+        });
+
+        $blade->extend(function($view, $compiler)
+        {
+            $pattern = $compiler->createPlainMatcher('endrole');
+
+            return preg_replace($pattern, '<?php endif; ?>', $view);
+        });
+
+        $blade->extend(function($view, $compiler)
+        {
+            $pattern = $compiler->createMatcher('permission');
+
+            return preg_replace($pattern, '<?php if (Auth::check() && Auth::user()->can$2): ?> ', $view);
+        });
+
+        $blade->extend(function($view, $compiler)
+        {
+            $pattern = $compiler->createPlainMatcher('endpermission');
+
+            return preg_replace($pattern, '<?php endif; ?>', $view);
+        });
+    }
 }

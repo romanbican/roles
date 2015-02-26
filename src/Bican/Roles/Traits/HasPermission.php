@@ -199,7 +199,7 @@ trait HasPermission {
     {
         if (starts_with($method, 'is'))
         {
-            if ($this->is(snake_case(substr($method, 2))))
+            if ($this->is(snake_case(substr($method, 2), '.')))
             {
                 return true;
             }
@@ -208,7 +208,7 @@ trait HasPermission {
         }
         elseif (starts_with($method, 'can'))
         {
-            if ($this->can(snake_case(substr($method, 3))))
+            if ($this->can(snake_case(substr($method, 3), '.')))
             {
                 return true;
             }
@@ -217,7 +217,7 @@ trait HasPermission {
         }
         elseif (starts_with($method, 'allowed'))
         {
-            if ($this->allowed(snake_case(substr($method, 7)), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true))
+            if ($this->allowed(snake_case(substr($method, 7), '.'), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true))
             {
                 return true;
             }

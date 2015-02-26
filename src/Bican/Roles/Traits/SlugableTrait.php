@@ -10,6 +10,6 @@ trait SlugableTrait {
      */
     public function setSlugAttribute($value)
     {
-        $this->attributes['slug'] = str_slug($value, '_');
+        $this->attributes['slug'] = str_slug($value, '.');
     }
 }

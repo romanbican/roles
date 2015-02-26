@@ -2,6 +2,8 @@
 
 Powerful package for handling roles and permissions in Laravel 5.
 
+**Change in 1.4.0: Words in slug are now separated with dots instead of underscores!**
+
 ## Install
 
 Pull this package in through Composer.
@@ -9,7 +11,7 @@ Pull this package in through Composer.
 ```js
 {
     "require": {
-        "bican/roles": "1.3.*"
+        "bican/roles": "1.4.*"
     }
 }
 ```
@@ -60,7 +62,7 @@ use Bican\Roles\Models\Role;
 use App\User;
 
 $role = Role::create([
-    'name' => 'Administrator',
+    'name' => 'Admin',
     'slug' => 'admin',
     'description' => '' // optional
 ]);
@@ -90,18 +92,18 @@ if ($user->isAdmin())
 And of course, there is a way to check for multiple roles:
 
 ```php
-if ($user->is('admin|moderator'))
+if ($user->is('admin|moderator')) // or $user->is('admin, moderator') and also $user->is(['admin', 'moderator'])
 {
     // if user has at least one role
 }
 
-if ($user->is('admin|moderator', 'all'))
+if ($user->is('admin|moderator', 'all')) // or $user->is('admin, moderator', 'all') and also $user->is(['admin', 'moderator'], 'all')
 {
     // if user has all roles
 }
 ```
 
-When you are creating roles, there is also optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can make checks like this:
+When you are creating roles, there is also optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
  
 ```php
 if ($user->level() > 4)
@@ -122,7 +124,7 @@ use Bican\Roles\Models\Role;
 
 $permission = Permission::create([
     'name' => 'Edit articles',
-    'slug' => 'edit_articles',
+    'slug' => 'edit.articles',
     'description' => '' // optional
 ]);
 
@@ -130,7 +132,7 @@ Role::find($id)->attachPermission($permission);
 
 $user->attachPermission($anotherPermission);
 
-if ($user->can('edit_articles') // you can pass an id or slug
+if ($user->can('edit.articles') // you can pass an id or slug
 {
     return 'he has permission!';
 }
@@ -144,7 +146,7 @@ if ($user->canAnotherPermission())
 
 You can check for multiple permissions the same way as roles.
 
-## Permissions inheriting
+## Permissions Inheriting
 
 Permissions attach to a specific user are unique by default. Role permissions not, but you can do it by passing optional parameter `unique` when creating and set it to `1`.
 
@@ -152,7 +154,7 @@ Anyways, role with higher level is inheriting permission from roles with lower l
 
 There is an example of this `magic`: You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. If you don't set column `unique` in permissions table to value `1`, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
 
-## Entity check
+## Entity Check
 
 Let's say you have an article and you want to edit it. This article belongs to a user (`user_id` in database).
 
@@ -180,4 +182,22 @@ if ($user->allowed('edit', $article, false)) // now owner check is disabled
 }
 ```
 
+## Blade Extensions
 
+There are two Blade extensions. Basically, it is replacement for classic if statements.
+
+```php
+@role('admin')
+    // user is admin
+@endrole
+
+@permission('edit.articles')
+    // user can edit articles
+@endpermission
+
+@role('admin|moderator', 'all')
+    // user is admin and also moderator
+@else
+    // something else
+@endrole
+```
