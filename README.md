@@ -184,7 +184,7 @@ if ($user->allowed('edit', $article, false)) // now owner check is disabled
 
 ## Blade Extensions
 
-There are two Blade extensions. Basically, it is replacement for classic if statements.
+There are three Blade extensions. Basically, it is replacement for classic if statements.
 
 ```php
 @role('admin') // @if(Auth::check() && Auth::user()->is('admin'))
