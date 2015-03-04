@@ -4,8 +4,8 @@ use Bican\Roles\Models\Permission;
 use Illuminate\Database\Eloquent\Collection;
 use Bican\Roles\Exceptions\RoleNotFoundException;
 
-trait HasPermission {
 
+trait HasPermission {
     /**
      * Get all role permissions.
      *
@@ -55,6 +55,7 @@ trait HasPermission {
      */
     public function can($permission, $methodName = 'One')
     {
+
         $this->checkMethodNameArgument($methodName);
 
         $permissions = $this->getArrayFrom($permission);
@@ -116,6 +117,9 @@ trait HasPermission {
      */
     protected function hasPermission($providedPermission, Collection $userPermissions)
     {
+        $pretend = $this->pretend('hasPermission');
+        if ($pretend !== null) return $pretend;
+
         foreach ($userPermissions as $permission)
         {
             if ($permission->id == $providedPermission || $permission->slug === $providedPermission)
@@ -137,6 +141,9 @@ trait HasPermission {
      */
     public function allowed($providedPermission, $entity, $owner = true)
     {
+        $pretend = $this->pretend('allowed');
+        if ($pretend !== null) return $pretend;
+
         if ($owner === true && $entity->user_id == $this->id)
         {
             return true;

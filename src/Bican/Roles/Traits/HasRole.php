@@ -3,9 +3,10 @@
 use Illuminate\Database\Eloquent\Collection;
 use Bican\Roles\Exceptions\RoleNotFoundException;
 use Bican\Roles\Exceptions\InvalidArgumentException;
+use Illuminate\Support\Facades\Config;
 
 trait HasRole {
-
+use HasPermission;
     /**
      * User belongs to many roles.
      *
@@ -26,6 +27,9 @@ trait HasRole {
      */
     public function is($role, $methodName = 'One')
     {
+        $pretend = $this->pretend('is');
+        if ($pretend !== null) return $pretend;
+
         $this->checkMethodNameArgument($methodName);
 
         $roles = $this->getArrayFrom($role);
@@ -87,6 +91,9 @@ trait HasRole {
      */
     protected function hasRole($providedRole, Collection $userRoles)
     {
+        $pretend = $this->pretend('hasRole');
+        if ($pretend !== null) return $pretend;
+
         foreach ($userRoles as $role)
         {
             if ($role->id == $providedRole || $role->slug === $providedRole)
@@ -149,6 +156,22 @@ trait HasRole {
         }
 
         throw new RoleNotFoundException('This user has no role.');
+    }
+
+    /**
+     * Allows to pretend/simulate package behavior.
+     *
+     * @return null|boolean
+     */
+    private function pretend($option = null)
+    {
+        $enabled = filter_var(Config::get('roles.pretend')['enabled'], FILTER_VALIDATE_BOOLEAN);
+
+        if (!is_null($option) && $enabled && in_array($option, ['hasPermission', 'hasRole', 'allowed', 'is'])) {
+            return filter_var(Config::get('roles.pretend')['options'][$option], FILTER_VALIDATE_BOOLEAN);
+        }
+        else
+            return null;
     }
 
     /**
