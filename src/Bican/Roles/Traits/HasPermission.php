@@ -117,7 +117,7 @@ trait HasPermission {
      */
     protected function hasPermission($providedPermission, Collection $userPermissions)
     {
-        $pretend = $this->pretend('hasPermission');
+        $pretend = $this->pretend(__FUNCTION__);
         if ($pretend !== null) return $pretend;
 
         foreach ($userPermissions as $permission)
@@ -141,7 +141,7 @@ trait HasPermission {
      */
     public function allowed($providedPermission, $entity, $owner = true)
     {
-        $pretend = $this->pretend('allowed');
+        $pretend = $this->pretend(__FUNCTION__);
         if ($pretend !== null) return $pretend;
 
         if ($owner === true && $entity->user_id == $this->id)

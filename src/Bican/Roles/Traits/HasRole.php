@@ -27,7 +27,7 @@ use HasPermission;
      */
     public function is($role, $methodName = 'One')
     {
-        $pretend = $this->pretend('is');
+        $pretend = $this->pretend(__FUNCTION__);
         if ($pretend !== null) return $pretend;
 
         $this->checkMethodNameArgument($methodName);
@@ -91,7 +91,7 @@ use HasPermission;
      */
     protected function hasRole($providedRole, Collection $userRoles)
     {
-        $pretend = $this->pretend('hasRole');
+        $pretend = $this->pretend(__FUNCTION__);
         if ($pretend !== null) return $pretend;
 
         foreach ($userRoles as $role)
@@ -167,7 +167,7 @@ use HasPermission;
     {
         $enabled = filter_var(Config::get('roles.pretend')['enabled'], FILTER_VALIDATE_BOOLEAN);
 
-        if (!is_null($option) && $enabled && in_array($option, ['hasPermission', 'hasRole', 'allowed', 'is'])) {
+        if (!is_null($option) && $enabled) {
             return filter_var(Config::get('roles.pretend')['options'][$option], FILTER_VALIDATE_BOOLEAN);
         }
         else
