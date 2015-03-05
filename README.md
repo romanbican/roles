@@ -32,27 +32,41 @@ Add the package to your application service providers in `config/app.php`
 ],
 ```
 
-Publish the package migrations to your application.
+Publish the package migrations and configuration to your application.
 
     $ php artisan vendor:publish
 
 Run migrations.
 
     $ php artisan migrate
+    
+### Configuration file
+Configuration file (`config/roles.php`) is self explanatory due comments inside. It lets you simulate package behavior no matter what is in your database.
+
+If you set `enabled => true` `options` array comes to play:
+
+- set `hasPermission => true` means every user has every permission in the system
+- set `hasPermission => false`means every user has **no** permission at all
+- set `hasRole => true` means every user has any (every) role
+- set `hasRole => false` means every user has **no** role
+- set `allowed => true` means every user is allowed
+- set `allowed => false` means every user is **not** allowed
+- set `is => true` means every user is "any role"
+- set `is => false` means every user is **not** "any role" 
+
 
 ## Usage
 
-First of all, include `HasRole`, `HasPermission` traits and also implement their interfaces `HasRoleContract` and `HasPermissionContract` inside your `User` model.
+First of all, include `HasRole` trait and implement interfaces `HasRoleContract` and `HasPermissionContract` inside your `User` model (your IDE will thank you).
 
 ```php
 use Bican\Roles\Contracts\HasRoleContract;
 use Bican\Roles\Contracts\HasPermissionContract;
 use Bican\Roles\Traits\HasRole;
-use Bican\Roles\Traits\HasPermission;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleContract, HasPermissionContract {
 
-	use Authenticatable, CanResetPassword, HasRole, HasPermission;
+	use Authenticatable, CanResetPassword, HasRole;
 ```
 
 You're set to go. You can create your first role and attach it to a user.
