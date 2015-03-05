@@ -19,7 +19,6 @@ class CreatePermissionsTable extends Migration {
 			$table->string('slug');
 			$table->string('description');
 			$table->string('model');
-			$table->boolean('unique');
 			$table->timestamps();
 		});
 	}

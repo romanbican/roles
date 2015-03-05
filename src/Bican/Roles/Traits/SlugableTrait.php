@@ -1,5 +1,7 @@
 <?php namespace Bican\Roles\Traits;
 
+use Illuminate\Support\Facades\Config;
+
 trait SlugableTrait {
 
     /**
@@ -10,6 +12,6 @@ trait SlugableTrait {
      */
     public function setSlugAttribute($value)
     {
-        $this->attributes['slug'] = str_slug($value, '.');
+        $this->attributes['slug'] = str_slug($value, Config::get('roles.separator'));
     }
 }

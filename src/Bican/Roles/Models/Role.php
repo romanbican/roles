@@ -1,12 +1,14 @@
 <?php namespace Bican\Roles\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Bican\Roles\Contracts\RoleContract;
+use Bican\Roles\Traits\RoleTrait;
 use Bican\Roles\Traits\SlugableTrait;
-use Config;
+use Illuminate\Support\Facades\Config;
 
-class Role extends Model {
+class Role extends Model implements RoleContract {
 
-    use SlugableTrait;
+    use RoleTrait, SlugableTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -16,60 +18,19 @@ class Role extends Model {
     protected $fillable = ['name', 'slug', 'description', 'level'];
 
     /**
-     * Role belongs to many permissions.
+     * Create a new Eloquent model instance.
      *
+     * @param array $attributes
      * @return mixed
      */
-    public function permissions()
+    public function __construct(array $attributes = [])
     {
-        return $this->belongsToMany('Bican\Roles\Models\Permission')->withTimestamps();
-    }
+        parent::__construct($attributes);
 
-    /**
-     * Role belongs to many users.
-     *
-     * @return mixed
-     */
-    public function users()
-    {
-        return $this->belongsToMany(Config::get('auth.model'))->withTimestamps();
-    }
-
-    /**
-     * Attach permission.
-     *
-     * @param int|Permission $permission
-     * @return mixed
-     */
-    public function attachPermission($permission)
-    {
-        if ( ! $this->permissions()->get()->contains($permission))
+        if ($connection = Config::get('roles.connection'))
         {
-            return $this->permissions()->attach($permission);
+            $this->connection = $connection;
         }
-
-        return true;
-    }
-
-    /**
-     * Detach permission.
-     *
-     * @param int|Permission $permission
-     * @return mixed
-     */
-    public function detachPermission($permission)
-    {
-        return $this->permissions()->detach($permission);
-    }
-
-    /**
-     * Detach all permissions.
-     *
-     * @return int
-     */
-    public function detachAllPermissions()
-    {
-        return $this->permissions()->detach();
     }
 
 }

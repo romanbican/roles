@@ -1,27 +1,36 @@
 <?php namespace Bican\Roles\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Bican\Roles\Contracts\PermissionContract;
+use Bican\Roles\Traits\PermissionTrait;
 use Bican\Roles\Traits\SlugableTrait;
+use Illuminate\Support\Facades\Config;
 
-class Permission extends Model {
+class Permission extends Model implements PermissionContract {
 
-    use SlugableTrait;
+    use PermissionTrait, SlugableTrait;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['name', 'slug', 'description', 'model', 'unique'];
+    protected $fillable = ['name', 'slug', 'description', 'model'];
 
     /**
-     * Permission belongs to many roles.
+     * Create a new Eloquent model instance.
      *
+     * @param array $attributes
      * @return mixed
      */
-    public function roles()
+    public function __construct(array $attributes = [])
     {
-        return $this->belongsToMany('Bican\Roles\Models\Role')->withTimestamps();
+        parent::__construct($attributes);
+
+        if ($connection = Config::get('roles.connection'))
+        {
+            $this->connection = $connection;
+        }
     }
 
 }

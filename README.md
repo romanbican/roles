@@ -2,7 +2,7 @@
 
 Powerful package for handling roles and permissions in Laravel 5.
 
-**Change in 1.4.0: Words in slug are now separated with dots instead of underscores!**
+**Changes in version 1.5.0! Please read the documentation.**
 
 ## Install
 
@@ -11,7 +11,7 @@ Pull this package in through Composer.
 ```js
 {
     "require": {
-        "bican/roles": "1.4.*"
+        "bican/roles": "1.5.*"
     }
 }
 ```
@@ -32,41 +32,29 @@ Add the package to your application service providers in `config/app.php`
 ],
 ```
 
-Publish the package migrations and configuration to your application.
+Publish the package migrations and config file to your application.
 
     $ php artisan vendor:publish
 
 Run migrations.
 
     $ php artisan migrate
-    
+
 ### Configuration file
-Configuration file (`config/roles.php`) is self explanatory due comments inside. It lets you simulate package behavior no matter what is in your database.
 
-If you set `enabled => true` `options` array comes to play:
-
-- set `hasPermission => true` means every user has every permission in the system
-- set `hasPermission => false`means every user has **no** permission at all
-- set `hasRole => true` means every user has any (every) role
-- set `hasRole => false` means every user has **no** role
-- set `allowed => true` means every user is allowed
-- set `allowed => false` means every user is **not** allowed
-- set `is => true` means every user is "any role"
-- set `is => false` means every user is **not** "any role" 
-
+You can change connection for models, slug separator and there is also a handy pretend feature. Have a look at config file for more information.
 
 ## Usage
 
-First of all, include `HasRole` trait and implement interfaces `HasRoleContract` and `HasPermissionContract` inside your `User` model (your IDE will thank you).
+First of all, include `HasRoleAndPermission` trait and also implement `HasRoleAndPermissionContract` inside your `User` model.
 
 ```php
-use Bican\Roles\Contracts\HasRoleContract;
-use Bican\Roles\Contracts\HasPermissionContract;
-use Bican\Roles\Traits\HasRole;
+use Bican\Roles\Contracts\HasRoleAndPermissionContract;
+use Bican\Roles\Traits\HasRoleAndPermission;
 
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleContract, HasPermissionContract {
+class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract {
 
-	use Authenticatable, CanResetPassword, HasRole;
+	use Authenticatable, CanResetPassword, HasRoleAndPermission;
 ```
 
 You're set to go. You can create your first role and attach it to a user.
@@ -117,6 +105,14 @@ if ($user->is('admin|moderator', 'all')) // or $user->is('admin, moderator', 'al
 }
 ```
 
+There is a handy `scope role`. Example:
+ 
+```php
+\App\User::role('admin')->get(); // Collection with all users that has admin role
+    
+\App\Company::where('name', 'Company')->users()->role('admin');  
+```
+
 When you are creating roles, there is also optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
  
 ```php
@@ -130,7 +126,7 @@ If user has multiple roles, method `level` returns the highest one.
 
 `Level` has also big effect on inheriting permissions. About it later.
 
-Let's talk about permissions. You can attach permission to a role or directly to a specific user (and of course detach them as well).
+Let's talk about permissions in general. You can attach permission to a role or directly to a specific user (and of course detach them as well).
 
 ```php
 use Bican\Roles\Models\Permission;
@@ -155,18 +151,29 @@ if ($user->canAnotherPermission())
 {
     //
 }
-
 ```
 
 You can check for multiple permissions the same way as roles.
 
+You can also use placeholders (wildcards) to check any matching permission.
+
+```php
+if ($user->can("edit.*"))
+{
+    //
+}
+
+if ($user->can("*.articles"))
+{
+    //
+}
+```
+
 ## Permissions Inheriting
 
-Permissions attach to a specific user are unique by default. Role permissions not, but you can do it by passing optional parameter `unique` when creating and set it to `1`.
+Role with higher level is inheriting permission from roles with lower level.
 
-Anyways, role with higher level is inheriting permission from roles with lower level.
-
-There is an example of this `magic`: You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. If you don't set column `unique` in permissions table to value `1`, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
+There is an example of this `magic`: You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. It means, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
 
 ## Entity Check
 
