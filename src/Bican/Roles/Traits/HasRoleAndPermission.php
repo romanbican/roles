@@ -304,16 +304,17 @@ trait HasRoleAndPermission {
      * @param string $providedPermission
      * @param object $entity
      * @param bool $owner
+     * @param string $ownerColumn
      * @return bool
      */
-    public function allowed($providedPermission, $entity, $owner = true)
+    public function allowed($providedPermission, $entity, $owner = true, $ownerColumn = 'user_id')
     {
         if ($this->isPretendEnabled())
         {
             return $this->pretend(__FUNCTION__);
         }
 
-        if ($owner === true && $entity->user_id == $this->id)
+        if ($owner === true && $entity->{$ownerColumn} == $this->id)
         {
             return true;
         }
@@ -445,7 +446,7 @@ trait HasRoleAndPermission {
         }
         elseif (starts_with($method, 'allowed'))
         {
-            if ($this->allowed(snake_case(substr($method, 7), Config::get('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true))
+            if ($this->allowed(snake_case(substr($method, 7), Config::get('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id'))
             {
                 return true;
             }

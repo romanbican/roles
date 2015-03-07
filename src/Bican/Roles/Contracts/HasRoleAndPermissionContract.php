@@ -88,9 +88,10 @@ interface HasRoleAndPermissionContract {
      * @param string $providedPermission
      * @param object $entity
      * @param bool $owner
+     * @param string $ownerColumn
      * @return bool
      */
-    public function allowed($providedPermission, $entity, $owner = true);
+    public function allowed($providedPermission, $entity, $owner = true, $ownerColumn = 'user_id');
 
     /**
      * Attach permission.
