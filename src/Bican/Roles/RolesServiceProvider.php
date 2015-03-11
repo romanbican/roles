@@ -4,30 +4,30 @@ use Illuminate\Support\ServiceProvider;
 
 class RolesServiceProvider extends ServiceProvider {
 
-	/**
-	 * Bootstrap any application services.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
-		$this->publishes([
-			__DIR__ . '/../../migrations/' => base_path('/database/migrations'),
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__ . '/../../migrations/' => base_path('/database/migrations'),
             __DIR__ . '/../../config/roles.php' => config_path('roles.php')
-		]);
+        ]);
 
         $this->registerBladeExtensions();
     }
 
-	/**
-	 * Register any application services.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
         $this->mergeConfigFrom(__DIR__ . '/../../config/roles.php', 'roles');
-	}
+    }
 
     /**
      * Register Blade extensions.
