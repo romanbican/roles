@@ -216,10 +216,11 @@ trait HasRoleAndPermission {
      *
      * @param int|string|array $permission
      * @param string $methodName
+     * @param string $from
      * @return bool
      * @throws \Bican\Roles\Exceptions\InvalidArgumentException
      */
-    public function can($permission, $methodName = 'One')
+    public function can($permission, $methodName = 'One', $from = '')
     {
         if ($this->isPretendEnabled())
         {
@@ -230,7 +231,9 @@ trait HasRoleAndPermission {
 
         $permissions = $this->getArrayFrom($permission);
 
-        if ($this->{'can' . ucwords($methodName)}($permissions, $this->permissions()))
+        $allPermissions = ($from != 'role' && $from != 'user') ? $this->permissions() : $this->{$from . 'Permissions'}()->get();
+
+        if ($this->{'can' . ucwords($methodName)}($permissions, $allPermissions))
         {
             return true;
         }

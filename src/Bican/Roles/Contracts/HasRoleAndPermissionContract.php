@@ -77,10 +77,11 @@ interface HasRoleAndPermissionContract {
      *
      * @param int|string|array $permission
      * @param string $methodName
+     * @param string $from
      * @return bool
      * @throws \Bican\Roles\Exceptions\InvalidArgumentException
      */
-    public function can($permission, $methodName = 'One');
+    public function can($permission, $methodName = 'One', $from = '');
 
     /**
      * Check if the user is allowed to manipulate with entity.
