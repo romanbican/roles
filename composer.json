@@ -1,21 +1,21 @@
 {
-	"name": "bican/roles",
-	"description": "Powerful package for handling roles and permissions in Laravel 5.",
-	"keywords": ["roles", "permissions", "laravel", "laravel5"],
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Roman Bičan",
-			"email": "romanbican@seznam.cz"
-		}
-	],
-	"require": {
-		"php": ">=5.4.0",
-		"illuminate/support": "~5.0"
-	},
-	"autoload": {
-		"psr-0": {
-			"Bican\\Roles": "src/"
-		}
-	}
+    "name": "bican/roles",
+    "description": "Powerful package for handling roles and permissions in Laravel 5.",
+    "keywords": ["roles", "permissions", "laravel", "laravel5"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roman Bičan",
+            "email": "romanbican@seznam.cz"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "~5.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Bican\\Roles": "src/"
+        }
+    }
 }
