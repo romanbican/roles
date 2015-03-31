@@ -36,9 +36,7 @@ trait HasRoleAndPermission
 
         $this->checkMethodNameArgument($methodName);
 
-        $roles = $this->getArrayFrom($role);
-
-        if ($this->{'is' . ucwords($methodName)}($roles, $this->roles()->get())) {
+        if ($this->{'is' . ucwords($methodName)}($this->getArrayFrom($role), $this->roles()->get())) {
             return true;
         }
 
@@ -224,11 +222,9 @@ trait HasRoleAndPermission
 
         $this->checkMethodNameArgument($methodName);
 
-        $permissions = $this->getArrayFrom($permission);
-
         $allPermissions = ($from != 'role' && $from != 'user') ? $this->permissions() : $this->{$from . 'Permissions'}()->get();
 
-        if ($this->{'can' . ucwords($methodName)}($permissions, $allPermissions)) {
+        if ($this->{'can' . ucwords($methodName)}($this->getArrayFrom($permission), $allPermissions)) {
             return true;
         }
 
