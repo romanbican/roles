@@ -2,8 +2,6 @@
 
 Powerful package for handling roles and permissions in Laravel 5.
 
-**Changes in version 1.5.0! Please read the documentation.**
-
 ## Install
 
 Pull this package in through Composer.
@@ -75,7 +73,7 @@ $user = User::find($id)->attachRole($role); // you can pass whole object, or jus
 You can simply check if the current user has required role.
 
 ```php
-if ($user->is('admin')) // here checking by slug. You can pass an id or slug
+if ($user->is('admin')) // you can pass an id or slug
 {
     return 'admin';
 }
@@ -212,15 +210,15 @@ There are three Blade extensions. Basically, it is replacement for classic if st
     // user is admin
 @endrole
 
-@permission('edit.articles')
+@permission('edit.articles') // @if(Auth::check() && Auth::user()->can('edit.articles'))
     // user can edit articles
 @endpermission
 
-@allowed('edit', $article)
+@allowed('edit', $article) // @if(Auth::check() && Auth::user()->allowed('edit', $article))
     // show edit button
 @endallowed
 
-@role('admin|moderator', 'all')
+@role('admin|moderator', 'all') // @if(Auth::check() && Auth::user()->is('admin|moderator', 'all'))
     // user is admin and also moderator
 @else
     // something else
