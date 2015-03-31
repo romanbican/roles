@@ -1,13 +1,15 @@
-<?php namespace Bican\Roles\Traits;
+<?php
 
+namespace Bican\Roles\Traits;
+
+use Bican\Roles\Models\Permission;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Collection;
 use Bican\Roles\Exceptions\RoleNotFoundException;
 use Bican\Roles\Exceptions\InvalidArgumentException;
-use Bican\Roles\Models\Permission;
-use Illuminate\Support\Facades\Config;
 
-trait HasRoleAndPermission {
-
+trait HasRoleAndPermission
+{
     /**
      * User belongs to many roles.
      *
@@ -28,17 +30,15 @@ trait HasRoleAndPermission {
      */
     public function is($role, $methodName = 'One')
     {
-        if ($this->isPretendEnabled())
-        {
-            return $this->pretend(__FUNCTION__);
+        if ($this->isPretendEnabled()) {
+            return $this->pretend('is');
         }
 
         $this->checkMethodNameArgument($methodName);
 
         $roles = $this->getArrayFrom($role);
 
-        if ($this->{'is' . ucwords($methodName)}($roles, $this->roles()->get()))
-        {
+        if ($this->{'is' . ucwords($methodName)}($roles, $this->roles()->get())) {
             return true;
         }
 
@@ -54,10 +54,8 @@ trait HasRoleAndPermission {
      */
     protected function isOne(array $roles, Collection $userRoles)
     {
-        foreach ($roles as $role)
-        {
-            if ($this->hasRole($role, $userRoles))
-            {
+        foreach ($roles as $role) {
+            if ($this->hasRole($role, $userRoles)) {
                 return true;
             }
         }
@@ -74,10 +72,8 @@ trait HasRoleAndPermission {
      */
     protected function isAll(array $roles, Collection $userRoles)
     {
-        foreach ($roles as $role)
-        {
-            if ( ! $this->hasRole($role, $userRoles))
-            {
+        foreach ($roles as $role) {
+            if (!$this->hasRole($role, $userRoles)) {
                 return false;
             }
         }
@@ -94,10 +90,8 @@ trait HasRoleAndPermission {
      */
     protected function hasRole($providedRole, Collection $userRoles)
     {
-        foreach ($userRoles as $role)
-        {
-            if ($role->id == $providedRole || str_is($providedRole, $role->slug))
-            {
+        foreach ($userRoles as $role) {
+            if ($role->id == $providedRole || str_is($providedRole, $role->slug)) {
                 return true;
             }
         }
@@ -113,8 +107,7 @@ trait HasRoleAndPermission {
      */
     public function attachRole($role)
     {
-        if ( ! $this->roles()->get()->contains($role))
-        {
+        if (!$this->roles()->get()->contains($role)) {
             return $this->roles()->attach($role);
         }
 
@@ -150,8 +143,7 @@ trait HasRoleAndPermission {
      */
     public function level()
     {
-        if ( $role = $this->roles()->orderBy('level', 'desc')->first())
-        {
+        if ($role = $this->roles()->orderBy('level', 'desc')->first()) {
             return $role->level;
         }
 
@@ -167,8 +159,7 @@ trait HasRoleAndPermission {
      */
     public function scopeRole($query, $role)
     {
-        return $query->whereHas('roles', function($query) use ($role)
-        {
+        return $query->whereHas('roles', function ($query) use ($role) {
             $query->where('slug', $role);
         });
     }
@@ -181,14 +172,19 @@ trait HasRoleAndPermission {
      */
     public function rolePermissions()
     {
-        if ( ! $rolesList = $this->roles()->select('roles.id')->lists('roles.id'))
-        {
+        if (!$rolesList = $this->roles()->select('roles.id')->lists('roles.id')) {
             throw new RoleNotFoundException('This user has no role.');
         }
 
-        return Permission::select(['permissions.*', 'permission_role.created_at as pivot_created_at', 'permission_role.updated_at as pivot_updated_at'])
-                ->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')
-                ->join('roles', 'roles.id', '=', 'permission_role.role_id')->whereIn('roles.id', $rolesList)->orWhere('roles.level', '<', $this->level())->groupBy('permissions.id');
+        return Permission::select([
+                    'permissions.*',
+                    'permission_role.created_at as pivot_created_at',
+                    'permission_role.updated_at as pivot_updated_at'
+                ])->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')
+                ->join('roles', 'roles.id', '=', 'permission_role.role_id')
+                ->whereIn('roles.id', $rolesList)
+                ->orWhere('roles.level', '<', $this->level())
+                ->groupBy('permissions.id');
     }
 
     /**
@@ -222,9 +218,8 @@ trait HasRoleAndPermission {
      */
     public function can($permission, $methodName = 'One', $from = '')
     {
-        if ($this->isPretendEnabled())
-        {
-            return $this->pretend(__FUNCTION__);
+        if ($this->isPretendEnabled()) {
+            return $this->pretend('can');
         }
 
         $this->checkMethodNameArgument($methodName);
@@ -233,8 +228,7 @@ trait HasRoleAndPermission {
 
         $allPermissions = ($from != 'role' && $from != 'user') ? $this->permissions() : $this->{$from . 'Permissions'}()->get();
 
-        if ($this->{'can' . ucwords($methodName)}($permissions, $allPermissions))
-        {
+        if ($this->{'can' . ucwords($methodName)}($permissions, $allPermissions)) {
             return true;
         }
 
@@ -250,10 +244,8 @@ trait HasRoleAndPermission {
      */
     protected function canOne(array $permissions, Collection $userPermissions)
     {
-        foreach ($permissions as $permission)
-        {
-            if ($this->hasPermission($permission, $userPermissions))
-            {
+        foreach ($permissions as $permission) {
+            if ($this->hasPermission($permission, $userPermissions)) {
                 return true;
             }
         }
@@ -270,10 +262,8 @@ trait HasRoleAndPermission {
      */
     protected function canAll(array $permissions, Collection $userPermissions)
     {
-        foreach ($permissions as $permission)
-        {
-            if ( ! $this->hasPermission($permission, $userPermissions))
-            {
+        foreach ($permissions as $permission) {
+            if (!$this->hasPermission($permission, $userPermissions)) {
                 return false;
             }
         }
@@ -290,10 +280,8 @@ trait HasRoleAndPermission {
      */
     protected function hasPermission($providedPermission, Collection $userPermissions)
     {
-        foreach ($userPermissions as $permission)
-        {
-            if ($permission->id == $providedPermission || str_is($providedPermission, $permission->slug))
-            {
+        foreach ($userPermissions as $permission) {
+            if ($permission->id == $providedPermission || str_is($providedPermission, $permission->slug)) {
                 return true;
             }
         }
@@ -312,20 +300,16 @@ trait HasRoleAndPermission {
      */
     public function allowed($providedPermission, $entity, $owner = true, $ownerColumn = 'user_id')
     {
-        if ($this->isPretendEnabled())
-        {
-            return $this->pretend(__FUNCTION__);
+        if ($this->isPretendEnabled()) {
+            return $this->pretend('allowed');
         }
 
-        if ($owner === true && $entity->{$ownerColumn} == $this->id)
-        {
+        if ($owner === true && $entity->{$ownerColumn} == $this->id) {
             return true;
         }
 
-        foreach ($this->permissions() as $permission)
-        {
-            if ($permission->model != '' && get_class($entity) == $permission->model && ($permission->id == $providedPermission || $permission->slug === $providedPermission))
-            {
+        foreach ($this->permissions() as $permission) {
+            if ($permission->model != '' && get_class($entity) == $permission->model && ($permission->id == $providedPermission || $permission->slug === $providedPermission)) {
                 return true;
             }
         }
@@ -341,8 +325,7 @@ trait HasRoleAndPermission {
      */
     public function attachPermission($permission)
     {
-        if ( ! $this->userPermissions()->get()->contains($permission))
-        {
+        if (!$this->userPermissions()->get()->contains($permission)) {
             return $this->userPermissions()->attach($permission);
         }
 
@@ -399,8 +382,7 @@ trait HasRoleAndPermission {
      */
     private function getArrayFrom($value)
     {
-        if ( ! is_array($value))
-        {
+        if (!is_array($value)) {
             return preg_split('/ ?[,|] ?/', $value);
         }
 
@@ -416,8 +398,7 @@ trait HasRoleAndPermission {
      */
     private function checkMethodNameArgument($methodName)
     {
-        if (ucwords($methodName) != 'One' && ucwords($methodName) != 'All')
-        {
+        if (ucwords($methodName) != 'One' && ucwords($methodName) != 'All') {
             throw new InvalidArgumentException('You can pass only strings [one] or [all] as a second parameter in [is] or [can] method.');
         }
     }
@@ -429,28 +410,20 @@ trait HasRoleAndPermission {
      */
     public function __call($method, $parameters)
     {
-        if (starts_with($method, 'is'))
-        {
-            if ($this->is(snake_case(substr($method, 2), Config::get('roles.separator'))))
-            {
+        if (starts_with($method, 'is')) {
+            if ($this->is(snake_case(substr($method, 2), Config::get('roles.separator')))) {
                 return true;
             }
 
             return false;
-        }
-        elseif (starts_with($method, 'can'))
-        {
-            if ($this->can(snake_case(substr($method, 3), Config::get('roles.separator'))))
-            {
+        } elseif (starts_with($method, 'can')) {
+            if ($this->can(snake_case(substr($method, 3), Config::get('roles.separator')))) {
                 return true;
             }
 
             return false;
-        }
-        elseif (starts_with($method, 'allowed'))
-        {
-            if ($this->allowed(snake_case(substr($method, 7), Config::get('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id'))
-            {
+        } elseif (starts_with($method, 'allowed')) {
+            if ($this->allowed(snake_case(substr($method, 7), Config::get('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id')) {
                 return true;
             }
 
@@ -459,5 +432,4 @@ trait HasRoleAndPermission {
 
         return parent::__call($method, $parameters);
     }
-
 }

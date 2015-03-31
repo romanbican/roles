@@ -1,9 +1,11 @@
-<?php namespace Bican\Roles\Traits;
+<?php
+
+namespace Bican\Roles\Traits;
 
 use Illuminate\Support\Facades\Config;
 
-trait PermissionTrait {
-
+trait PermissionTrait
+{
     /**
      * Permission belongs to many roles.
      *
@@ -23,5 +25,4 @@ trait PermissionTrait {
     {
         return $this->belongsToMany(Config::get('auth.model'))->withTimestamps();
     }
-
 }

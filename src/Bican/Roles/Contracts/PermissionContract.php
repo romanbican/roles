@@ -1,7 +1,9 @@
-<?php namespace Bican\Roles\Contracts;
+<?php
 
-interface PermissionContract {
+namespace Bican\Roles\Contracts;
 
+interface PermissionContract
+{
     /**
      * Permission belongs to many roles.
      *
@@ -15,5 +17,4 @@ interface PermissionContract {
      * @return mixed
      */
     public function users();
-
 }

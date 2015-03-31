@@ -1,3 +1,8 @@
-<?php namespace Bican\Roles\Exceptions;
+<?php
 
-class InvalidArgumentException extends \Exception {}
+namespace Bican\Roles\Exceptions;
+
+class InvalidArgumentException extends \Exception
+{
+
+}

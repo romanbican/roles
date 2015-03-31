@@ -1,7 +1,9 @@
-<?php namespace Bican\Roles\Contracts;
+<?php
 
-interface HasRoleAndPermissionContract {
+namespace Bican\Roles\Contracts;
 
+interface HasRoleAndPermissionContract
+{
     /**
      * User belongs to many roles.
      *
@@ -116,5 +118,4 @@ interface HasRoleAndPermissionContract {
      * @return int
      */
     public function detachAllPermissions();
-
 }

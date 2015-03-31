@@ -1,9 +1,11 @@
-<?php namespace Bican\Roles;
+<?php
+
+namespace Bican\Roles;
 
 use Illuminate\Support\ServiceProvider;
 
-class RolesServiceProvider extends ServiceProvider {
-
+class RolesServiceProvider extends ServiceProvider
+{
     /**
      * Bootstrap any application services.
      *
@@ -38,43 +40,37 @@ class RolesServiceProvider extends ServiceProvider {
     {
         $blade = $this->app['view']->getEngineResolver()->resolve('blade')->getCompiler();
 
-        $blade->extend(function($view, $compiler)
-        {
+        $blade->extend(function ($view, $compiler) {
             $pattern = $compiler->createMatcher('role');
 
             return preg_replace($pattern, '<?php if (Auth::check() && Auth::user()->is$2): ?> ', $view);
         });
 
-        $blade->extend(function($view, $compiler)
-        {
+        $blade->extend(function ($view, $compiler) {
             $pattern = $compiler->createPlainMatcher('endrole');
 
             return preg_replace($pattern, '<?php endif; ?>', $view);
         });
 
-        $blade->extend(function($view, $compiler)
-        {
+        $blade->extend(function ($view, $compiler) {
             $pattern = $compiler->createMatcher('permission');
 
             return preg_replace($pattern, '<?php if (Auth::check() && Auth::user()->can$2): ?> ', $view);
         });
 
-        $blade->extend(function($view, $compiler)
-        {
+        $blade->extend(function ($view, $compiler) {
             $pattern = $compiler->createPlainMatcher('endpermission');
 
             return preg_replace($pattern, '<?php endif; ?>', $view);
         });
 
-        $blade->extend(function($view, $compiler)
-        {
+        $blade->extend(function ($view, $compiler) {
             $pattern = $compiler->createMatcher('allowed');
 
             return preg_replace($pattern, '<?php if (Auth::check() && Auth::user()->allowed$2): ?> ', $view);
         });
 
-        $blade->extend(function($view, $compiler)
-        {
+        $blade->extend(function ($view, $compiler) {
             $pattern = $compiler->createPlainMatcher('endallowed');
 
             return preg_replace($pattern, '<?php endif; ?>', $view);

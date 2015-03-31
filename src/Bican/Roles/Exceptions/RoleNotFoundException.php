@@ -1,3 +1,8 @@
-<?php namespace Bican\Roles\Exceptions;
+<?php
 
-class RoleNotFoundException extends \Exception {}
+namespace Bican\Roles\Exceptions;
+
+class RoleNotFoundException extends \Exception
+{
+
+}

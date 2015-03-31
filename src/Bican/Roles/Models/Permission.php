@@ -1,13 +1,15 @@
-<?php namespace Bican\Roles\Models;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
-use Bican\Roles\Contracts\PermissionContract;
-use Bican\Roles\Traits\PermissionTrait;
+namespace Bican\Roles\Models;
+
 use Bican\Roles\Traits\SlugableTrait;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Database\Eloquent\Model;
+use Bican\Roles\Traits\PermissionTrait;
+use Bican\Roles\Contracts\PermissionContract;
 
-class Permission extends Model implements PermissionContract {
-
+class Permission extends Model implements PermissionContract
+{
     use PermissionTrait, SlugableTrait;
 
     /**
@@ -27,10 +29,8 @@ class Permission extends Model implements PermissionContract {
     {
         parent::__construct($attributes);
 
-        if ($connection = Config::get('roles.connection'))
-        {
+        if ($connection = Config::get('roles.connection')) {
             $this->connection = $connection;
         }
     }
-
 }

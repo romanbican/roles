@@ -1,9 +1,11 @@
-<?php namespace Bican\Roles\Traits;
+<?php
+
+namespace Bican\Roles\Traits;
 
 use Illuminate\Support\Facades\Config;
 
-trait SlugableTrait {
-
+trait SlugableTrait
+{
     /**
      * Set slug property.
      *

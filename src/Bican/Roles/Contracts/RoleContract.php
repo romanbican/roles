@@ -1,7 +1,9 @@
-<?php namespace Bican\Roles\Contracts;
+<?php
 
-interface RoleContract {
+namespace Bican\Roles\Contracts;
 
+interface RoleContract
+{
     /**
      * Role belongs to many permissions.
      *
@@ -38,5 +40,4 @@ interface RoleContract {
      * @return int
      */
     public function detachAllPermissions();
-
 }

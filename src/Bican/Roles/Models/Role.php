@@ -1,13 +1,15 @@
-<?php namespace Bican\Roles\Models;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
-use Bican\Roles\Contracts\RoleContract;
+namespace Bican\Roles\Models;
+
 use Bican\Roles\Traits\RoleTrait;
 use Bican\Roles\Traits\SlugableTrait;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Database\Eloquent\Model;
+use Bican\Roles\Contracts\RoleContract;
 
-class Role extends Model implements RoleContract {
-
+class Role extends Model implements RoleContract
+{
     use RoleTrait, SlugableTrait;
 
     /**
@@ -27,10 +29,8 @@ class Role extends Model implements RoleContract {
     {
         parent::__construct($attributes);
 
-        if ($connection = Config::get('roles.connection'))
-        {
+        if ($connection = Config::get('roles.connection')) {
             $this->connection = $connection;
         }
     }
-
 }

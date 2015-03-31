@@ -1,9 +1,11 @@
-<?php namespace Bican\Roles\Traits;
+<?php
+
+namespace Bican\Roles\Traits;
 
 use Illuminate\Support\Facades\Config;
 
-trait RoleTrait {
-
+trait RoleTrait
+{
     /**
      * Role belongs to many permissions.
      *
@@ -32,8 +34,7 @@ trait RoleTrait {
      */
     public function attachPermission($permission)
     {
-        if ( ! $this->permissions()->get()->contains($permission))
-        {
+        if (!$this->permissions()->get()->contains($permission)) {
             return $this->permissions()->attach($permission);
         }
 
@@ -60,5 +61,4 @@ trait RoleTrait {
     {
         return $this->permissions()->detach();
     }
-
 }
