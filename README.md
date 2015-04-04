@@ -32,7 +32,8 @@ Add the package to your application service providers in `config/app.php`
 
 Publish the package migrations and config file to your application.
 
-    $ php artisan vendor:publish
+    $ php artisan vendor:publish --provider="Vendor/Bican/Roles/RolesServiceProvider" --tag="config"
+    $ php artisan vendor:publish --provider="Vendor/Bican/Roles/RolesServiceProvider" --tag="migrations"
 
 Run migrations.
 
