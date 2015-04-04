@@ -225,3 +225,5 @@ There are three Blade extensions. Basically, it is replacement for classic if st
     // something else
 @endrole
 ```
+
+For more information, please have a look at [HasRoleAndPermissionContract](https://github.com/romanbican/roles/blob/master/src/Bican/Roles/Contracts/HasRoleAndPermissionContract.php).
