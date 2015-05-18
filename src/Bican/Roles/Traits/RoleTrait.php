@@ -21,7 +21,7 @@ trait RoleTrait
      */
     public function users()
     {
-        return $this->belongsToMany(Config::get('auth.model'))->withTimestamps();
+        return $this->belongsToMany(config('auth.model'))->withTimestamps();
     }
 
     /**
