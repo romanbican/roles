@@ -2,14 +2,12 @@
 
 namespace Bican\Roles\Traits;
 
-use Illuminate\Support\Facades\Config;
-
 trait RoleTrait
 {
     /**
      * Role belongs to many permissions.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function permissions()
     {
@@ -19,7 +17,7 @@ trait RoleTrait
     /**
      * Role belongs to many users.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
     {
@@ -27,25 +25,21 @@ trait RoleTrait
     }
 
     /**
-     * Attach permission.
+     * Attach permission to a role.
      *
      * @param int|\Bican\Roles\Models\Permission $permission
-     * @return mixed
+     * @return int|bool
      */
     public function attachPermission($permission)
     {
-        if (!$this->permissions()->get()->contains($permission)) {
-            return $this->permissions()->attach($permission);
-        }
-
-        return true;
+        return (!$this->permissions()->get()->contains($permission)) ? $this->permissions()->attach($permission) : true;
     }
 
     /**
-     * Detach permission.
+     * Detach permission from a role.
      *
      * @param int|\Bican\Roles\Models\Permission $permission
-     * @return mixed
+     * @return int
      */
     public function detachPermission($permission)
     {

@@ -9,7 +9,7 @@ Pull this package in through Composer.
 ```js
 {
     "require": {
-        "bican/roles": "1.6.*"
+        "bican/roles": "1.7.*"
     }
 }
 ```
@@ -98,18 +98,10 @@ if ($user->is('admin|moderator')) // or $user->is('admin, moderator') and also $
     // if user has at least one role
 }
 
-if ($user->is('admin|moderator', 'all')) // or $user->is('admin, moderator', 'all') and also $user->is(['admin', 'moderator'], 'all')
+if ($user->is('admin|moderator', 'All')) // or $user->is('admin, moderator', 'All') and also $user->is(['admin', 'moderator'], 'All')
 {
     // if user has all roles
 }
-```
-
-There is a handy `scope role`. Example:
- 
-```php
-\App\User::role('admin')->get(); // Collection with all users that has admin role
-    
-\App\Company::where('name', 'Company')->users()->role('admin');  
 ```
 
 When you are creating roles, there is also optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
@@ -153,20 +145,6 @@ if ($user->canAnotherPermission())
 ```
 
 You can check for multiple permissions the same way as roles.
-
-You can also use placeholders (wildcards) to check any matching permission.
-
-```php
-if ($user->can("edit.*"))
-{
-    //
-}
-
-if ($user->can("*.articles"))
-{
-    //
-}
-```
 
 ## Permissions Inheriting
 

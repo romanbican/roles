@@ -7,30 +7,30 @@ interface RoleContract
     /**
      * Role belongs to many permissions.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function permissions();
 
     /**
      * Role belongs to many users.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users();
 
     /**
-     * Attach permission.
+     * Attach permission to a role.
      *
-     * @param int|Permission $permission
-     * @return mixed
+     * @param int|\Bican\Roles\Models\Permission $permission
+     * @return int|bool
      */
     public function attachPermission($permission);
 
     /**
-     * Detach permission.
+     * Detach permission from a role.
      *
-     * @param int|Permission $permission
-     * @return mixed
+     * @param int|\Bican\Roles\Models\Permission $permission
+     * @return int
      */
     public function detachPermission($permission);
 

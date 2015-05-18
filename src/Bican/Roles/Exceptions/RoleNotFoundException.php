@@ -2,7 +2,9 @@
 
 namespace Bican\Roles\Exceptions;
 
-class RoleNotFoundException extends \Exception
+use Exception;
+
+class RoleNotFoundException extends Exception
 {
 
 }

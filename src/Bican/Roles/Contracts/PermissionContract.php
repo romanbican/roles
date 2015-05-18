@@ -7,14 +7,14 @@ interface PermissionContract
     /**
      * Permission belongs to many roles.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function roles();
 
     /**
      * Permission belongs to many users.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users();
 }

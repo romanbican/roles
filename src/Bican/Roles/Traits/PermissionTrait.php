@@ -2,14 +2,12 @@
 
 namespace Bican\Roles\Traits;
 
-use Illuminate\Support\Facades\Config;
-
 trait PermissionTrait
 {
     /**
      * Permission belongs to many roles.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function roles()
     {
@@ -19,10 +17,10 @@ trait PermissionTrait
     /**
      * Permission belongs to many users.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
     {
-        return $this->belongsToMany(Config::get('auth.model'))->withTimestamps();
+        return $this->belongsToMany(config('auth.model'))->withTimestamps();
     }
 }
