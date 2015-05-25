@@ -153,7 +153,7 @@ trait HasRoleAndPermission
      */
     public function rolePermissions()
     {
-        if (!$roles = $this->getRoles()->lists('id')) {
+        if (!$roles = $this->getRoles()->lists('id')->toArray()) {
             throw new RoleNotFoundException('This user has no role.');
         }
 
