@@ -43,40 +43,28 @@ class RolesServiceProvider extends ServiceProvider
     {
         $blade = $this->app['view']->getEngineResolver()->resolve('blade')->getCompiler();
 
-        $blade->extend(function ($view, $compiler) {
-            $pattern = $compiler->createMatcher('role');
-
-            return preg_replace($pattern, '<?php if (Auth::check() && Auth::user()->is$2): ?> ', $view);
+        $blade->directive('role', function($role) {
+            return "<?php if (Auth::check() && Auth::user()->is{$role}): ?>";
         });
 
-        $blade->extend(function ($view, $compiler) {
-            $pattern = $compiler->createPlainMatcher('endrole');
-
-            return preg_replace($pattern, '<?php endif; ?>', $view);
+        $blade->directive('endrole', function() {
+            return "<?php endif; ?>";
         });
 
-        $blade->extend(function ($view, $compiler) {
-            $pattern = $compiler->createMatcher('permission');
-
-            return preg_replace($pattern, '<?php if (Auth::check() && Auth::user()->can$2): ?> ', $view);
+        $blade->directive('permission', function($permission) {
+            return "<?php if (Auth::check() && Auth::user()->can{$permission}): ?>";
         });
 
-        $blade->extend(function ($view, $compiler) {
-            $pattern = $compiler->createPlainMatcher('endpermission');
-
-            return preg_replace($pattern, '<?php endif; ?>', $view);
+        $blade->directive('endpermission', function() {
+            return "<?php endif; ?>";
         });
 
-        $blade->extend(function ($view, $compiler) {
-            $pattern = $compiler->createMatcher('allowed');
-
-            return preg_replace($pattern, '<?php if (Auth::check() && Auth::user()->allowed$2): ?> ', $view);
+        $blade->directive('allowed', function($action) {
+            return "<?php if (Auth::check() && Auth::user()->allowed{$action}): ?>";
         });
 
-        $blade->extend(function ($view, $compiler) {
-            $pattern = $compiler->createPlainMatcher('endallowed');
-
-            return preg_replace($pattern, '<?php endif; ?>', $view);
+        $blade->directive('endallowed', function() {
+            return "<?php endif; ?>";
         });
     }
 }
