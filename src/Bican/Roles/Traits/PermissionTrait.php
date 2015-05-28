@@ -11,7 +11,7 @@ trait PermissionTrait
      */
     public function roles()
     {
-        return $this->belongsToMany('Bican\Roles\Models\Role')->withTimestamps();
+        return $this->belongsToMany(config('roles.models.role'))->withTimestamps();
     }
 
     /**

@@ -51,4 +51,9 @@ return [
 
     ],
 
+    'models' => [
+        'role'=> 'Bican\Roles\Models\Role',
+        'permission' => 'Bican\Roles\Models\Permission'
+    ],
+
 ];

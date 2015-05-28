@@ -29,7 +29,7 @@ trait HasRoleAndPermission
      */
     public function roles()
     {
-        return $this->belongsToMany('Bican\Roles\Models\Role')->withTimestamps();
+        return $this->belongsToMany(config('roles.models.role'))->withTimestamps();
     }
 
     /**
@@ -175,7 +175,7 @@ trait HasRoleAndPermission
      */
     public function userPermissions()
     {
-        return $this->belongsToMany('Bican\Roles\Models\Permission')->withTimestamps();
+        return $this->belongsToMany(config('roles.models.permission'))->withTimestamps();
     }
 
     /**
