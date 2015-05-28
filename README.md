@@ -16,7 +16,7 @@ Pull this package in through Composer.
 
     $ composer update
 
-Add the package to your application service providers in `config/app.php`
+Add the package to your application service providers in `config/app.php` **NOTE:** Ensure you also register the BaumServiceProvider as well!
 
 ```php
 'providers' => [
@@ -26,6 +26,7 @@ Add the package to your application service providers in `config/app.php`
     ...
     
     'Bican\Roles\RolesServiceProvider',
+    'Baum\Providers\BaumServiceProvider',
 
 ],
 ```

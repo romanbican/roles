@@ -14,9 +14,10 @@ interface HasRoleAndPermissionContract
     /**
      * Get all roles as collection.
      *
+     * @param bool $includeInheritedRoles
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getRoles();
+    public function getRoles($includeInheritedRoles = false);
 
     /**
      * Check if the user has a role or roles.
@@ -51,13 +52,6 @@ interface HasRoleAndPermissionContract
      */
     public function detachAllRoles();
 
-    /**
-     * Get role level of a user.
-     *
-     * @return int
-     * @throws \Bican\Roles\Exceptions\RoleNotFoundException
-     */
-    public function level();
 
     /**
      * Get all permissions from roles.
