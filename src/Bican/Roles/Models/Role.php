@@ -4,10 +4,11 @@ namespace Bican\Roles\Models;
 
 use Bican\Roles\Traits\RoleTrait;
 use Bican\Roles\Traits\SlugableTrait;
-use Illuminate\Database\Eloquent\Model;
+use Baum\Node;
 use Bican\Roles\Contracts\RoleContract;
 
-class Role extends Model implements RoleContract
+
+class Role extends Node implements RoleContract
 {
     use RoleTrait, SlugableTrait;
 
