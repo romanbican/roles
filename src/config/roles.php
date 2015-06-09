@@ -21,12 +21,28 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you can change the slug separator. This is very important in matter
-    | of magic method __call() and also a SlugableTrait. The default value
+    | of magic method __call() and also a `Slugable` trait. The default value
     | is a dot.
     |
     */
 
     'separator' => '.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Models
+    |--------------------------------------------------------------------------
+    |
+    | If you want, you can replace default models from this package by models
+    | you created. Have a look at `Bican\Roles\Models\Role` model and
+    | `Bican\Roles\Models\Permission` model. 
+    |
+    */
+
+    'models' => [
+        'role' => Bican\Roles\Models\Role::class,
+        'permission' => Bican\Roles\Models\Permission::class,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -44,16 +60,11 @@ return [
         'enabled' => false,
 
         'options' => [
-            'is'        => true,
-            'can'       => true,
-            'allowed'   => true,
+            'is' => true,
+            'can' => true,
+            'allowed' => true,
         ],
 
-    ],
-
-    'models' => [
-        'role'=> 'Bican\Roles\Models\Role',
-        'permission' => 'Bican\Roles\Models\Permission'
     ],
 
 ];

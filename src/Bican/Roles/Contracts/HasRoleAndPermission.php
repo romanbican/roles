@@ -2,7 +2,9 @@
 
 namespace Bican\Roles\Contracts;
 
-interface HasRoleAndPermissionContract
+use Illuminate\Database\Eloquent\Model;
+
+interface HasRoleAndPermission
 {
     /**
      * User belongs to many roles.
@@ -22,11 +24,10 @@ interface HasRoleAndPermissionContract
      * Check if the user has a role or roles.
      *
      * @param int|string|array $role
-     * @param string $methodName
+     * @param bool $all
      * @return bool
-     * @throws \Bican\Roles\Exceptions\InvalidArgumentException
      */
-    public function is($role, $methodName = 'One');
+    public function is($role, $all = false);
 
     /**
      * Attach role to a user.
@@ -55,7 +56,6 @@ interface HasRoleAndPermissionContract
      * Get role level of a user.
      *
      * @return int
-     * @throws \Bican\Roles\Exceptions\RoleNotFoundException
      */
     public function level();
 
@@ -63,7 +63,6 @@ interface HasRoleAndPermissionContract
      * Get all permissions from roles.
      *
      * @return \Illuminate\Database\Eloquent\Builder
-     * @throws \Bican\Roles\Exceptions\RoleNotFoundException
      */
     public function rolePermissions();
 
@@ -85,23 +84,21 @@ interface HasRoleAndPermissionContract
      * Check if the user has a permission or permissions.
      *
      * @param int|string|array $permission
-     * @param string $methodName
-     * @param string $from
+     * @param bool $all
      * @return bool
-     * @throws \Bican\Roles\Exceptions\InvalidArgumentException
      */
-    public function can($permission, $methodName = 'One', $from = '');
+    public function can($permission, $all = false);
 
     /**
      * Check if the user is allowed to manipulate with entity.
      *
      * @param string $providedPermission
-     * @param object $entity
+     * @param \Illuminate\Database\Eloquent\Model $entity
      * @param bool $owner
      * @param string $ownerColumn
      * @return bool
      */
-    public function allowed($providedPermission, $entity, $owner = true, $ownerColumn = 'user_id');
+    public function allowed($providedPermission, Model $entity, $owner = true, $ownerColumn = 'user_id');
 
     /**
      * Attach permission to a user.

@@ -2,7 +2,7 @@
 
 namespace Bican\Roles\Traits;
 
-trait SlugableTrait
+trait Slugable
 {
     /**
      * Set slug attribute.

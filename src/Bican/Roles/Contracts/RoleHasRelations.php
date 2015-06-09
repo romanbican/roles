@@ -2,7 +2,7 @@
 
 namespace Bican\Roles\Contracts;
 
-interface RoleContract
+interface RoleHasRelations
 {
     /**
      * Role belongs to many permissions.

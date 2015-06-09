@@ -2,7 +2,7 @@
 
 namespace Bican\Roles\Traits;
 
-trait PermissionTrait
+trait PermissionHasRelations
 {
     /**
      * Permission belongs to many roles.

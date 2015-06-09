@@ -2,14 +2,14 @@
 
 namespace Bican\Roles\Models;
 
-use Bican\Roles\Traits\SlugableTrait;
+use Bican\Roles\Traits\Slugable;
 use Illuminate\Database\Eloquent\Model;
-use Bican\Roles\Traits\PermissionTrait;
-use Bican\Roles\Contracts\PermissionContract;
+use Bican\Roles\Traits\PermissionHasRelations;
+use Bican\Roles\Contracts\PermissionHasRelations as PermissionHasRelationsContract;
 
-class Permission extends Model implements PermissionContract
+class Permission extends Model implements PermissionHasRelationsContract
 {
-    use PermissionTrait, SlugableTrait;
+    use Slugable, PermissionHasRelations;
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class Permission extends Model implements PermissionContract
     protected $fillable = ['name', 'slug', 'description', 'model'];
 
     /**
-     * Create a new Eloquent model instance.
+     * Create a new model instance.
      *
      * @param array $attributes
      * @return void
