@@ -308,6 +308,6 @@ You can change connection for models, slug separator, models path and there is a
 
 For more information, please have a look at [HasRoleAndPermission](https://github.com/romanbican/roles/blob/master/src/Bican/Roles/Contracts/HasRoleAndPermission.php) contact.
 
-## Licence
+## License
 
 This package is free software distributed under the terms of the MIT license.
