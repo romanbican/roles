@@ -1,24 +1,54 @@
-# Roles and permissions for Laravel 5
+# Roles And Permissions For Laravel 5
 
 Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5.0).
 
-## Install
+- [Installation](#installation)
+    - [Composer](#composer)
+    - [Service Provider](#service-provider)
+    - [Config File And Migrations](#config-file-and-migrations)
+    - [HasRoleAndPermission Trait And Contract](#hasroleandpermission-trait-and-contract)
+- [Usage](#usage)
+    - [Creating Roles](#creating-roles)
+    - [Attaching And Detaching Roles](#attaching-and-detaching-roles)
+    - [Checking For Roles](#checking-for-roles)
+    - [Levels](#levels)
+    - [Creating Permissions](#creating-permissions)
+    - [Attaching And Detaching Permissions](#attaching-and-detaching-permissions)
+    - [Checking For Permissions](#checking-for-permissions)
+    - [Permissions Inheriting](#permissions-inheriting)
+    - [Entity Check](#entity-check)
+    - [Blade Extensions](#blade-extensions)
+- [Config File](#config-file)
+- [More Information](#more-information)
+- [License](#license)
 
-**Changes in version 2.0.0! Please read the documentation if you want to upgrade.**
+## Installation
 
-Pull this package in through Composer. For Laravel 5.0, have a look at tag `1.7.*`.
+This package is very easy to set up. There are only couple of steps.
+
+### Composer
+
+Pull this package in through Composer (file `composer.json`).
 
 ```js
 {
     "require": {
+        "php": ">=5.5.9",
+        "laravel/framework": "5.1.*",
         "bican/roles": "2.0.*"
     }
 }
 ```
 
-    $ composer update
+> If you are still using Laravel 5.0, you must pull in version `1.7.*`.
 
-Add the package to your application service providers in `config/app.php`
+Run this command inside your terminal.
+
+    composer update
+
+### Service Provider
+
+Add the package to your application service providers in `config/app.php` file.
 
 ```php
 'providers' => [
@@ -30,126 +60,175 @@ Add the package to your application service providers in `config/app.php`
     Illuminate\Auth\AuthServiceProvider::class,
     ...
     
+    /**
+     * Third Party Service Providers...
+     */
     Bican\Roles\RolesServiceProvider::class,
 
 ],
 ```
 
-Publish the package migrations and config file to your application.
+### Config File And Migrations
 
-    $ php artisan vendor:publish --provider="Bican\Roles\RolesServiceProvider" --tag=config
-    $ php artisan vendor:publish --provider="Bican\Roles\RolesServiceProvider" --tag=migrations
+Publish the package config file and migrations to your application. Run these commands inside your terminal.
 
-Run migrations.
+    php artisan vendor:publish --provider="Bican\Roles\RolesServiceProvider" --tag=config
+    php artisan vendor:publish --provider="Bican\Roles\RolesServiceProvider" --tag=migrations
 
-    $ php artisan migrate
+And also run migrations.
 
-### Configuration file
+    php artisan migrate
 
-You can change connection for models, slug separator, models path and there is also a handy pretend feature. Have a look at config file for more information.
+> There must be created migration file for users table, which is in Laravel out of the box.
 
-## Usage
+### HasRoleAndPermission Trait And Contract
 
-First of all, include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` contract inside your `User` model.
+Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` contract inside your `User` model.
 
 ```php
 use Bican\Roles\Traits\HasRoleAndPermission;
 use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
 
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract {
-
-	use Authenticatable, CanResetPassword, HasRoleAndPermission;
+class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract
+{
+    use Authenticatable, CanResetPassword, HasRoleAndPermission;
 ```
 
-You're set to go. You can create your first role and attach it to a user.
+And that's it!
+
+## Usage
+
+### Creating Roles
 
 ```php
-use App\User;
 use Bican\Roles\Models\Role;
 
-$role = Role::create([
+$adminRole = Role::create([
     'name' => 'Admin',
     'slug' => 'admin',
     'description' => '', // optional
+    'level' => 1, // optional, set to 1 by default
 ]);
+
+$moderatorRole = Role::create([
+    'name' => 'Forum Moderator',
+    'slug' => 'forum.moderator',
+]);
+```
+
+> Because of `Slugable` trait, if you make a mistake and for example leave a space in slug parameter, it'll be replaced with a dot automatically, because of `str_slug` function.
+
+### Attaching And Detaching Roles
+
+It's really simple. You fetch a user from database and call `attachRole` method. There is `BelongsToMany` relationship between `User` and `Role` model.
+
+```php
+use App\User;
 
 $user = User::find($id);
 
-$user->attachRole($role); // you can pass whole object, or just an id
+$user->attachRole($adminRole); // you can pass whole object, or just an id
 ```
 
-You can simply check if the current user has required role.
+```php
+$user->detachRole($adminRole); // in case you want to detach role
+$user->detachAllRoles(); // in case you want to detach all roles
+```
+
+### Checking For Roles
+
+You can now check if the user has required role.
 
 ```php
-if ($user->is('admin')) // you can pass an id or slug
-{
-    return 'admin';
+if ($user->is('admin')) { // you can pass an id or slug
+    //
 }
 ```
 
 You can also do this:
 
 ```php
-if ($user->isAdmin())
-{
-    return 'admin';
+if ($user->isAdmin()) {
+    //
 }
-
 ```
 
 And of course, there is a way to check for multiple roles:
 
 ```php
-if ($user->is('admin|moderator')) // or $user->is('admin, moderator') and also $user->is(['admin', 'moderator'])
-{
+if ($user->is('admin|moderator')) { // or $user->is('admin, moderator') and also $user->is(['admin', 'moderator'])
     // if user has at least one role
 }
 
-if ($user->is('admin|moderator', true)) // or $user->is('admin, moderator', true) and also $user->is(['admin', 'moderator'], true)
-{
+if ($user->is('admin|moderator', true)) { // or $user->is('admin, moderator', true) and also $user->is(['admin', 'moderator'], true)
     // if user has all roles
 }
 ```
 
-When you are creating roles, there is also optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
+### Levels
+
+When you are creating roles, there is optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
  
 ```php
-if ($user->level() > 4)
-{
+if ($user->level() > 4) {
     //
 }
 ```
 
-If user has multiple roles, method `level` returns the highest one.
+> If user has multiple roles, method `level` returns the highest one.
 
 `Level` has also big effect on inheriting permissions. About it later.
 
-Let's talk about permissions in general. You can attach permission to a role or directly to a specific user (and of course detach them as well).
+### Creating Permissions
+
+It's very simple thanks to `Permission` model.
 
 ```php
-use Bican\Roles\Models\Role;
 use Bican\Roles\Models\Permission;
 
-$permission = Permission::create([
-    'name' => 'Edit articles',
-    'slug' => 'edit.articles',
+$createUsersPermission = Permission::create([
+    'name' => 'Create users',
+    'slug' => 'create.users',
     'description' => '', // optional
 ]);
 
+$deleteUsersPermission = Permission::create([
+    'name' => 'Delete users',
+    'slug' => 'delete.users',
+]);
+```
+
+### Attaching And Detaching Permissions
+
+You can attach permissions to a role or directly to a specific user (and of course detach them as well).
+
+```php
+use App\User;
+use Bican\Roles\Models\Role;
+
 $role = Role::find($roleId);
+$role->attachPermission($createUsersPermission); // permission attached to a role
+
 $user = User::find($userId);
+$user->attachPermission($deleteUsersPermission); // permission attached to a user
+```
 
-$role->attachPermission($permission); // permission attached to a role
+```php
+$role->detachPermission($createUsersPermission); // in case you want to detach permission
+$role->detachAllPermissions(); // in case you want to detach all permissions
 
-$user->attachPermission($permission); // permission attached to a user
+$user->detachPermission($deleteUsersPermission);
+$user->detachAllPermissions();
+```
 
-if ($user->can('edit.articles') // you can pass an id or slug
-{
+### Checking For Permissions
+
+```php
+if ($user->can('create.users') { // you can pass an id or slug
     //
 }
 
-if ($user->canEditArticles())
-{
+if ($user->canDeleteusers()) {
     //
 }
 ```
@@ -160,34 +239,39 @@ You can check for multiple permissions the same way as roles.
 
 Role with higher level is inheriting permission from roles with lower level.
 
-There is an example of this `magic`: You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. It means, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
+There is an example of this `magic`:
+
+You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. It means, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
+
+> If you don't want permissions inheriting feature in you application, simply ignore `level` parameter when you're creating roles.
 
 ## Entity Check
 
-Let's say you have an article and you want to edit it. This article belongs to a user (`user_id` in database).
+Let's say you have an article and you want to edit it. This article belongs to a user (there is a column `user_id` in articles table).
 
 ```php
 use App\Article;
+use Bican\Roles\Models\Permission;
 
-$user->attachPermission([
-    'slug' => 'edit',
+$editArticlesPermission = Permission::create([
     'name' => 'Edit articles',
+    'slug' => 'edit.articles',
     'model' => 'App\Article',
 ]);
 
+$user->attachPermission($editArticlesPermission);
+
 $article = Article::find(1);
 
-if ($user->allowed('edit', $article)) // $user->allowedEdit($article)
-{
+if ($user->allowed('edit.articles', $article)) { // $user->allowedEditArticles($article)
     //
 }
 ```
 
-This condition checks if the current user is the owner of provided article. If not, it will be looking inside user permissions for a row we created before.
+This condition checks if the current user is the owner of article. If not, it will be looking inside user permissions for a row we created before.
 
 ```php
-if ($user->allowed('edit', $article, false)) // now owner check is disabled
-{
+if ($user->allowed('edit', $article, false)) { // now owner check is disabled
     //
 }
 ```
@@ -216,4 +300,14 @@ There are three Blade extensions. Basically, it is replacement for classic if st
 @endrole
 ```
 
-For more information, please have a look at contract [HasRoleAndPermission](https://github.com/romanbican/roles/blob/master/src/Bican/Roles/Contracts/HasRoleAndPermission.php).
+## Config File
+
+You can change connection for models, slug separator, models path and there is also a handy pretend feature. Have a look at config file for more information.
+
+## More Information
+
+For more information, please have a look at [HasRoleAndPermission](https://github.com/romanbican/roles/blob/master/src/Bican/Roles/Contracts/HasRoleAndPermission.php) contact.
+
+## Licence
+
+This package is free software distributed under the terms of the MIT license.
