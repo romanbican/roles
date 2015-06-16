@@ -147,10 +147,10 @@ trait HasRoleAndPermission
     {
         if (!$roles = $this->getRoles()->lists('id')->toArray()) { $roles = []; }
 
-        return Permission::select(['permissions.*', 'permission_role.created_at as pivot_created_at', 'permission_role.updated_at as pivot_updated_at'])
-                ->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')->join('roles', 'roles.id', '=', 'permission_role.role_id')
-                ->whereIn('roles.id', $roles) ->orWhere('roles.level', '<', $this->level())
-                ->groupBy('permissions.id');
+        return Permission::select([config('roles.prefix') . 'permissions.*', config('roles.prefix') . 'permission_role.created_at as pivot_created_at', config('roles.prefix') . 'permission_role.updated_at as pivot_updated_at'])
+                ->join(config('roles.prefix') . 'permission_role', config('roles.prefix') . 'permission_role.permission_id', '=', config('roles.prefix') . 'permissions.id')->join(config('roles.prefix') . 'roles', config('roles.prefix') . 'roles.id', '=', config('roles.prefix') . 'permission_role.role_id')
+                ->whereIn(config('roles.prefix') . 'roles.id', $roles) ->orWhere(config('roles.prefix') . 'roles.level', '<', $this->level())
+                ->groupBy(config('roles.prefix') . 'permissions.id');
     }
 
     /**
