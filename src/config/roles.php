@@ -17,18 +17,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Database Table Prefix
-    |--------------------------------------------------------------------------
-    |
-    | By default, this pulls the prefix from your selected database connection.
-    | There is no reason to change this.
-    |
-    */
-
-    'prefix' => config('database.connections.' . config('database.default') . '.prefix'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Slug Separator
     |--------------------------------------------------------------------------
     |
