@@ -20,11 +20,12 @@ return [
     | Database Table Prefix
     |--------------------------------------------------------------------------
     |
-    | If your tables have a prefix you may specify that here.
+    | By default, this pulls the prefix from your selected database connection.
+    | There is no reason to change this.
     |
     */
 
-    'prefix' => '',
+    'prefix' => config('database.connections.' . config('database.default') . '.prefix'),
 
     /*
     |--------------------------------------------------------------------------
