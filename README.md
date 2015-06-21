@@ -271,7 +271,7 @@ if ($user->allowed('edit.articles', $article)) { // $user->allowedEditArticles($
 This condition checks if the current user is the owner of article. If not, it will be looking inside user permissions for a row we created before.
 
 ```php
-if ($user->allowed('edit', $article, false)) { // now owner check is disabled
+if ($user->allowed('edit.articles', $article, false)) { // now owner check is disabled
     //
 }
 ```
