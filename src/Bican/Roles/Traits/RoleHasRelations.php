@@ -31,7 +31,7 @@ trait RoleHasRelations
      */
     public function parent()
     {
-        return $this->belongsTo(config('roles.models.role'));
+        return $this->belongsTo(config('roles.models.role'),'parent_id');
     }
     // all ascendants
     public function parentRecursive()
@@ -46,7 +46,7 @@ trait RoleHasRelations
      */
     public function children()
     {
-        return $this->hasMany(config('roles.models.role'));
+        return $this->hasMany(config('roles.models.role'),'parent_id');
     }
 
     // recursive, loads all descendants

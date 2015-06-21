@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRolesTable extends Migration
+class UpdateRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateRolesTable extends Migration
     public function up()
     {
         Schema::table('roles', function($table) {
-            $table->integer('parent_id')->unsigned()->after('level');
+            $table->integer('parent_id')->unsigned()->nullable()->after('level');
             $table->foreign('parent_id')->references('id')->on('roles');
         });
     }

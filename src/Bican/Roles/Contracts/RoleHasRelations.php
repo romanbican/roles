@@ -25,12 +25,16 @@ interface RoleHasRelations
      */
     public function parent();
 
+    public function parentRecursive();
+
     /**
      * Role has many children roles
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function children();
+
+    public function childrenRecursive();
 
     /**
      * Attach permission to a role.
