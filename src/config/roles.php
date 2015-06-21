@@ -30,6 +30,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Role Hierarchy Type
+    |--------------------------------------------------------------------------
+    |
+    | By default Levels are used. I.E. anyone in level 100 roles will get any roles
+    | that are level 1-99 as well. Switch this to nested and roles will be inherited
+    | based on their parent role instead of their level.
+    |
+    | Options:
+    | level - level based inheritance
+    | nested - parent based inheritance
+    |
+    */
+
+    'hierarchy' => 'level',
+
+    /*
+    |--------------------------------------------------------------------------
     | Models
     |--------------------------------------------------------------------------
     |

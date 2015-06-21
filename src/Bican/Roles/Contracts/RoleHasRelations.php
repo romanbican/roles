@@ -19,6 +19,20 @@ interface RoleHasRelations
     public function users();
 
     /**
+     * Role belongs to parent role.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function parent();
+
+    /**
+     * Role has many children roles
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function children();
+
+    /**
      * Attach permission to a role.
      *
      * @param int|\Bican\Roles\Models\Permission $permission

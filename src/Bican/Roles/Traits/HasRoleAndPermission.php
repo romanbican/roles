@@ -38,7 +38,11 @@ trait HasRoleAndPermission
      */
     public function getRoles()
     {
-        return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
+        if(config('roles.hierarchy')=='nested')
+        {
+            return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
+        }else
+            return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
     }
 
     /**
@@ -151,7 +155,7 @@ trait HasRoleAndPermission
         
         $prefix = config('database.connections.' . config('database.default') . '.prefix');
 
-        return Permission::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
+        return config('roles.models.permission')::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
                 ->join($prefix . 'permission_role', $prefix . 'permission_role.permission_id', '=', $prefix . 'permissions.id')->join($prefix . 'roles', $prefix . 'roles.id', '=', $prefix . 'permission_role.role_id')
                 ->whereIn($prefix . 'roles.id', $roles) ->orWhere($prefix . 'roles.level', '<', $this->level())
                 ->groupBy($prefix . 'permissions.id');
