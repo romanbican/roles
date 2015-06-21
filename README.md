@@ -331,7 +331,7 @@ $router->get('/example', [
 
 $router->post('/example', [
     'as' => 'example',
-    'middleware' => 'permission:edit.articleds',
+    'middleware' => 'permission:edit.articles',
     'uses' => 'ExampleController@index',
 ]);
 ```
