@@ -33,10 +33,19 @@ trait RoleHasRelations
     {
         return $this->belongsTo(config('roles.models.role'),'parent_id');
     }
-    // all ascendants
-    public function parentRecursive()
+
+
+    public function ancestors()
     {
-        return $this->parent()->with('parentRecursive');
+        $ancestors = $this->where('id', '=', $this->parent_id)->get();
+
+        while ($ancestors->last() && $ancestors->last()->parent_id !== null)
+        {
+            $parent = $this->where('id', '=', $ancestors->last()->parent_id)->get();
+            $ancestors = $ancestors->merge($parent);
+        }
+
+        return $ancestors;
     }
 
     /**
@@ -49,12 +58,14 @@ trait RoleHasRelations
         return $this->hasMany(config('roles.models.role'),'parent_id');
     }
 
-    // recursive, loads all descendants
-    public function childrenRecursive()
+    public function descendants()
     {
-        return $this->children()->with('childrenRecursive');
-        // which is equivalent to:
-        // return $this->hasMany('Survey', 'parent')->with('childrenRecursive);
+        $descendants = $this->where('parent_id', '=', $this->id)->get();
+
+        foreach($descendants as $descendant)
+            $descendants = $descendants->merge($descendant->descendants());
+
+        return $descendants;
     }
 
     /**

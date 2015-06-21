@@ -4,6 +4,7 @@ namespace Bican\Roles\Traits;
 
 use Bican\Roles\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 
 trait HasRoleAndPermission
 {
@@ -13,6 +14,14 @@ trait HasRoleAndPermission
      * @var \Illuminate\Database\Eloquent\Collection|null
      */
     protected $roles;
+
+    /**
+     * Property for caching inherited roles.
+     * Only used for nested inheritance
+     *
+     * @var \Illuminate\Database\Eloquent\Collection|null
+     */
+    protected $inheritedRoles;
 
     /**
      * Property for caching permissions.
@@ -38,11 +47,20 @@ trait HasRoleAndPermission
      */
     public function getRoles()
     {
+        if(!$this->roles)
+            $this->roles = $this->roles()->get();
+
         if(config('roles.hierarchy')=='nested')
         {
-            return (!$this->roles) ? $this->roles = $this->roles()->with('childrenRecursive')->get() : $this->roles;
+            if(!$this->inheritedRoles){
+                $inheritedRoles = new Collection();
+                foreach($this->roles as $role)
+                    $inheritedRoles = $inheritedRoles->merge($role->descendants());
+                $this->inheritedRoles = $inheritedRoles;
+            }
+            return  $this->roles->merge($this->inheritedRoles);
         }else
-            return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
+            return $this->roles;
     }
 
     /**
@@ -151,14 +169,23 @@ trait HasRoleAndPermission
      */
     public function rolePermissions()
     {
-        if (!$roles = $this->getRoles()->lists('id')->toArray()) { $roles = []; }
-        
-        $prefix = config('database.connections.' . config('database.default') . '.prefix');
-        $permission = config('roles.models.permission');
-        return $permission::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
+
+        if(config('roles.hierarchy')=='nested')
+        {
+            $permissions = new Collection();
+            foreach ($this->getRoles() as $role)
+                $permissions = $permissions->merge($role->permissions);
+            return $permissions;
+        }else{
+            if (!$roles = $this->getRoles()->lists('id')->toArray()) { $roles = []; }
+            $prefix = config('database.connections.' . config('database.default') . '.prefix');
+            $permission = config('roles.models.permission');
+            return $permission::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
                 ->join($prefix . 'permission_role', $prefix . 'permission_role.permission_id', '=', $prefix . 'permissions.id')->join($prefix . 'roles', $prefix . 'roles.id', '=', $prefix . 'permission_role.role_id')
                 ->whereIn($prefix . 'roles.id', $roles) ->orWhere($prefix . 'roles.level', '<', $this->level())
                 ->groupBy($prefix . 'permissions.id');
+        }
+
     }
 
     /**
@@ -178,7 +205,11 @@ trait HasRoleAndPermission
      */
     public function getPermissions()
     {
-        return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->get()->merge($this->userPermissions()->get()) : $this->permissions;
+        if(config('roles.hierarchy')=='nested') {
+            return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->merge($this->userPermissions()->get()) : $this->permissions;
+        }else{
+            return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->get()->merge($this->userPermissions()->get()) : $this->permissions;
+        }
     }
 
     /**

@@ -25,7 +25,12 @@ interface RoleHasRelations
      */
     public function parent();
 
-    public function parentRecursive();
+    /**
+     * Roles parent, grand parent, etc.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function ancestors();
 
     /**
      * Role has many children roles
@@ -34,7 +39,12 @@ interface RoleHasRelations
      */
     public function children();
 
-    public function childrenRecursive();
+    /**
+     * Roles children, grand children, etc.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function descendants();
 
     /**
      * Attach permission to a role.
