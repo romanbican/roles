@@ -18,6 +18,7 @@ Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5
     - [Permissions Inheriting](#permissions-inheriting)
     - [Entity Check](#entity-check)
     - [Blade Extensions](#blade-extensions)
+    - [Middleware](#middleware)
 - [Config File](#config-file)
 - [More Information](#more-information)
 - [License](#license)
@@ -35,7 +36,7 @@ Pull this package in through Composer (file `composer.json`).
     "require": {
         "php": ">=5.5.9",
         "laravel/framework": "5.1.*",
-        "bican/roles": "2.0.*"
+        "bican/roles": "2.1.*"
     }
 }
 ```
@@ -235,7 +236,7 @@ if ($user->canDeleteusers()) {
 
 You can check for multiple permissions the same way as roles.
 
-## Permissions Inheriting
+### Permissions Inheriting
 
 Role with higher level is inheriting permission from roles with lower level.
 
@@ -245,7 +246,7 @@ You have three roles: `user`, `moderator` and `admin`. User has a permission to 
 
 > If you don't want permissions inheriting feature in you application, simply ignore `level` parameter when you're creating roles.
 
-## Entity Check
+### Entity Check
 
 Let's say you have an article and you want to edit it. This article belongs to a user (there is a column `user_id` in articles table).
 
@@ -276,7 +277,7 @@ if ($user->allowed('edit.articles', $article, false)) { // now owner check is di
 }
 ```
 
-## Blade Extensions
+### Blade Extensions
 
 There are three Blade extensions. Basically, it is replacement for classic if statements.
 
@@ -298,6 +299,64 @@ There are three Blade extensions. Basically, it is replacement for classic if st
 @else
     // something else
 @endrole
+```
+
+### Middleware
+
+This package comes with `VerifyRole` and `VerifyPermission` middleware. You must add them inside your `app/Http/Kernel.php` file.
+
+```php
+/**
+ * The application's route middleware.
+ *
+ * @var array
+ */
+protected $routeMiddleware = [
+    'auth' => \App\Http\Middleware\Authenticate::class,
+    'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+    'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+    'role' => \Bican\Roles\Middleware\VerifyRole::class,
+    'permission' => \Bican\Roles\Middleware\VerifyPermission::class,
+];
+```
+
+Now you can easily protect your routes.
+
+```php
+$router->get('/example', [
+    'as' => 'example',
+    'middleware' => 'role:admin',
+    'uses' => 'ExampleController@index',
+]);
+
+$router->post('/example', [
+    'as' => 'example',
+    'middleware' => 'permission:edit.articleds',
+    'uses' => 'ExampleController@index',
+]);
+```
+
+It throws `\Bican\Roles\Exception\AccessDeniedException` if it goes wrong.
+
+You can catch this exception inside `app/Exceptions/Handler.php` file and do whatever you want.
+
+```php
+/**
+ * Render an exception into an HTTP response.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @param  \Exception  $e
+ * @return \Illuminate\Http\Response
+ */
+public function render($request, Exception $e)
+{
+    if ($e instanceof \Bican\Roles\Exceptions\AccessDeniedException) {
+        // you can for example flash message, redirect...
+        return redirect()->back();
+    }
+
+    return parent::render($request, $e);
+}
 ```
 
 ## Config File
