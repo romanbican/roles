@@ -15,7 +15,9 @@ Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5
     - [Creating Permissions](#creating-permissions)
     - [Attaching And Detaching Permissions](#attaching-and-detaching-permissions)
     - [Checking For Permissions](#checking-for-permissions)
-    - [Permissions Inheriting](#permissions-inheriting)
+    - [Inheritance](#inheritance)
+        - [Permission Based](#permission-based)
+        - [Role Based](#role-based)
     - [Entity Check](#entity-check)
     - [Blade Extensions](#blade-extensions)
     - [Middleware](#middleware)
@@ -109,6 +111,7 @@ $adminRole = Role::create([
     'slug' => 'admin',
     'description' => '', // optional
     'level' => 1, // optional, set to 1 by default
+    'parent_id' => NULL, // optional, set to NULL by default
 ]);
 
 $moderatorRole = Role::create([
@@ -236,7 +239,13 @@ if ($user->canDeleteUsers()) {
 
 You can check for multiple permissions the same way as roles.
 
-### Permissions Inheriting
+### Inheritance
+
+There are two methods of inheritance; permission based, and role based. The default is permission based. But can be changed easily in the config.
+
+> If you don't want the inheritance feature in you application, simply ignore the `level` and `parent_id` parameter when you're creating roles.
+
+#### Permission Based
 
 Role with higher level is inheriting permission from roles with lower level.
 
@@ -244,7 +253,22 @@ There is an example of this `magic`:
 
 You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. It means, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
 
-> If you don't want permissions inheriting feature in you application, simply ignore `level` parameter when you're creating roles.
+#### Role Based
+
+Roles that are assigned a parent_id of another role are automatically inherited when a user is assigned or inherits the parent role.
+
+Here is an example:
+
+You have 5 administrative groups. Admins, Store Admins, Store Inventory Managers, Blog Admins, and Blog Writers.
+
+The `Admins Role` is the parent of both `Store Admins Role` as well as `Blog Admins Role`.
+While the `Store Admins Role` is the parent to `Store Inventory Managers Role`.
+And the `Blog Admins Role` is the parent to `Blog Writers`.
+
+This enables the `Admins Role` to inherit both `Store Inventory Managers Role` and `Blog Writers Role`.
+But the `Store Admins Role` only inherits the `Store Inventory Managers Role`,
+And the `Blog Admins Role` only inherits the `Blog Writers Role`.
+
 
 ### Entity Check
 
