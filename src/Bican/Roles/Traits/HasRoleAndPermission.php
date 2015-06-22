@@ -175,7 +175,6 @@ trait HasRoleAndPermission
      */
     public function rolePermissions()
     {
-
         if(config('roles.hierarchy')=='nested')
         {
             $permissions = new Collection();
@@ -183,9 +182,10 @@ trait HasRoleAndPermission
                 $permissions = $permissions->merge($role->permissions);
             return $permissions;
         }else{
-            if (!$roles = $this->getRoles()->lists('id')->toArray()) { $roles = []; }
+            if (!$roles = $this->getRoles()->lists('id')->toArray()) {
                 $roles = [];
             }
+
             $prefix = config('database.connections.' . config('database.default') . '.prefix');
             $permission = config('roles.models.permission');
             return $permission::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
