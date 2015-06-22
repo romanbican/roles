@@ -291,11 +291,12 @@ trait HasRoleAndPermission
      * Attach permission to a user.
      *
      * @param int|\Bican\Roles\Models\Permission $permission
-     * @return null|bool
+     * @param bool $granted
+     * @return bool|null
      */
-    public function attachPermission($permission)
+    public function attachPermission($permission, $granted = true)
     {
-        return (!$this->getPermissions()->contains($permission)) ? $this->userPermissions()->attach($permission) : true;
+        return (!$this->getPermissions()->contains($permission)) ? $this->userPermissions()->attach($permission, array('granted' => $granted)) : true;
     }
 
     /**
