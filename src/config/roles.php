@@ -30,12 +30,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Role Hierarchy Type // Inheritance
+    | Inheritance // Hierarchy Type
     |--------------------------------------------------------------------------
     |
-    | By default Levels are used. I.E. anyone in level 100 roles will get any roles
-    | that are level 1-99 as well. Switch this to nested and roles will be inherited
-    | based on their parent role instead of their level.
+    | Permission Inheritance // Level Based
+    | By default Levels are used to inherit only permissions.
+    | I.E. anyone in level 100 roles will get any permissions
+    | that belong to roles level 1-99 as well.
+    |
+    | Role Inheritance // Nested Based
+    | Alternatively you can inherit roles and their permissions, based on a parent_id
+    | I.E.
+    |=====================================
+    | id | slug        | parent_id | level
+    |  1 | admin       | NULL      | 99
+    |  2 | admin.user  | 1         | 55
+    |  3 | admin.blog  | 1         | 55
+    |  4 | blog.writer | 3         | 33
+    |=====================================
+    | Under Level Based Hierarchy `admin.user` role would inherit the `blog.writer` permissions.
     |
     | Options:
     | level - level based inheritance // Permission Inheritance
