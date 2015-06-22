@@ -2,7 +2,6 @@
 
 namespace Bican\Roles\Traits;
 
-use Bican\Roles\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
 
 trait HasRoleAndPermission
@@ -153,15 +152,12 @@ trait HasRoleAndPermission
      */
     public function rolePermissions()
     {
-        if (!$roles = $this->getRoles()->lists('id')->toArray()) {
-            $roles = [];
-        }
-        
+        $permissionModel = config('roles.models.permission');
         $prefix = config('database.connections.' . config('database.default') . '.prefix');
 
-        return Permission::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
+        return $permissionModel::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
                 ->join($prefix . 'permission_role', $prefix . 'permission_role.permission_id', '=', $prefix . 'permissions.id')->join($prefix . 'roles', $prefix . 'roles.id', '=', $prefix . 'permission_role.role_id')
-                ->whereIn($prefix . 'roles.id', $roles) ->orWhere($prefix . 'roles.level', '<', $this->level())
+                ->whereIn($prefix . 'roles.id', $this->getRoles()->lists('id')->toArray()) ->orWhere($prefix . 'roles.level', '<', $this->level())
                 ->groupBy($prefix . 'permissions.id');
     }
 
