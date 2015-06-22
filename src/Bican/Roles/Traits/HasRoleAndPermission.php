@@ -4,6 +4,7 @@ namespace Bican\Roles\Traits;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
 trait HasRoleAndPermission
 {
@@ -153,7 +154,12 @@ trait HasRoleAndPermission
      */
     public function rolePermissions()
     {
-        $permissionModel = config('roles.models.permission');
+        $permissionModel = app(config('roles.models.permission'));
+
+        if (!$permissionModel instanceof Model) {
+            throw new InvalidArgumentException('[roles.models.permission] must be an instance of \Illuminate\Database\Eloquent\Model');
+        }
+
         $prefix = config('database.connections.' . config('database.default') . '.prefix');
 
         return $permissionModel::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
