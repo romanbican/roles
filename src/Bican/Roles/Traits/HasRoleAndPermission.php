@@ -51,7 +51,9 @@ trait HasRoleAndPermission
      */
     public function is($role, $all = false)
     {
-        if ($this->isPretendEnabled()) { return $this->pretend('is'); }
+        if ($this->isPretendEnabled()) {
+            return $this->pretend('is');
+        }
 
         return $this->{$this->getMethodName('is', $all)}($this->getArrayFrom($role));
     }
@@ -65,7 +67,9 @@ trait HasRoleAndPermission
     protected function isOne(array $roles)
     {
         foreach ($roles as $role) {
-            if ($this->hasRole($role)) { return true; }
+            if ($this->hasRole($role)) {
+                return true;
+            }
         }
 
         return false;
@@ -80,7 +84,9 @@ trait HasRoleAndPermission
     protected function isAll(array $roles)
     {
         foreach ($roles as $role) {
-            if (!$this->hasRole($role)) { return false; }
+            if (!$this->hasRole($role)) {
+                return false;
+            }
         }
 
         return true;
@@ -148,7 +154,9 @@ trait HasRoleAndPermission
      */
     public function rolePermissions()
     {
-        if (!$roles = $this->getRoles()->lists('id')->toArray()) { $roles = []; }
+        if (!$roles = $this->getRoles()->lists('id')->toArray()) {
+            $roles = [];
+        }
         
         $prefix = config('database.connections.' . config('database.default') . '.prefix');
 
@@ -202,7 +210,9 @@ trait HasRoleAndPermission
      */
     public function can($permission, $all = false)
     {
-        if ($this->isPretendEnabled()) { return $this->pretend('can'); }
+        if ($this->isPretendEnabled()) {
+            return $this->pretend('can');
+        }
 
         return $this->{$this->getMethodName('can', $all)}($this->getArrayFrom($permission));
     }
@@ -216,7 +226,9 @@ trait HasRoleAndPermission
     protected function canOne(array $permissions)
     {
         foreach ($permissions as $permission) {
-            if ($this->hasPermission($permission)) { return true; }
+            if ($this->hasPermission($permission)) {
+                return true;
+            }
         }
 
         return false;
@@ -231,7 +243,9 @@ trait HasRoleAndPermission
     protected function canAll(array $permissions)
     {
         foreach ($permissions as $permission) {
-            if (!$this->hasPermission($permission)) { return false; }
+            if (!$this->hasPermission($permission)) {
+                return false;
+            }
         }
 
         return true;
@@ -261,9 +275,13 @@ trait HasRoleAndPermission
      */
     public function allowed($providedPermission, Model $entity, $owner = true, $ownerColumn = 'user_id')
     {
-        if ($this->isPretendEnabled()) { return $this->pretend('allowed'); }
+        if ($this->isPretendEnabled()) {
+            return $this->pretend('allowed');
+        }
 
-        if ($owner === true && $entity->{$ownerColumn} == $this->id) { return true; }
+        if ($owner === true && $entity->{$ownerColumn} == $this->id) {
+            return true;
+        }
 
         return $this->isAllowed($providedPermission, $entity);
     }
@@ -280,7 +298,9 @@ trait HasRoleAndPermission
         foreach ($this->getPermissions() as $permission) {
             if ($permission->model != '' && get_class($entity) == $permission->model
                 && ($permission->id == $providedPermission || $permission->slug === $providedPermission)
-            ) { return true; }
+            ) {
+                return true;
+            }
         }
 
         return false;
