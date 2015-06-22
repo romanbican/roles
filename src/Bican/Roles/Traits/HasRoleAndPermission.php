@@ -4,7 +4,7 @@ namespace Bican\Roles\Traits;
 
 use Bican\Roles\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
-use \Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 trait HasRoleAndPermission
 {
@@ -191,7 +191,6 @@ trait HasRoleAndPermission
             });
         }
         return $this->permissions;
-        //return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->get()->merge($this->userPermissions()->get()) : $this->permissions;
     }
 
     /**
