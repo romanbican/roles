@@ -15,9 +15,9 @@ Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5
     - [Creating Permissions](#creating-permissions)
     - [Attaching And Detaching Permissions](#attaching-and-detaching-permissions)
     - [Checking For Permissions](#checking-for-permissions)
-    - [Role Inheriting](#role-inheriting)
-        - [Level Based](#level-based)
-        - [Nested Based](#nested-based)
+    - [Inheritance](#inheritance)
+        - [Permission Based](#permission-based)
+        - [Role Based](#role-based)
     - [Entity Check](#entity-check)
     - [Blade Extensions](#blade-extensions)
     - [Middleware](#middleware)
@@ -239,13 +239,13 @@ if ($user->canDeleteusers()) {
 
 You can check for multiple permissions the same way as roles.
 
-### Role Inheriting
+### Inheritance
 
-There are two methods of role inheritance, level based, and parent based. The default is Level based. But can be changed in the config.
+There are two methods of role inheritance, permission based, and role based. The default is permission based. But can be changed easily in the config.
 
-> If you don't want the role inheriting feature in you application, simply ignore the `level` and `parent_id` parameter when you're creating roles.
+> If you don't want the inheritance feature in you application, simply ignore the `level` and `parent_id` parameter when you're creating roles.
 
-#### Level Based
+#### Permission Based
 
 Role with higher level is inheriting permission from roles with lower level.
 
@@ -253,7 +253,7 @@ There is an example of this `magic`:
 
 You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. It means, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
 
-#### Parent Based
+#### Role Based
 
 Roles that are assigned a parent_id of another role are automatically inherited when a user is assigned or inherits the parent role.
 
