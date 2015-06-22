@@ -65,7 +65,7 @@ return [
     |
     | If you want, you can replace default models from this package by models
     | you created. Have a look at `Bican\Roles\Models\Role` model and
-    | `Bican\Roles\Models\Permission` model. 
+    | `Bican\Roles\Models\Permission` model.
     |
     */
 
