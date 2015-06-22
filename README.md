@@ -336,9 +336,9 @@ $router->post('/example', [
 ]);
 ```
 
-It throws `\Bican\Roles\Exception\AccessDeniedException` if it goes wrong.
+It throws `\Bican\Roles\Exception\RoleDeniedException` or `\Bican\Roles\Exception\PermissionDeniedException` exceptions if it goes wrong.
 
-You can catch this exception inside `app/Exceptions/Handler.php` file and do whatever you want.
+You can catch these exceptions inside `app/Exceptions/Handler.php` file and do whatever you want.
 
 ```php
 /**
@@ -350,7 +350,7 @@ You can catch this exception inside `app/Exceptions/Handler.php` file and do wha
  */
 public function render($request, Exception $e)
 {
-    if ($e instanceof \Bican\Roles\Exceptions\AccessDeniedException) {
+    if ($e instanceof \Bican\Roles\Exceptions\RoleDeniedException) {
         // you can for example flash message, redirect...
         return redirect()->back();
     }
