@@ -4,7 +4,7 @@ namespace Bican\Roles\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
-use Bican\Roles\Exceptions\AccessDeniedException;
+use Bican\Roles\Exceptions\RoleDeniedException;
 
 class VerifyRole
 {
@@ -31,12 +31,12 @@ class VerifyRole
      * @param \Closure $next
      * @param int|string $role
      * @return mixed
-     * @throws \Bican\Roles\Exceptions\AccessDeniedException
+     * @throws \Bican\Roles\Exceptions\RoleDeniedException
      */
     public function handle($request, Closure $next, $role)
     {
         if ($this->auth->check() && $this->auth->user()->is($role)) { return $next($request); }
 
-        throw new AccessDeniedException('You don\'t have a required [' . $role . '] role.');
+        throw new RoleDeniedException($role);
     }
 }
