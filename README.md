@@ -229,7 +229,7 @@ if ($user->can('create.users') { // you can pass an id or slug
     //
 }
 
-if ($user->canDeleteusers()) {
+if ($user->canDeleteUsers()) {
     //
 }
 ```
