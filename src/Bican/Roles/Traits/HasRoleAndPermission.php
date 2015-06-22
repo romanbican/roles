@@ -176,7 +176,7 @@ trait HasRoleAndPermission
     public function getPermissions()
     {
         if(!$this->permissions){
-            $rolePermissions = $this->rolePermissions();
+            $rolePermissions = $this->rolePermissions()->get();
             $userPermissions = $this->userPermissions()->get();
             $deniedPermissions = new Collection();
             foreach($userPermissions as $key => $permission){
