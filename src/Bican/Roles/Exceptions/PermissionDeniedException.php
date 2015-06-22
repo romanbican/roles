@@ -5,7 +5,7 @@ namespace Bican\Roles\Exceptions;
 class PermissionDeniedException extends AccessDeniedException
 {
     /**
-     * Constructor.
+     * Create a new permission denied exception instance.
      *
      * @param string $permission
      */
