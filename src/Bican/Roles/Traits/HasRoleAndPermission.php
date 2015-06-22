@@ -2,6 +2,7 @@
 
 namespace Bican\Roles\Traits;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
 trait HasRoleAndPermission
@@ -99,7 +100,7 @@ trait HasRoleAndPermission
     protected function hasRole($role)
     {
         return $this->getRoles()->contains(function ($key, $value) use ($role) {
-            return $role == $value->id || str_is($role, $value->slug);
+            return $role == $value->id || Str::is($role, $value->slug);
         });
     }
 
@@ -240,7 +241,7 @@ trait HasRoleAndPermission
     protected function hasPermission($permission)
     {
         return $this->getPermissions()->contains(function ($key, $value) use ($permission) {
-            return $permission == $value->id || str_is($permission, $value->slug);
+            return $permission == $value->id || Str::is($permission, $value->slug);
         });
     }
 

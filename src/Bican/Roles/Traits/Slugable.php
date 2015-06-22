@@ -2,6 +2,8 @@
 
 namespace Bican\Roles\Traits;
 
+use Illuminate\Support\Str;
+
 trait Slugable
 {
     /**
@@ -12,6 +14,6 @@ trait Slugable
      */
     public function setSlugAttribute($value)
     {
-        $this->attributes['slug'] = str_slug($value, config('roles.separator'));
+        $this->attributes['slug'] = Str::slug($value, config('roles.separator'));
     }
 }
