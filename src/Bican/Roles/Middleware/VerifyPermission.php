@@ -4,7 +4,7 @@ namespace Bican\Roles\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
-use Bican\Roles\Exceptions\AccessDeniedException;
+use Bican\Roles\Exceptions\PermissionDeniedException;
 
 class VerifyPermission
 {
@@ -31,12 +31,14 @@ class VerifyPermission
      * @param \Closure $next
      * @param int|string $permission
      * @return mixed
-     * @throws \Bican\Roles\Exception\AccessDeniedException
+     * @throws \Bican\Roles\Exceptions\PermissionDeniedException
      */
     public function handle($request, Closure $next, $permission)
     {
-        if ($this->auth->check() && $this->auth->user()->can($permission)) { return $next($request); }
+        if ($this->auth->check() && $this->auth->user()->can($permission)) {
+            return $next($request);
+        }
 
-        throw new AccessDeniedException('You don\'t have a required [' . $permission . '] permission.');
+        throw new PermissionDeniedException($permission);
     }
 }
