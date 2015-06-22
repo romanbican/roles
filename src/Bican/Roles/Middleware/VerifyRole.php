@@ -31,7 +31,7 @@ class VerifyRole
      * @param \Closure $next
      * @param int|string $role
      * @return mixed
-     * @throws \Bican\Roles\Exception\AccessDeniedException
+     * @throws \Bican\Roles\Exceptions\AccessDeniedException
      */
     public function handle($request, Closure $next, $role)
     {
