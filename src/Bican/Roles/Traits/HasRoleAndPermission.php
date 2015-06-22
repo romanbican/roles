@@ -174,7 +174,6 @@ trait HasRoleAndPermission
      */
     public function rolePermissions()
     {
-<<<<<<< HEAD
         if(config('roles.hierarchy')=='nested')
         {
             $permissions = new Collection();
@@ -182,19 +181,9 @@ trait HasRoleAndPermission
                 $permissions = $permissions->merge($role->permissions);
             return $permissions;
         }else{
-            if (!$roles = $this->getRoles()->lists('id')->toArray()) {
-                $roles = [];
-            }
-
+            $permissionModel = config('roles.models.permission');
             $prefix = config('database.connections.' . config('database.default') . '.prefix');
-            $permission = config('roles.models.permission');
-            return $permission::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
-=======
-        $permissionModel = config('roles.models.permission');
-        $prefix = config('database.connections.' . config('database.default') . '.prefix');
-
-        return $permissionModel::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
->>>>>>> 808e2aad5b033b29bd0a0ddd087653dac4f0bb69
+            return $permissionModel::select([$prefix . 'permissions.*', $prefix . 'permission_role.created_at as pivot_created_at', $prefix . 'permission_role.updated_at as pivot_updated_at'])
                 ->join($prefix . 'permission_role', $prefix . 'permission_role.permission_id', '=', $prefix . 'permissions.id')->join($prefix . 'roles', $prefix . 'roles.id', '=', $prefix . 'permission_role.role_id')
                 ->whereIn($prefix . 'roles.id', $this->getRoles()->lists('id')->toArray()) ->orWhere($prefix . 'roles.level', '<', $this->level())
                 ->groupBy($prefix . 'permissions.id');
