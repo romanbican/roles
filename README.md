@@ -241,7 +241,7 @@ You can check for multiple permissions the same way as roles.
 
 ### Inheritance
 
-There are two methods of role inheritance, permission based, and role based. The default is permission based. But can be changed easily in the config.
+There are two methods of inheritance; permission based, and role based. The default is permission based. But can be changed easily in the config.
 
 > If you don't want the inheritance feature in you application, simply ignore the `level` and `parent_id` parameter when you're creating roles.
 
