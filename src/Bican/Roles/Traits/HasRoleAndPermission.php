@@ -154,7 +154,7 @@ trait HasRoleAndPermission
      */
     public function rolePermissions()
     {
-        $permissionModel = config('roles.models.permission');
+        $permissionModel = app(config('roles.models.permission'));
 
         if (!$permissionModel instanceof Model) {
             throw new InvalidArgumentException('[roles.models.permission] must be an instance of \Illuminate\Database\Eloquent\Model');
