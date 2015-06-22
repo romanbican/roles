@@ -4,6 +4,7 @@ namespace Bican\Roles\Traits;
 
 use Bican\Roles\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
+use \Illuminate\Database\Eloquent\Collection;
 
 trait HasRoleAndPermission
 {
@@ -164,7 +165,7 @@ trait HasRoleAndPermission
      */
     public function userPermissions()
     {
-        return $this->belongsToMany(config('roles.models.permission'))->withTimestamps();
+        return $this->belongsToMany(config('roles.models.permission'))->withTimestamps()->withPivot('granted');;
     }
 
     /**
@@ -174,7 +175,23 @@ trait HasRoleAndPermission
      */
     public function getPermissions()
     {
-        return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->get()->merge($this->userPermissions()->get()) : $this->permissions;
+        if(!$this->permissions){
+            $rolePermissions = $this->rolePermissions();
+            $userPermissions = $this->userPermissions()->get();
+            $deniedPermissions = new Collection();
+            foreach($userPermissions as $key => $permission){
+                if(!$permission->pivot->granted && $rolePermissions->contains($permission)){
+                    $deniedPermissions->push($permission);
+                }
+            }
+            $permissions = $rolePermissions->merge($userPermissions);
+            $this->permissions = $permissions->filter(function($permission) use ($deniedPermissions)
+            {
+                return !$deniedPermissions->contains($permission);
+            });
+        }
+        return $this->permissions;
+        //return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->get()->merge($this->userPermissions()->get()) : $this->permissions;
     }
 
     /**
