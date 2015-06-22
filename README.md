@@ -16,6 +16,7 @@ Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5
     - [Attaching And Detaching Permissions](#attaching-and-detaching-permissions)
     - [Checking For Permissions](#checking-for-permissions)
     - [Permissions Inheriting](#permissions-inheriting)
+    - [Deny A Permission](#deny-a-permission)
     - [Entity Check](#entity-check)
     - [Blade Extensions](#blade-extensions)
     - [Middleware](#middleware)
@@ -245,6 +246,18 @@ There is an example of this `magic`:
 You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. It means, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
 
 > If you don't want permissions inheriting feature in you application, simply ignore `level` parameter when you're creating roles.
+
+### Deny A Permission
+
+Easily deny a user a specific permission regardless of what role the user is apart of.
+
+```php
+use App\User;
+use Bican\Roles\Models\Role;
+
+$user = User::find($userId);
+$user->attachPermission($deleteUsersPermission, false); // permission attached to a user, specially to deny that permission 
+```
 
 ### Entity Check
 

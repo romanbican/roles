@@ -4,6 +4,7 @@ namespace Bican\Roles\Traits;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 
 trait HasRoleAndPermission
 {
@@ -169,7 +170,7 @@ trait HasRoleAndPermission
      */
     public function userPermissions()
     {
-        return $this->belongsToMany(config('roles.models.permission'))->withTimestamps();
+        return $this->belongsToMany(config('roles.models.permission'))->withTimestamps()->withPivot('granted');;
     }
 
     /**
@@ -179,7 +180,22 @@ trait HasRoleAndPermission
      */
     public function getPermissions()
     {
-        return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->get()->merge($this->userPermissions()->get()) : $this->permissions;
+        if(!$this->permissions){
+            $rolePermissions = $this->rolePermissions()->get();
+            $userPermissions = $this->userPermissions()->get();
+            $deniedPermissions = new Collection();
+            foreach($userPermissions as $key => $permission){
+                if(!$permission->pivot->granted && $rolePermissions->contains($permission)){
+                    $deniedPermissions->push($permission);
+                }
+            }
+            $permissions = $rolePermissions->merge($userPermissions);
+            $this->permissions = $permissions->filter(function($permission) use ($deniedPermissions)
+            {
+                return !$deniedPermissions->contains($permission);
+            });
+        }
+        return $this->permissions;
     }
 
     /**
@@ -291,11 +307,12 @@ trait HasRoleAndPermission
      * Attach permission to a user.
      *
      * @param int|\Bican\Roles\Models\Permission $permission
-     * @return null|bool
+     * @param bool $granted
+     * @return bool|null
      */
-    public function attachPermission($permission)
+    public function attachPermission($permission, $granted = true)
     {
-        return (!$this->getPermissions()->contains($permission)) ? $this->userPermissions()->attach($permission) : true;
+        return (!$this->getPermissions()->contains($permission)) ? $this->userPermissions()->attach($permission, array('granted' => $granted)) : true;
     }
 
     /**
