@@ -303,7 +303,7 @@ There are three Blade extensions. Basically, it is replacement for classic if st
 
 ### Middleware
 
-This package comes with `VerifyRole` and `VerifyPermission` middleware. You must add them inside your `app/Http/Kernel.php` file.
+This package comes with `VerifyRole`, `VerifyPermission` and `VerifyLevel` middleware. You must add them inside your `app/Http/Kernel.php` file.
 
 ```php
 /**
@@ -317,6 +317,7 @@ protected $routeMiddleware = [
     'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
     'role' => \Bican\Roles\Middleware\VerifyRole::class,
     'permission' => \Bican\Roles\Middleware\VerifyPermission::class,
+    'level' => \Bican\Roles\Middleware\VerifyLevel::class,
 ];
 ```
 
@@ -334,9 +335,15 @@ $router->post('/example', [
     'middleware' => 'permission:edit.articles',
     'uses' => 'ExampleController@index',
 ]);
+
+$router->get('/example', [
+    'as' => 'example',
+    'middleware' => 'level:2', // level >= 2
+    'uses' => 'ExampleController@index',
+]);
 ```
 
-It throws `\Bican\Roles\Exception\RoleDeniedException` or `\Bican\Roles\Exception\PermissionDeniedException` exceptions if it goes wrong.
+It throws `\Bican\Roles\Exception\RoleDeniedException`, `\Bican\Roles\Exception\PermissionDeniedException` or `\Bican\Roles\Exception\LevelDeniedException` exceptions if it goes wrong.
 
 You can catch these exceptions inside `app/Exceptions/Handler.php` file and do whatever you want.
 
