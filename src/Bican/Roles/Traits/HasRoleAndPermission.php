@@ -11,16 +11,16 @@ trait HasRoleAndPermission
     /**
      * Property for caching roles.
      *
-     * @var \Illuminate\Database\Eloquent\Collection|null
+     * @var bool
      */
-    protected $roles;
+    protected $rolesLoaded = false;
 
     /**
      * Property for caching permissions.
      *
-     * @var \Illuminate\Database\Eloquent\Collection|null
+     * @var bool
      */
-    protected $permissions;
+    protected $permissionsLoaded = false;
 
     /**
      * User belongs to many roles.
@@ -33,13 +33,17 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Get all roles as collection.
+     * Get all roles as collection. Lazy Eagerload roles and flag them as loaded.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getRoles()
     {
-        return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
+        if (!$this->rolesLoaded) {
+            $this->load('roles');
+            $this->rolesLoaded = true;
+        }
+        return $this->roles;
     }
 
     /**
@@ -179,13 +183,17 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Get all permissions as collection.
+     * Get all permissions as collection. Lazy Eagerload roles and flag them as loaded.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getPermissions()
     {
-        return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->get()->merge($this->userPermissions()->get()) : $this->permissions;
+        if (!$this->permissionsLoaded) {
+            $this->load('permissions');
+            $this->permissionsLoaded = true;
+        }
+        return $this->permissions;
     }
 
     /**
