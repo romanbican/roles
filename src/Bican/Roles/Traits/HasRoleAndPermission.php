@@ -66,8 +66,7 @@ trait HasRoleAndPermission
      */
     public function isOne($role)
     {
-        $roles = $this->getArrayFrom($role);
-        foreach ($roles as $role) {
+        foreach ($this->getArrayFrom($role) as $role) {
             if ($this->hasRole($role)) {
                 return true;
             }
@@ -84,8 +83,7 @@ trait HasRoleAndPermission
      */
     public function isAll($role)
     {
-        $roles = $this->getArrayFrom($role);
-        foreach ($roles as $role) {
+        foreach ($this->getArrayFrom($role) as $role) {
             if (!$this->hasRole($role)) {
                 return false;
             }
@@ -214,8 +212,7 @@ trait HasRoleAndPermission
      */
     public function canOne($permission)
     {
-        $permissions = $this->getArrayFrom($permission);
-        foreach ($permissions as $permission) {
+        foreach ($this->getArrayFrom($permission) as $permission) {
             if ($this->hasPermission($permission)) {
                 return true;
             }
@@ -232,8 +229,7 @@ trait HasRoleAndPermission
      */
     public function canAll($permission)
     {
-        $permissions = $this->getArrayFrom($permission);
-        foreach ($permissions as $permission) {
+        foreach ($this->getArrayFrom($permission) as $permission) {
             if (!$this->hasPermission($permission)) {
                 return false;
             }
