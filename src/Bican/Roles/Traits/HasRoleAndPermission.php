@@ -129,7 +129,7 @@ trait HasRoleAndPermission
     public function detachRole($role)
     {
         $this->rolesLoaded = false;
-        return $this->roles()->deattach($role);
+        return $this->roles()->detach($role);
     }
 
     /**
