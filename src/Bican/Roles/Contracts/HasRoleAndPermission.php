@@ -30,6 +30,30 @@ interface HasRoleAndPermission
     public function is($role, $all = false);
 
     /**
+     * Check if the user has all roles.
+     *
+     * @param int|string|array $role
+     * @return bool
+     */
+    public function isAll($role);
+
+    /**
+     * Check if the user has at least one role.
+     *
+     * @param int|string|array $role
+     * @return bool
+     */
+    public function isOne($role);
+
+    /**
+     * Check if the user has role.
+     *
+     * @param int|string $role
+     * @return bool
+     */
+    public function hasRole($role);
+
+    /**
      * Attach role to a user.
      *
      * @param int|\Bican\Roles\Models\Role $role
@@ -88,6 +112,22 @@ interface HasRoleAndPermission
      * @return bool
      */
     public function can($permission, $all = false);
+
+    /**
+     * Check if the user has all permissions.
+     *
+     * @param int|string|array $permission
+     * @return bool
+     */
+    public function canAll($permission);
+
+    /**
+     * Check if the user has at least one permission.
+     *
+     * @param int|string|array $permission
+     * @return bool
+     */
+    public function canOne($permission);
 
     /**
      * Check if the user is allowed to manipulate with entity.
