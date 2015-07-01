@@ -16,13 +16,6 @@ trait HasRoleAndPermission
     protected $rolesLoaded = false;
 
     /**
-     * Property for caching permissions.
-     *
-     * @var bool
-     */
-    protected $permissionsLoaded = false;
-
-    /**
      * User belongs to many roles.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -191,11 +184,7 @@ trait HasRoleAndPermission
      */
     public function getPermissions()
     {
-        if (!$this->permissionsLoaded) {
-            $this->load('permissions');
-            $this->permissionsLoaded = true;
-        }
-        return $this->permissions;
+        return $this->rolePermissions()->get()->merge($this->userPermissions()->get());
     }
 
     /**
@@ -310,8 +299,7 @@ trait HasRoleAndPermission
      */
     public function attachPermission($permission)
     {
-        $this->permissionsLoaded = false;
-        $this->permissions()->attach($permission);
+        $this->userPermissions()->attach($permission);
     }
 
     /**
@@ -322,8 +310,7 @@ trait HasRoleAndPermission
      */
     public function detachPermission($permission)
     {
-        $this->permissionsLoaded = false;
-        $this->permissions()->detach($permission);
+        return $this->userPermissions()->detach($permission);
     }
 
     /**
@@ -333,8 +320,7 @@ trait HasRoleAndPermission
      */
     public function detachAllPermissions()
     {
-        $this->permissionsLoaded = false;
-        $this->permissions()->detach();
+        return $this->userPermissions()->detach();
     }
 
     /**
