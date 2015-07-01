@@ -113,11 +113,11 @@ trait HasRoleAndPermission
      * Attach role to a user.
      *
      * @param int|\Bican\Roles\Models\Role $role
-     * @return null|bool
      */
     public function attachRole($role)
     {
-        return (!$this->getRoles()->contains($role)) ? $this->roles()->attach($role) : true;
+        $this->rolesLoaded = false;
+        $this->roles()->attach($role);
     }
 
     /**
@@ -128,7 +128,8 @@ trait HasRoleAndPermission
      */
     public function detachRole($role)
     {
-        return $this->roles()->detach($role);
+        $this->rolesLoaded = false;
+        return $this->roles()->deattach($role);
     }
 
     /**
@@ -138,6 +139,7 @@ trait HasRoleAndPermission
      */
     public function detachAllRoles()
     {
+        $this->rolesLoaded = false;
         return $this->roles()->detach();
     }
 
@@ -305,11 +307,11 @@ trait HasRoleAndPermission
      * Attach permission to a user.
      *
      * @param int|\Bican\Roles\Models\Permission $permission
-     * @return null|bool
      */
     public function attachPermission($permission)
     {
-        return (!$this->getPermissions()->contains($permission)) ? $this->userPermissions()->attach($permission) : true;
+        $this->permissionsLoaded = false;
+        $this->permissions()->attach($permission);
     }
 
     /**
@@ -320,7 +322,8 @@ trait HasRoleAndPermission
      */
     public function detachPermission($permission)
     {
-        return $this->userPermissions()->detach($permission);
+        $this->permissionsLoaded = false;
+        $this->permissions()->detach($permission);
     }
 
     /**
@@ -330,7 +333,8 @@ trait HasRoleAndPermission
      */
     public function detachAllPermissions()
     {
-        return $this->userPermissions()->detach();
+        $this->permissionsLoaded = false;
+        $this->permissions()->detach();
     }
 
     /**
