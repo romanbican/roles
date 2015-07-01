@@ -150,18 +150,30 @@ You can also do this:
 
 ```php
 if ($user->isAdmin()) {
-    //
+    // or alternatively: $user->hasRole('admin')
 }
 ```
 
 And of course, there is a way to check for multiple roles:
 
 ```php
-if ($user->is('admin|moderator')) { // or $user->is('admin, moderator') and also $user->is(['admin', 'moderator'])
+if ($user->is('admin|moderator')) { 
+    // or alternatively: 
+    //   $user->is('admin, moderator')
+    //   $user->is(['admin', 'moderator'])
+    //   $user->isOne('admin|moderator')
+    //   $user->isOne('admin, moderator')
+    //   $user->isOne(['admin', 'moderator'])
     // if user has at least one role
 }
 
-if ($user->is('admin|moderator', true)) { // or $user->is('admin, moderator', true) and also $user->is(['admin', 'moderator'], true)
+if ($user->is('admin|moderator', true)) {
+    // or alternatively: 
+    //   $user->is('admin, moderator', true)
+    //   $user->is(['admin', 'moderator'], true)
+    //   $user->isAll('admin|moderator')
+    //   $user->isAll('admin, moderator')
+    //   $user->isAll(['admin', 'moderator'])
     // if user has all roles
 }
 ```

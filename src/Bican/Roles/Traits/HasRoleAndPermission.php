@@ -55,18 +55,18 @@ trait HasRoleAndPermission
             return $this->pretend('is');
         }
 
-        return $this->{$this->getMethodName('is', $all)}($this->getArrayFrom($role));
+        return $this->{$this->getMethodName('is', $all)}($role);
     }
 
     /**
      * Check if the user has at least one role.
      *
-     * @param array $roles
+     * @param int|string|array $role
      * @return bool
      */
-    protected function isOne(array $roles)
+    public function isOne($role)
     {
-        foreach ($roles as $role) {
+        foreach ($this->getArrayFrom($role) as $role) {
             if ($this->hasRole($role)) {
                 return true;
             }
@@ -78,12 +78,12 @@ trait HasRoleAndPermission
     /**
      * Check if the user has all roles.
      *
-     * @param array $roles
+     * @param int|string|array $role
      * @return bool
      */
-    protected function isAll(array $roles)
+    public function isAll($role)
     {
-        foreach ($roles as $role) {
+        foreach ($this->getArrayFrom($role) as $role) {
             if (!$this->hasRole($role)) {
                 return false;
             }
@@ -98,7 +98,7 @@ trait HasRoleAndPermission
      * @param int|string $role
      * @return bool
      */
-    protected function hasRole($role)
+    public function hasRole($role)
     {
         return $this->getRoles()->contains(function ($key, $value) use ($role) {
             return $role == $value->id || Str::is($role, $value->slug);
@@ -201,18 +201,18 @@ trait HasRoleAndPermission
             return $this->pretend('can');
         }
 
-        return $this->{$this->getMethodName('can', $all)}($this->getArrayFrom($permission));
+        return $this->{$this->getMethodName('can', $all)}($permission);
     }
 
     /**
      * Check if the user has at least one permission.
      *
-     * @param array $permissions
+     * @param int|string|array $permission
      * @return bool
      */
-    protected function canOne(array $permissions)
+    public function canOne($permission)
     {
-        foreach ($permissions as $permission) {
+        foreach ($this->getArrayFrom($permission) as $permission) {
             if ($this->hasPermission($permission)) {
                 return true;
             }
@@ -224,12 +224,12 @@ trait HasRoleAndPermission
     /**
      * Check if the user has all permissions.
      *
-     * @param array $permissions
+     * @param int|string|array $permission
      * @return bool
      */
-    protected function canAll(array $permissions)
+    public function canAll($permission)
     {
-        foreach ($permissions as $permission) {
+        foreach ($this->getArrayFrom($permission) as $permission) {
             if (!$this->hasPermission($permission)) {
                 return false;
             }
@@ -244,7 +244,7 @@ trait HasRoleAndPermission
      * @param int|string $permission
      * @return bool
      */
-    protected function hasPermission($permission)
+    public function hasPermission($permission)
     {
         return $this->getPermissions()->contains(function ($key, $value) use ($permission) {
             return $permission == $value->id || Str::is($permission, $value->slug);
