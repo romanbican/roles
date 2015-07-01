@@ -130,6 +130,14 @@ interface HasRoleAndPermission
     public function canOne($permission);
 
     /**
+     * Check if the user has a permission.
+     *
+     * @param int|string $permission
+     * @return bool
+     */
+    public function hasPermission($permission);
+
+    /**
      * Check if the user is allowed to manipulate with entity.
      *
      * @param string $providedPermission
