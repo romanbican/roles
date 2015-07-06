@@ -359,7 +359,7 @@ $router->get('/example', [
 ]);
 ```
 
-It throws `\Bican\Roles\Exception\RoleDeniedException`, `\Bican\Roles\Exception\PermissionDeniedException` or `\Bican\Roles\Exception\LevelDeniedException` exceptions if it goes wrong.
+It throws `\Bican\Roles\Exceptions\RoleDeniedException`, `\Bican\Roles\Exceptions\PermissionDeniedException` or `\Bican\Roles\Exceptions\LevelDeniedException` exceptions if it goes wrong.
 
 You can catch these exceptions inside `app/Exceptions/Handler.php` file and do whatever you want.
 
