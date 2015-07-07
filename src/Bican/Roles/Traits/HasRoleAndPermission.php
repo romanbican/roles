@@ -11,16 +11,9 @@ trait HasRoleAndPermission
     /**
      * Property for caching roles.
      *
-     * @var \Illuminate\Database\Eloquent\Collection|null
+     * @var bool
      */
-    protected $roles;
-
-    /**
-     * Property for caching permissions.
-     *
-     * @var \Illuminate\Database\Eloquent\Collection|null
-     */
-    protected $permissions;
+    protected $rolesLoaded = false;
 
     /**
      * User belongs to many roles.
@@ -33,13 +26,17 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Get all roles as collection.
+     * Get all roles as collection. Lazy Eagerload roles and flag them as loaded.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getRoles()
     {
-        return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
+        if (!$this->rolesLoaded) {
+            $this->load('roles');
+            $this->rolesLoaded = true;
+        }
+        return $this->roles;
     }
 
     /**
@@ -109,11 +106,11 @@ trait HasRoleAndPermission
      * Attach role to a user.
      *
      * @param int|\Bican\Roles\Models\Role $role
-     * @return null|bool
      */
     public function attachRole($role)
     {
-        return (!$this->getRoles()->contains($role)) ? $this->roles()->attach($role) : true;
+        $this->rolesLoaded = false;
+        $this->roles()->attach($role);
     }
 
     /**
@@ -124,6 +121,7 @@ trait HasRoleAndPermission
      */
     public function detachRole($role)
     {
+        $this->rolesLoaded = false;
         return $this->roles()->detach($role);
     }
 
@@ -134,6 +132,7 @@ trait HasRoleAndPermission
      */
     public function detachAllRoles()
     {
+        $this->rolesLoaded = false;
         return $this->roles()->detach();
     }
 
@@ -179,13 +178,13 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Get all permissions as collection.
+     * Get all permissions as collection. Lazy Eagerload roles and flag them as loaded.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getPermissions()
     {
-        return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->get()->merge($this->userPermissions()->get()) : $this->permissions;
+        return $this->rolePermissions()->get()->merge($this->userPermissions()->get());
     }
 
     /**
@@ -297,11 +296,10 @@ trait HasRoleAndPermission
      * Attach permission to a user.
      *
      * @param int|\Bican\Roles\Models\Permission $permission
-     * @return null|bool
      */
     public function attachPermission($permission)
     {
-        return (!$this->getPermissions()->contains($permission)) ? $this->userPermissions()->attach($permission) : true;
+        $this->userPermissions()->attach($permission);
     }
 
     /**
