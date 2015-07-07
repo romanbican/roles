@@ -84,7 +84,7 @@ And also run migrations.
 
 ### HasRoleAndPermission Trait And Contract
 
-Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermissionContract` inside your `User` model.
+Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` contract inside your `User` model.
 
 ```php
 use Bican\Roles\Traits\HasRoleAndPermission;
