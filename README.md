@@ -80,11 +80,11 @@ And also run migrations.
 
     php artisan migrate
 
-> There must be created migration file for users table, which is in Laravel out of the box.
+> This uses the default users table which is in Laravel. You should already have the migration file for the users table available and migrated.
 
 ### HasRoleAndPermission Trait And Contract
 
-Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` contract inside your `User` model.
+Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermissionContract` inside your `User` model.
 
 ```php
 use Bican\Roles\Traits\HasRoleAndPermission;
