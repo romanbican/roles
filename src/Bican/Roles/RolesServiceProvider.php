@@ -32,6 +32,18 @@ class RolesServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../../config/roles.php', 'roles');
+
+        $this->commands('Bican\Roles\Console\ListrolesCommand');
+        $this->commands('Bican\Roles\Console\AddroleCommand');
+        $this->commands('Bican\Roles\Console\DeleteroleCommand');
+
+        $this->commands('Bican\Roles\Console\ListpermissionsCommand');
+        $this->commands('Bican\Roles\Console\AddpermissionCommand');
+        $this->commands('Bican\Roles\Console\DeletepermissionCommand');
+
+        $this->commands('Bican\Roles\Console\AttachroletouserCommand');
+        $this->commands('Bican\Roles\Console\AttachpermissiontouserCommand');
+        $this->commands('Bican\Roles\Console\AttachpermissiontoroleCommand');
     }
 
     /**
