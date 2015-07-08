@@ -12,7 +12,7 @@ class AddpermissionCommand extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'roles:addpermission {name} {slug?} {description?}';
+	protected $signature = 'roles:addpermission {name} {slug?} {model?} {description?}';
 
 	/**
 	 * The console command description.
@@ -45,6 +45,10 @@ class AddpermissionCommand extends Command
 
 		if($this->argument("description") != "") {
 			$data['description'] = $this->argument("description");
+		}
+
+		if($this->argument("model") != "") {
+			$data['model'] = $this->argument("model");
 		}
 
 		$permissionModel = config('roles.models.permission');
