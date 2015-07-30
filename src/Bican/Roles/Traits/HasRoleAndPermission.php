@@ -124,6 +124,7 @@ trait HasRoleAndPermission
      */
     public function detachRole($role)
     {
+        $this->roles = null;
         return $this->roles()->detach($role);
     }
 
@@ -134,6 +135,7 @@ trait HasRoleAndPermission
      */
     public function detachAllRoles()
     {
+        $this->roles = null;
         return $this->roles()->detach();
     }
 
@@ -310,6 +312,7 @@ trait HasRoleAndPermission
      */
     public function detachPermission($permission)
     {
+        $this->permissions = null;
         return $this->userPermissions()->detach($permission);
     }
 
@@ -320,6 +323,7 @@ trait HasRoleAndPermission
      */
     public function detachAllPermissions()
     {
+        $this->permissions = null;
         return $this->userPermissions()->detach();
     }
 
