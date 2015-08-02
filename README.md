@@ -289,6 +289,42 @@ if ($user->allowed('edit.articles', $article, false)) { // now owner check is di
 }
 ```
 
+#### Checking Through Relationships
+
+If your models have a different relationship than a simple `belongsTo` you can use the `allowedThrough` method which will check to see if the entity exists within the supplied relationship.
+
+Let's say your articles have a many-to-many to users so you can have multiple authors. Within your user model you would add this relationship:
+
+ ```php
+ // within User model
+ public function articles()
+ {
+    return $this->hasMany('App\Article');
+ }
+ ```
+
+ Now you can substitute `allowed` with `allowedThrough` in the examples above, passing in the name of the dynamic property for ownership check.
+
+ ```php
+ if ($user->allowedThrough('edit.articles', $article, 'articles')){
+    // article exists in the relation, do stuff
+ }
+ ```
+
+ This method also includes the boolean value to skip the relationship check.
+
+ #### And/Or
+
+ By default both `allowed` and `allowedThrough` function using **OR** logic, they have the permission *or* they are the owner. This is useful for saying an admin *or* the owner can edit an article. But sometimes you need to check if a user has a permission **AND** is within a specific relationship. To accomplish this you can pass boolean `true` as the last argument to the functions to switch to AND mode.
+
+```php
+// user must have the edit.articles permission AND $article->user_id === $user->id
+$user->allowed('edit.articles', $article, true, 'user_id', true)
+
+// user must have the edit.articles permission AND the article is in $user->articles relationship
+$user->allowedThrough('edit.articles', $article, 'articles', true, true)
+```
+
 ### Blade Extensions
 
 There are four Blade extensions. Basically, it is replacement for classic if statements.
@@ -309,6 +345,10 @@ There are four Blade extensions. Basically, it is replacement for classic if sta
 @allowed('edit', $article) // @if(Auth::check() && Auth::user()->allowed('edit', $article))
     // show edit button
 @endallowed
+
+@allowedThrough('edit', $article, 'articles') // @if(Auth::check() && Auth::user()->allowedThrough('edit', $article, 'articles'))
+    // show edit button
+@endallowedthrough
 
 @role('admin|moderator', 'all') // @if(Auth::check() && Auth::user()->is('admin|moderator', 'all'))
     // user is admin and also moderator
