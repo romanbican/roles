@@ -268,19 +268,32 @@ trait HasRoleAndPermission
      * @param \Illuminate\Database\Eloquent\Model $entity
      * @param bool $owner
      * @param string $ownerColumn
+	 * @param bool $and
      * @return bool
      */
-    public function allowed($providedPermission, Model $entity, $owner = true, $ownerColumn = 'user_id')
+    public function allowed($providedPermission, Model $entity, $owner = true, $ownerColumn = 'user_id', $and = false)
     {
         if ($this->isPretendEnabled()) {
             return $this->pretend('allowed');
         }
 
+		$related = false;
         if ($owner === true && $entity->{$ownerColumn} == $this->id) {
-            return true;
+			if($and === false){
+				return true;
+			} else {
+				$related = true;
+			}
+
         }
 
-        return $this->isAllowed($providedPermission, $entity);
+        $allowed = $this->isAllowed($providedPermission, $entity);
+
+		if($and === false){
+			return $related || $allowed;
+		} else {
+			return $related && $allowed;
+		}
     }
 
 	/**
@@ -290,17 +303,18 @@ trait HasRoleAndPermission
 	 * @param Model $entity
 	 * @param string $relation_name
 	 * @param bool $owner
+	 * @param bool $and
 	 * @return bool
 	 */
-	public function allowedThrough($providedPermission, Model $entity, $relation_name, $owner = true)
+	public function allowedThrough($providedPermission, Model $entity, $relation_name, $owner = true, $and = false)
 	{
 		if ($this->isPretendEnabled()) {
 			return $this->pretend('allowed');
 		}
 
+		$related  = false;
 		if($owner === true){
 			$relation = $this->$relation_name();
-			$related  = false;
 			switch ((new ReflectionClass($relation))->getShortName()) {
 				case 'BelongsTo':
 					$related = $this->checkBelongsTo($relation, $entity);
@@ -333,13 +347,19 @@ trait HasRoleAndPermission
 					break;
 			}
 
-			if($related){
+			if($related && $and === false){
 				return true;
 			}
 
 		}
 
-		return $this->isAllowed($providedPermission, $entity);
+		$allowed = $this->isAllowed($providedPermission, $entity);
+
+		if($and === false){
+			return $related || $allowed;
+		} else {
+			return $related && $allowed;
+		}
 	}
 
 	/**
