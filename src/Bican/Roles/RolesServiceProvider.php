@@ -76,5 +76,13 @@ class RolesServiceProvider extends ServiceProvider
         $blade->directive('endallowed', function () {
             return "<?php endif; ?>";
         });
+
+		$blade->directive('allowedThrough', function($expression) {
+			return "<?php if(Auth::check() && Auth::user()->allowedThrough{$expression}): ?>";
+		});
+
+		$blade->directive('endallowedthrough', function () {
+			return "<?php endif; ?>";
+		});
     }
 }
