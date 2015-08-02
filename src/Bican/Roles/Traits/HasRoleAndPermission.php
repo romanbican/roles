@@ -2,9 +2,17 @@
 
 namespace Bican\Roles\Traits;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
+use Illuminate\Database\Eloquent\Relations\MorphOneOrMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use ReflectionClass;
 
 trait HasRoleAndPermission
 {
@@ -260,20 +268,229 @@ trait HasRoleAndPermission
      * @param \Illuminate\Database\Eloquent\Model $entity
      * @param bool $owner
      * @param string $ownerColumn
+	 * @param bool $and
      * @return bool
      */
-    public function allowed($providedPermission, Model $entity, $owner = true, $ownerColumn = 'user_id')
+    public function allowed($providedPermission, Model $entity, $owner = true, $ownerColumn = 'user_id', $and = false)
     {
         if ($this->isPretendEnabled()) {
             return $this->pretend('allowed');
         }
 
+		$related = false;
         if ($owner === true && $entity->{$ownerColumn} == $this->id) {
-            return true;
+			if($and === false){
+				return true;
+			} else {
+				$related = true;
+			}
+
         }
 
-        return $this->isAllowed($providedPermission, $entity);
+        $allowed = $this->isAllowed($providedPermission, $entity);
+
+		if($and === false){
+			return $related || $allowed;
+		} else {
+			return $related && $allowed;
+		}
     }
+
+	/**
+	 * Checks if the user is allowed to manipulate the entity, but through a relationship
+	 *
+	 * @param $providedPermission
+	 * @param Model $entity
+	 * @param string $relation_name
+	 * @param bool $owner
+	 * @param bool $and
+	 * @return bool
+	 */
+	public function allowedThrough($providedPermission, Model $entity, $relation_name, $owner = true, $and = false)
+	{
+		if ($this->isPretendEnabled()) {
+			return $this->pretend('allowed');
+		}
+
+		$related  = false;
+		if($owner === true){
+			$relation = $this->$relation_name();
+			switch ((new ReflectionClass($relation))->getShortName()) {
+				case 'BelongsTo':
+					$related = $this->checkBelongsTo($relation, $entity);
+					break;
+
+				case 'BelongsToMany':
+					$related = $this->checkbelongsToMany($relation, $entity);
+					break;
+
+				case 'HasMany':
+				case 'HasOne':
+					$related = $this->checkHasOneOrMany($relation, $entity);
+					break;
+
+				case 'HasManyThrough':
+					$related = $this->checkHasManyThrough($relation, $entity);
+					break;
+
+				case 'MorphMany':
+				case 'MorphOne':
+					$related = $this->checkMorphOneOrMany($relation, $entity);
+					break;
+
+				case 'MorphTo':
+					$related = $this->checkMorphTo($relation, $entity);
+					break;
+
+				case 'MorphToMany':
+					$related = $this->checkMorphToMany($relation, $entity);
+					break;
+			}
+
+			if($related && $and === false){
+				return true;
+			}
+
+		}
+
+		$allowed = $this->isAllowed($providedPermission, $entity);
+
+		if($and === false){
+			return $related || $allowed;
+		} else {
+			return $related && $allowed;
+		}
+	}
+
+	/**
+	 * Checks if the provided entity is with the provided BelongsTo relationship
+	 *
+	 * @param BelongsTo $relation
+	 * @param Model $entity
+	 * @return bool
+	 */
+	protected function checkBelongsTo(BelongsTo $relation, Model $entity)
+	{
+		$this_key   = $relation->getForeignKey();
+		$entity_key = $relation->getOtherKey();
+
+		return $this->$this_key === $entity->$entity_key;
+	}
+
+	/**
+	 * Check if the provided entity is within the provided BelongsToMany relationship
+	 *
+	 * @param BelongsToMany $relation
+	 * @param Model $entity
+	 * @return bool
+	 */
+	protected function checkBelongsToMany(BelongsToMany $relation, Model $entity)
+	{
+		$entity_qualified_key_name = $relation->getOtherKey();
+
+		return $relation
+			->where($entity_qualified_key_name, $entity->getKey())
+			->exists();
+	}
+
+	/**
+	 * Checks if the provided entity is within the provided HasOneOrMany relationship
+	 *
+	 * @param HasOneOrMany $relation
+	 * @param Model $entity
+	 * @return bool
+	 */
+	protected function checkHasOneOrMany(HasOneOrMany $relation, Model $entity)
+	{
+		$this_key   = $this->unqualifiedKeyName($relation->getQualifiedParentKeyName());
+		$entity_key = $relation->getPlainForeignKey();
+
+		return $this->$this_key === $entity->$entity_key;
+	}
+
+	/**
+	 * Checks if the provided entity is within the provided HasManyThrough relationship
+	 *
+	 * @param HasManyThrough $relation
+	 * @param Model $entity
+	 * @return bool
+	 */
+	protected function checkHasManyThrough(HasManyThrough $relation, Model $entity)
+	{
+		$entity_qualified_key_name = $relation->getRelated()->getQualifiedKeyName();
+		$entity_key_name           = $relation->getRelated()->getKeyName();
+
+		return $relation
+			->where($entity_qualified_key_name, $entity->$entity_key_name)
+			->exists();
+	}
+
+	/**
+	 * Checks if the provided entity is within the provided MorphOneOrMany relationship
+	 *
+	 * @param MorphOneOrMany $relation
+	 * @param Model $entity
+	 * @return bool
+	 */
+	protected function checkMorphOneOrMany(MorphOneOrMany $relation, Model $entity)
+	{
+		$entity_qualified_key_name = $relation->getRelated()->getQualifiedKeyName();
+		$entity_key_name           = $relation->getRelated()->getKeyName();
+
+		return $relation
+			->where($entity_qualified_key_name, $entity->$entity_key_name)
+			->exists();
+	}
+
+	/**
+	 * Checks if the provided entity is within the provided MorphTo relationship
+	 *
+	 * @param MorphTo $relation
+	 * @param Model $entity
+	 * @return bool
+	 */
+	protected function checkMorphTo(MorphTo $relation, Model $entity)
+	{
+		$morphed_type = $this->{$relation->getMorphType()};
+		$this_key     = $relation->getForeignKey();
+		$entity_key   = $relation->getOtherKey();
+
+		return (
+			$entity instanceof $morphed_type
+			&& $this->$this_key === $entity->$entity_key
+		);
+	}
+
+	/**
+	 * Checks if the provided entity is within the provided MorphToMany relationship
+	 *
+	 * @param MorphToMany $relation
+	 * @param Model $entity
+	 * @return bool
+	 */
+	protected function checkMorphToMany(MorphToMany $relation, Model $entity)
+	{
+		$entity_qualified_key_name = $relation->getOtherKey();
+		$entity_key_name           = $relation->getRelated()->getKeyName();
+
+		return $relation
+			->where($entity_qualified_key_name, $entity->$entity_key_name)
+			->exists();
+	}
+
+
+	/**
+	 * Takes a qualified key name and returns the unqualified version
+	 *
+	 * @param $key
+	 * @return mixed
+	 */
+	private function unqualifiedKeyName($key)
+	{
+		$segments = explode('.', $key);
+
+		return array_pop($segments);
+	}
 
     /**
      * Check if the user is allowed to manipulate with provided entity.
