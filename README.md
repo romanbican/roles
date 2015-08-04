@@ -19,6 +19,7 @@ Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5
     - [Entity Check](#entity-check)
     - [Blade Extensions](#blade-extensions)
     - [Middleware](#middleware)
+    - [Find users by their role](#find-by-role)
 - [Config File](#config-file)
 - [More Information](#more-information)
 - [License](#license)
@@ -381,6 +382,13 @@ public function render($request, Exception $e)
     return parent::render($request, $e);
 }
 ```
+
+### Find users by their role
+There are multiple ways to get a list of users by their given role.
+#### Examples
+
+###### Using the level assigned to the admin role
+` $admins = Role::find(1)->users; `
 
 ## Config File
 

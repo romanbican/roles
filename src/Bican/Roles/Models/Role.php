@@ -9,7 +9,7 @@ use Bican\Roles\Contracts\RoleHasRelations as RoleHasRelationsContract;
 
 class Role extends Model implements RoleHasRelationsContract
 {
-    use Slugable, RoleHasRelations;
+	use Slugable, RoleHasRelations;
 
     /**
      * The attributes that are mass assignable.
@@ -17,6 +17,11 @@ class Role extends Model implements RoleHasRelationsContract
      * @var array
      */
     protected $fillable = ['name', 'slug', 'description', 'level'];
+    
+    public function users()
+    {
+    	return $this->belongsToMany('App\User', 'role_user', 'role_id', 'user_id');
+    }
 
     /**
      * Create a new model instance.
@@ -26,10 +31,10 @@ class Role extends Model implements RoleHasRelationsContract
      */
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);
+    	parent::__construct($attributes);
 
-        if ($connection = config('roles.connection')) {
-            $this->connection = $connection;
-        }
+    	if ($connection = config('roles.connection')) {
+    		$this->connection = $connection;
+    	}
     }
 }
