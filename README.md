@@ -385,11 +385,11 @@ public function render($request, Exception $e)
 
 ### Find users by their role
 There are multiple ways to get a list of users by their given role.
-#### Examples
 
-###### Using the level assigned to the admin role
-` $admins = Role::find(1)->users; `
-
+**Using the level assigned to the admin role**
+```php 
+$admins = Role::find(1)->users;
+```
 ## Config File
 
 You can change connection for models, slug separator, models path and there is also a handy pretend feature. Have a look at config file for more information.
