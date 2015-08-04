@@ -19,7 +19,7 @@ Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5
     - [Entity Check](#entity-check)
     - [Blade Extensions](#blade-extensions)
     - [Middleware](#middleware)
-    - [Find users by their role](#find-by-role)
+    - [Find users by their role](#find-users-by-their-role)
 - [Config File](#config-file)
 - [More Information](#more-information)
 - [License](#license)
