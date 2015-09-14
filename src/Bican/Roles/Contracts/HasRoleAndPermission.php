@@ -111,7 +111,7 @@ interface HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function can($permission, $all = false);
+    public function may($permission, $all = false);
 
     /**
      * Check if the user has all permissions.
@@ -119,7 +119,7 @@ interface HasRoleAndPermission
      * @param int|string|array $permission
      * @return bool
      */
-    public function canAll($permission);
+    public function mayAll($permission);
 
     /**
      * Check if the user has at least one permission.
@@ -127,7 +127,7 @@ interface HasRoleAndPermission
      * @param int|string|array $permission
      * @return bool
      */
-    public function canOne($permission);
+    public function mayOne($permission);
 
     /**
      * Check if the user has a permission.
