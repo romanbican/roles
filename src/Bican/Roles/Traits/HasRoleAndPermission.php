@@ -197,13 +197,13 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function can($permission, $all = false)
+    public function may($permission, $all = false)
     {
         if ($this->isPretendEnabled()) {
-            return $this->pretend('can');
+            return $this->pretend('may');
         }
 
-        return $this->{$this->getMethodName('can', $all)}($permission);
+        return $this->{$this->getMethodName('may', $all)}($permission);
     }
 
     /**
@@ -212,7 +212,7 @@ trait HasRoleAndPermission
      * @param int|string|array $permission
      * @return bool
      */
-    public function canOne($permission)
+    public function mayOne($permission)
     {
         foreach ($this->getArrayFrom($permission) as $permission) {
             if ($this->hasPermission($permission)) {
@@ -229,7 +229,7 @@ trait HasRoleAndPermission
      * @param int|string|array $permission
      * @return bool
      */
-    public function canAll($permission)
+    public function mayAll($permission)
     {
         foreach ($this->getArrayFrom($permission) as $permission) {
             if (!$this->hasPermission($permission)) {
@@ -386,8 +386,8 @@ trait HasRoleAndPermission
     {
         if (starts_with($method, 'is')) {
             return $this->is(snake_case(substr($method, 2), config('roles.separator')));
-        } elseif (starts_with($method, 'can')) {
-            return $this->can(snake_case(substr($method, 3), config('roles.separator')));
+        } elseif (starts_with($method, 'may')) {
+            return $this->may(snake_case(substr($method, 3), config('roles.separator')));
         } elseif (starts_with($method, 'allowed')) {
             return $this->allowed(snake_case(substr($method, 7), config('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
         }

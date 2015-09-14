@@ -52,7 +52,7 @@ class RolesServiceProvider extends ServiceProvider
         });
 
         $blade->directive('permission', function ($expression) {
-            return "<?php if (Auth::check() && Auth::user()->can{$expression}): ?>";
+            return "<?php if (Auth::check() && Auth::user()->may{$expression}): ?>";
         });
 
         $blade->directive('endpermission', function () {
