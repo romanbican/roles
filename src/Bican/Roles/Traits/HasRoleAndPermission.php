@@ -345,6 +345,19 @@ trait HasRoleAndPermission
     }
 
     /**
+     * Sync permissions for a user.
+     *
+     * @param array|\Bican\Roles\Models\Permission[]|\Illuminate\Database\Eloquent\Collection $permissions
+     * @return array
+     */
+    public function syncPermissions($permissions)
+    {
+        $this->permissions = null;
+
+        return $this->permissions()->sync($permissions);
+    }
+
+    /**
      * Check if pretend option is enabled.
      *
      * @return bool
