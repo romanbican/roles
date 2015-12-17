@@ -9,7 +9,7 @@ Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5
     - [HasRoleAndPermission Trait And Contract](#hasroleandpermission-trait-and-contract)
 - [Usage](#usage)
     - [Creating Roles](#creating-roles)
-    - [Attaching And Detaching Roles](#attaching-and-detaching-roles)
+    - [Attaching, Detaching and Syncing Roles](#attaching-detaching-and-syncing-roles)
     - [Checking For Roles](#checking-for-roles)
     - [Levels](#levels)
     - [Creating Permissions](#creating-permissions)
@@ -119,7 +119,7 @@ $moderatorRole = Role::create([
 
 > Because of `Slugable` trait, if you make a mistake and for example leave a space in slug parameter, it'll be replaced with a dot automatically, because of `str_slug` function.
 
-### Attaching And Detaching Roles
+### Attaching, Detaching and Syncing Roles
 
 It's really simple. You fetch a user from database and call `attachRole` method. There is `BelongsToMany` relationship between `User` and `Role` model.
 
@@ -129,11 +129,9 @@ use App\User;
 $user = User::find($id);
 
 $user->attachRole($adminRole); // you can pass whole object, or just an id
-```
-
-```php
 $user->detachRole($adminRole); // in case you want to detach role
 $user->detachAllRoles(); // in case you want to detach all roles
+$user->syncRoles($roles); // you can pass Eloquent collection, or just an array of ids
 ```
 
 ### Checking For Roles

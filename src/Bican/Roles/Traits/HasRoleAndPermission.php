@@ -141,14 +141,13 @@ trait HasRoleAndPermission
         return $this->roles()->detach();
     }
 
-
     /**
-     * Sync roles from a user.
+     * Sync roles for a user.
      *
-     * @param int|\Bican\Roles\Models\Role $roles
-     * @return int
+     * @param array|\Bican\Roles\Models\Role[]|\Illuminate\Database\Eloquent\Collection $roles
+     * @return array
      */
-    public function syncRoles(array $roles)
+    public function syncRoles($roles)
     {
         $this->roles = null;
 
@@ -164,7 +163,6 @@ trait HasRoleAndPermission
     {
         return ($role = $this->getRoles()->sortByDesc('level')->first()) ? $role->level : 0;
     }
-
 
     /**
      * Get all permissions from roles.
@@ -342,7 +340,7 @@ trait HasRoleAndPermission
     public function detachAllPermissions()
     {
         $this->permissions = null;
-        
+
         return $this->userPermissions()->detach();
     }
 
