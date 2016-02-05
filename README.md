@@ -9,11 +9,11 @@ Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5
     - [HasRoleAndPermission Trait And Contract](#hasroleandpermission-trait-and-contract)
 - [Usage](#usage)
     - [Creating Roles](#creating-roles)
-    - [Attaching And Detaching Roles](#attaching-and-detaching-roles)
+    - [Attaching, Detaching and Syncing Roles](#attaching-detaching-and-syncing-roles)
     - [Checking For Roles](#checking-for-roles)
     - [Levels](#levels)
     - [Creating Permissions](#creating-permissions)
-    - [Attaching And Detaching Permissions](#attaching-and-detaching-permissions)
+    - [Attaching, Detaching and Syncing Permissions](#attaching-detaching-and-syncing-permissions)
     - [Checking For Permissions](#checking-for-permissions)
     - [Permissions Inheriting](#permissions-inheriting)
     - [Entity Check](#entity-check)
@@ -53,14 +53,14 @@ Add the package to your application service providers in `config/app.php` file.
 
 ```php
 'providers' => [
-    
+
     /*
      * Laravel Framework Service Providers...
      */
     Illuminate\Foundation\Providers\ArtisanServiceProvider::class,
     Illuminate\Auth\AuthServiceProvider::class,
     ...
-    
+
     /**
      * Third Party Service Providers...
      */
@@ -119,7 +119,7 @@ $moderatorRole = Role::create([
 
 > Because of `Slugable` trait, if you make a mistake and for example leave a space in slug parameter, it'll be replaced with a dot automatically, because of `str_slug` function.
 
-### Attaching And Detaching Roles
+### Attaching, Detaching and Syncing Roles
 
 It's really simple. You fetch a user from database and call `attachRole` method. There is `BelongsToMany` relationship between `User` and `Role` model.
 
@@ -129,11 +129,9 @@ use App\User;
 $user = User::find($id);
 
 $user->attachRole($adminRole); // you can pass whole object, or just an id
-```
-
-```php
 $user->detachRole($adminRole); // in case you want to detach role
 $user->detachAllRoles(); // in case you want to detach all roles
+$user->syncRoles($roles); // you can pass Eloquent collection, or just an array of ids
 ```
 
 ### Checking For Roles
@@ -157,7 +155,7 @@ if ($user->isAdmin()) {
 And of course, there is a way to check for multiple roles:
 
 ```php
-if ($user->is('admin|moderator')) { 
+if ($user->is('admin|moderator')) {
     /*
     | Or alternatively:
     | $user->is('admin, moderator'), $user->is(['admin', 'moderator']),
@@ -181,7 +179,7 @@ if ($user->is('admin|moderator', true)) {
 ### Levels
 
 When you are creating roles, there is optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
- 
+
 ```php
 if ($user->level() > 4) {
     //
@@ -211,7 +209,7 @@ $deleteUsersPermission = Permission::create([
 ]);
 ```
 
-### Attaching And Detaching Permissions
+### Attaching, Detaching and Syncing Permissions
 
 You can attach permissions to a role or directly to a specific user (and of course detach them as well).
 
@@ -229,9 +227,11 @@ $user->attachPermission($deleteUsersPermission); // permission attached to a use
 ```php
 $role->detachPermission($createUsersPermission); // in case you want to detach permission
 $role->detachAllPermissions(); // in case you want to detach all permissions
+$role->syncPermissions($permissions); // you can pass Eloquent collection, or just an array of ids
 
 $user->detachPermission($deleteUsersPermission);
 $user->detachAllPermissions();
+$user->syncPermissions($permissions); // you can pass Eloquent collection, or just an array of ids
 ```
 
 ### Checking For Permissions

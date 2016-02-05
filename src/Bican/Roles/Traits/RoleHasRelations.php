@@ -55,4 +55,15 @@ trait RoleHasRelations
     {
         return $this->permissions()->detach();
     }
+
+    /**
+     * Sync permissions for a role.
+     *
+     * @param array|\Bican\Roles\Models\Permission[]|\Illuminate\Database\Eloquent\Collection $permissions
+     * @return array
+     */
+    public function syncPermissions($permissions)
+    {
+        return $this->permissions()->sync($permissions);
+    }
 }
