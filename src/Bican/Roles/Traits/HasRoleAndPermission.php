@@ -354,7 +354,7 @@ trait HasRoleAndPermission
     {
         $this->permissions = null;
 
-        return $this->permissions()->sync($permissions);
+        return $this->userPermissions()->sync($permissions);
     }
 
     /**
