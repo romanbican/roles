@@ -13,9 +13,13 @@ class RolesServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__ . '/../../config/roles.php' => config_path('roles.php')
-        ], 'config');
+        $configPath = __DIR__ . '/../../config/roles.php';
+        if (function_exists('config_path')) {
+            $publishPath = config_path('roles.php');
+        } else {
+            $publishPath = base_path('config/roles.php');
+        }
+        $this->publishes([$configPath => $publishPath], 'config');
 
         $this->publishes([
             __DIR__ . '/../../migrations/' => base_path('/database/migrations')
