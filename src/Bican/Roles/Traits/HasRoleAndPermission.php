@@ -156,6 +156,19 @@ trait HasRoleAndPermission
     }
 
     /**
+     * Sync permissions for a user.
+     *
+     * @param array|\Bican\Roles\Models\Permission[]|\Illuminate\Database\Eloquent\Collection $permissions
+     * @return array
+     */
+    public function syncPermissions($permissions)
+    {
+        $this->userPermissions = null;
+
+        return $this->userPermissions()->sync($permissions);
+    }
+
+    /**
      * Get role level of a user.
      *
      * @return int
