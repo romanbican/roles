@@ -29,7 +29,37 @@ trait HasRoleAndPermission
      */
     public function roles()
     {
-        return $this->belongsToMany(config('roles.models.role'))->withTimestamps();
+        return $this->belongsToMany($this->getRoleClass())->withTimestamps();
+    }
+
+    // TODO Test helpers, move down. \/
+
+    /**
+     * @var $roles \Illuminate\Database\Eloquent\Collection|null
+     */
+    public function setRoles($roles)
+    {
+        $this->roles = $roles;
+    }
+
+    /**
+     * Get role class name from config.
+     *
+     * @return string
+     */
+    protected function getRoleClass()
+    {
+        return config('roles.models.role');
+    }
+
+    /**
+     * Get permission class name from config.
+     *
+     * @return string
+     */
+    protected function getPermissionClass()
+    {
+        return config('roles.models.permission');
     }
 
     /**
@@ -39,7 +69,11 @@ trait HasRoleAndPermission
      */
     public function getRoles()
     {
-        return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
+        if ($this->roles){
+            return $this->roles;
+        }
+        
+        return $this->roles = $this->roles()->get();
     }
 
     /**
@@ -164,10 +198,12 @@ trait HasRoleAndPermission
             throw new InvalidArgumentException('[roles.models.permission] must be an instance of \Illuminate\Database\Eloquent\Model');
         }
 
+        // @formatter:off
         return $permissionModel::select(['permissions.*', 'permission_role.created_at as pivot_created_at', 'permission_role.updated_at as pivot_updated_at'])
                 ->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')->join('roles', 'roles.id', '=', 'permission_role.role_id')
                 ->whereIn('roles.id', $this->getRoles()->lists('id')->toArray()) ->orWhere('roles.level', '<', $this->level())
                 ->groupBy(['permissions.id', 'pivot_created_at', 'pivot_updated_at']);
+        // @formatter:on
     }
 
     /**
@@ -327,7 +363,7 @@ trait HasRoleAndPermission
     public function detachAllPermissions()
     {
         $this->permissions = null;
-        
+
         return $this->userPermissions()->detach();
     }
 
