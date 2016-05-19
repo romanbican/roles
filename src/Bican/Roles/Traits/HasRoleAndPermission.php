@@ -2,6 +2,7 @@
 
 namespace Bican\Roles\Traits;
 
+use Bican\Roles\Models\Role;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
@@ -32,7 +33,6 @@ trait HasRoleAndPermission
         return $this->belongsToMany(config('roles.models.role'))->withTimestamps();
     }
 
-
     /**
      * Get all roles as collection.
      *
@@ -40,14 +40,14 @@ trait HasRoleAndPermission
      */
     public function getRoles()
     {
-        return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
+        return (! $this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
     }
 
     /**
      * Check if the user has a role or roles.
      *
-     * @param int|string|array $role
-     * @param bool $all
+     * @param int|string|array|\Bican\Roles\Models\Role $role
+     * @param bool                                      $all
      * @return bool
      */
     public function is($role, $all = false)
@@ -62,7 +62,7 @@ trait HasRoleAndPermission
     /**
      * Check if the user has at least one role.
      *
-     * @param int|string|array $role
+     * @param int|string|array|\Bican\Roles\Models\Role $role
      * @return bool
      */
     public function isOne($role)
@@ -79,13 +79,13 @@ trait HasRoleAndPermission
     /**
      * Check if the user has all roles.
      *
-     * @param int|string|array $role
+     * @param int|string|array|\Bican\Roles\Models\Role $role
      * @return bool
      */
     public function isAll($role)
     {
         foreach ($this->getArrayFrom($role) as $role) {
-            if (!$this->hasRole($role)) {
+            if (! $this->hasRole($role)) {
                 return false;
             }
         }
@@ -94,14 +94,18 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Check if the user has role by either slug or id.
+     * Check if the user has role.
      *
-     * @param int|string $role
+     * @param int|string|\Bican\Roles\Models\Role $role
      * @return bool
      */
     public function hasRole($role)
     {
         return $this->getRoles()->contains(function ($key, $value) use ($role) {
+            if ($role instanceof Role) {
+                return $value->id == $role->id;
+            }
+
             return $role == $value->id || Str::is($role, $value->slug);
         });
     }
@@ -114,7 +118,7 @@ trait HasRoleAndPermission
      */
     public function attachRole($role)
     {
-        return (!$this->getRoles()->contains($role)) ? $this->roles()->attach($role) : true;
+        return (! $this->getRoles()->contains($role)) ? $this->roles()->attach($role) : true;
     }
 
     /**
@@ -161,16 +165,20 @@ trait HasRoleAndPermission
     {
         $permissionModel = app(config('roles.models.permission'));
 
-        if (!$permissionModel instanceof Model) {
+        if (! $permissionModel instanceof Model) {
             throw new InvalidArgumentException('[roles.models.permission] must be an instance of \Illuminate\Database\Eloquent\Model');
         }
 
-        // @formatter:off
-        return $permissionModel::select(['permissions.*', 'permission_role.created_at as pivot_created_at', 'permission_role.updated_at as pivot_updated_at'])
-                ->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')->join('roles', 'roles.id', '=', 'permission_role.role_id')
-                ->whereIn('roles.id', $this->getRoles()->lists('id')->toArray()) ->orWhere('roles.level', '<', $this->level())
-                ->groupBy(['permissions.id', 'pivot_created_at', 'pivot_updated_at']);
-        // @formatter:on
+        return $permissionModel::select([
+            'permissions.*',
+            'permission_role.created_at as pivot_created_at',
+            'permission_role.updated_at as pivot_updated_at',
+        ])
+            ->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')
+            ->join('roles', 'roles.id', '=', 'permission_role.role_id')
+            ->whereIn('roles.id', $this->getRoles()->pluck('id')->toArray())
+            ->orWhere('roles.level', '<', $this->level())
+            ->groupBy(['permissions.id', 'pivot_created_at', 'pivot_updated_at']);
     }
 
     /**
@@ -190,14 +198,16 @@ trait HasRoleAndPermission
      */
     public function getPermissions()
     {
-        return (!$this->permissions) ? $this->permissions = $this->rolePermissions()->get()->merge($this->userPermissions()->get()) : $this->permissions;
+        return (! $this->permissions) ? $this->permissions = $this->rolePermissions()
+            ->get()
+            ->merge($this->userPermissions()->get()) : $this->permissions;
     }
 
     /**
      * Check if the user has a permission or permissions.
      *
      * @param int|string|array $permission
-     * @param bool $all
+     * @param bool             $all
      * @return bool
      */
     public function can($permission, $all = false)
@@ -235,7 +245,7 @@ trait HasRoleAndPermission
     public function canAll($permission)
     {
         foreach ($this->getArrayFrom($permission) as $permission) {
-            if (!$this->hasPermission($permission)) {
+            if (! $this->hasPermission($permission)) {
                 return false;
             }
         }
@@ -251,7 +261,9 @@ trait HasRoleAndPermission
      */
     public function hasPermission($permission)
     {
-        return $this->getPermissions()->contains(function ($key, $value) use ($permission) {
+        return $this->getPermissions()->contains(function ($key, $value) use (
+            $permission
+        ) {
             return $permission == $value->id || Str::is($permission, $value->slug);
         });
     }
@@ -259,13 +271,18 @@ trait HasRoleAndPermission
     /**
      * Check if the user is allowed to manipulate with entity.
      *
-     * @param string $providedPermission
+     * @param string                              $providedPermission
      * @param \Illuminate\Database\Eloquent\Model $entity
-     * @param bool $owner
-     * @param string $ownerColumn
+     * @param bool                                $owner
+     * @param string                              $ownerColumn
      * @return bool
      */
-    public function allowed($providedPermission, Model $entity, $owner = true, $ownerColumn = 'user_id')
+    public function allowed(
+        $providedPermission,
+        Model $entity,
+        $owner = true,
+        $ownerColumn = 'user_id'
+    )
     {
         if ($this->isPretendEnabled()) {
             return $this->pretend('allowed');
@@ -281,16 +298,14 @@ trait HasRoleAndPermission
     /**
      * Check if the user is allowed to manipulate with provided entity.
      *
-     * @param string $providedPermission
+     * @param string                              $providedPermission
      * @param \Illuminate\Database\Eloquent\Model $entity
      * @return bool
      */
     protected function isAllowed($providedPermission, Model $entity)
     {
         foreach ($this->getPermissions() as $permission) {
-            if ($permission->model != '' && get_class($entity) == $permission->model
-                && ($permission->id == $providedPermission || $permission->slug === $providedPermission)
-            ) {
+            if ($permission->model != '' && get_class($entity) == $permission->model && ($permission->id == $providedPermission || $permission->slug === $providedPermission)) {
                 return true;
             }
         }
@@ -306,7 +321,8 @@ trait HasRoleAndPermission
      */
     public function attachPermission($permission)
     {
-        return (!$this->getPermissions()->contains($permission)) ? $this->userPermissions()->attach($permission) : true;
+        return (! $this->getPermissions()->contains($permission)) ? $this->userPermissions()
+            ->attach($permission) : true;
     }
 
     /**
@@ -359,7 +375,7 @@ trait HasRoleAndPermission
      * Get method name.
      *
      * @param string $methodName
-     * @param bool $all
+     * @param bool   $all
      * @return string
      */
     private function getMethodName($methodName, $all)
@@ -375,14 +391,22 @@ trait HasRoleAndPermission
      */
     private function getArrayFrom($argument)
     {
-        return (!is_array($argument)) ? preg_split('/ ?[,|] ?/', $argument) : $argument;
+        if (is_array($argument)) {
+            return $argument;
+        }
+
+        if (is_string($argument)) {
+            return preg_split('/ ?[,|] ?/', $argument);
+        }
+
+        return [$argument];
     }
 
     /**
      * Handle dynamic method calls.
      *
      * @param string $method
-     * @param array $parameters
+     * @param array  $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -392,7 +416,9 @@ trait HasRoleAndPermission
         } elseif (starts_with($method, 'can')) {
             return $this->can(snake_case(substr($method, 3), config('roles.separator')));
         } elseif (starts_with($method, 'allowed')) {
-            return $this->allowed(snake_case(substr($method, 7), config('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
+            return $this->allowed(snake_case(substr($method, 7), config('roles.separator')),
+                $parameters[0], (isset($parameters[1])) ? $parameters[1] : true,
+                (isset($parameters[2])) ? $parameters[2] : 'user_id');
         }
 
         return parent::__call($method, $parameters);
