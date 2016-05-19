@@ -29,38 +29,9 @@ trait HasRoleAndPermission
      */
     public function roles()
     {
-        return $this->belongsToMany($this->getRoleClass())->withTimestamps();
+        return $this->belongsToMany(config('roles.models.role'))->withTimestamps();
     }
 
-    // TODO Test helpers, move down. \/
-
-    /**
-     * @var $roles \Illuminate\Database\Eloquent\Collection|null
-     */
-    public function setRoles($roles)
-    {
-        $this->roles = $roles;
-    }
-
-    /**
-     * Get role class name from config.
-     *
-     * @return string
-     */
-    protected function getRoleClass()
-    {
-        return config('roles.models.role');
-    }
-
-    /**
-     * Get permission class name from config.
-     *
-     * @return string
-     */
-    protected function getPermissionClass()
-    {
-        return config('roles.models.permission');
-    }
 
     /**
      * Get all roles as collection.
@@ -69,11 +40,7 @@ trait HasRoleAndPermission
      */
     public function getRoles()
     {
-        if ($this->roles){
-            return $this->roles;
-        }
-        
-        return $this->roles = $this->roles()->get();
+        return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
     }
 
     /**
@@ -127,7 +94,7 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Check if the user has role.
+     * Check if the user has role by either slug or id.
      *
      * @param int|string $role
      * @return bool
