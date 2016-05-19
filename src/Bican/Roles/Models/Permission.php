@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Bican\Roles\Traits\PermissionHasRelations;
 use Bican\Roles\Contracts\PermissionHasRelations as PermissionHasRelationsContract;
 
+/**
+ * @property integer id
+ * @property string  name
+ * @property string  slug
+ * @property string  description
+ * @property string  model
+ */
 class Permission extends Model implements PermissionHasRelationsContract
 {
     use Slugable, PermissionHasRelations;
