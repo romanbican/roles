@@ -1,5 +1,7 @@
 # Roles And Permissions For Laravel 5
 
+[![Build Status](https://travis-ci.org/Asvae/bican-roles-test.svg)](https://travis-ci.org/Asvae/bican-roles-test)
+
 Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5.0).
 
 - [Installation](#installation)
@@ -385,6 +387,11 @@ public function render($request, Exception $e)
 ## Config File
 
 You can change connection for models, slug separator, models path and there is also a handy pretend feature. Have a look at config file for more information.
+
+## Tests
+
+Tests are handled by [external package](https://github.com/Asvae/bican-roles-test) as it's not viable to test the library
+outside of laravel framework.
 
 ## More Information
 
