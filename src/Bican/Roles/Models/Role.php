@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Bican\Roles\Traits\RoleHasRelations;
 use Bican\Roles\Contracts\RoleHasRelations as RoleHasRelationsContract;
 
+/**
+ * @property integer id
+ * @property string  name
+ * @property string  slug
+ * @property string  description
+ * @property integer level
+ */
 class Role extends Model implements RoleHasRelationsContract
 {
     use Slugable, RoleHasRelations;
