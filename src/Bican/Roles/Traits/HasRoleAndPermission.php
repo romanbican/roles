@@ -2,7 +2,6 @@
 
 namespace Bican\Roles\Traits;
 
-use Bican\Roles\Models\Role;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
@@ -102,7 +101,7 @@ trait HasRoleAndPermission
     public function hasRole($role)
     {
         return $this->getRoles()->contains(function ($key, $value) use ($role) {
-            if ($role instanceof Role) {
+            if ($role instanceof Model) {
                 return $value->id == $role->id;
             }
 
@@ -261,9 +260,11 @@ trait HasRoleAndPermission
      */
     public function hasPermission($permission)
     {
-        return $this->getPermissions()->contains(function ($key, $value) use (
-            $permission
-        ) {
+        return $this->getPermissions()->contains(function ($key, $value) use ($permission) {
+            if ($permission instanceof Model) {
+                return $value->id == $permission->id;
+            }
+
             return $permission == $value->id || Str::is($permission, $value->slug);
         });
     }
