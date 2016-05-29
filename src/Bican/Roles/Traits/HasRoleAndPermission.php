@@ -39,7 +39,7 @@ trait HasRoleAndPermission
      */
     public function getRoles()
     {
-        return (!$this->roles) ? $this->roles = $this->roles()->get() : $this->roles;
+        return (!$this->roles) ? $this->roles = call_user_func([config('roles.models.role'), 'get']) : $this->roles;
     }
 
     /**
