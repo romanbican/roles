@@ -1,5 +1,5 @@
 {
-    "name": "bican/roles",
+    "name": "skvrd/roles",
     "description": "Powerful package for handling roles and permissions in Laravel 5.",
     "keywords": ["roles", "permissions", "acl", "auth", "laravel", "illuminate"],
     "license": "MIT",
