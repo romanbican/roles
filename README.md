@@ -1,6 +1,6 @@
-# Roles And Permissions For Laravel 5
+# Roles And Permissions For Laravel 5.3
 
-Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5.0).
+Powerful package for handling roles and permissions in Laravel 5.3.
 
 - [Installation](#installation)
     - [Composer](#composer)
@@ -34,8 +34,8 @@ Pull this package in through Composer (file `composer.json`).
 ```js
 {
     "require": {
-        "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
+        "php": ">=5.6.4",
+        "laravel/framework": "5.3.*",
         "bican/roles": "2.1.*"
     }
 }
@@ -141,7 +141,7 @@ $user->detachAllRoles(); // in case you want to detach all roles
 You can now check if the user has required role.
 
 ```php
-if ($user->is('admin')) { // you can pass an id or slug
+if ($user->isRole('admin')) { // you can pass an id or slug
     // or alternatively $user->hasRole('admin')
 }
 ```
@@ -157,20 +157,20 @@ if ($user->isAdmin()) {
 And of course, there is a way to check for multiple roles:
 
 ```php
-if ($user->is('admin|moderator')) { 
+if ($user->isRole('admin|moderator')) { 
     /*
     | Or alternatively:
-    | $user->is('admin, moderator'), $user->is(['admin', 'moderator']),
+    | $user->isRole('admin, moderator'), $user->isRole(['admin', 'moderator']),
     | $user->isOne('admin|moderator'), $user->isOne('admin, moderator'), $user->isOne(['admin', 'moderator'])
     */
 
     // if user has at least one role
 }
 
-if ($user->is('admin|moderator', true)) {
+if ($user->isRole('admin|moderator', true)) {
     /*
     | Or alternatively:
-    | $user->is('admin, moderator', true), $user->is(['admin', 'moderator'], true),
+    | $user->isRole('admin, moderator', true), $user->isRole(['admin', 'moderator'], true),
     | $user->isAll('admin|moderator'), $user->isAll('admin, moderator'), $user->isAll(['admin', 'moderator'])
     */
 
@@ -294,7 +294,7 @@ if ($user->allowed('edit.articles', $article, false)) { // now owner check is di
 There are four Blade extensions. Basically, it is replacement for classic if statements.
 
 ```php
-@role('admin') // @if(Auth::check() && Auth::user()->is('admin'))
+@role('admin') // @if(Auth::check() && Auth::user()->isRole('admin'))
     // user is admin
 @endrole
 
@@ -310,7 +310,7 @@ There are four Blade extensions. Basically, it is replacement for classic if sta
     // show edit button
 @endallowed
 
-@role('admin|moderator', 'all') // @if(Auth::check() && Auth::user()->is('admin|moderator', 'all'))
+@role('admin|moderator', 'all') // @if(Auth::check() && Auth::user()->isRole('admin|moderator', 'all'))
     // user is admin and also moderator
 @else
     // something else
