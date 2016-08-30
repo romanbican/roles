@@ -49,7 +49,7 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function is($role, $all = false)
+    public function isRole($role, $all = false)
     {
         if ($this->isPretendEnabled()) {
             return $this->pretend('is');
@@ -100,7 +100,7 @@ trait HasRoleAndPermission
      */
     public function hasRole($role)
     {
-        return $this->getRoles()->contains(function ($key, $value) use ($role) {
+        return $this->getRoles()->contains(function ($value, $key) use ($role) {
             return $role == $value->id || Str::is($role, $value->slug);
         });
     }
@@ -248,7 +248,7 @@ trait HasRoleAndPermission
      */
     public function hasPermission($permission)
     {
-        return $this->getPermissions()->contains(function ($key, $value) use ($permission) {
+        return $this->getPermissions()->contains(function ($value, $key) use ($permission) {
             return $permission == $value->id || Str::is($permission, $value->slug);
         });
     }
