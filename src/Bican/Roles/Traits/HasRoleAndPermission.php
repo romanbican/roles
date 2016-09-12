@@ -167,7 +167,7 @@ trait HasRoleAndPermission
         return $permissionModel::select(['permissions.*', 'permission_role.created_at as pivot_created_at', 'permission_role.updated_at as pivot_updated_at'])
                 ->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')->join('roles', 'roles.id', '=', 'permission_role.role_id')
                 ->whereIn('roles.id', $this->getRoles()->pluck('id')->all()) ->orWhere('roles.level', '<', $this->level())
-                ->groupBy(['permissions.id', 'pivot_created_at', 'pivot_updated_at']);
+                ->groupBy(['permissions.id','permissions.name', 'permissions.slug', 'permissions.description', 'permissions.model', 'permissions.created_at', 'permissions.updated_at', 'pivot_created_at', 'pivot_updated_at']);
     }
 
     /**
