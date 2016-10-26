@@ -40,6 +40,10 @@ Pull this package in through Composer (file `composer.json`).
     }
 }
 ```
+or execute
+```bash
+composer require bican/roles
+```
 
 > If you are still using Laravel 5.0, you must pull in version `1.7.*`.
 
