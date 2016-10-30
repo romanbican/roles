@@ -128,7 +128,7 @@ use App\User;
 
 $user = User::find($id);
 
-$user->attachRole($adminRole); // you can pass whole object, or just an id
+$user->attachRole($adminRole); // you may pass whole object, or just an id
 ```
 
 ```php
@@ -138,15 +138,15 @@ $user->detachAllRoles(); // in case you want to detach all roles
 
 ### Checking For Roles
 
-You can now check if the user has required role.
+You may now check if the user has required role.
 
 ```php
-if ($user->isRole('admin')) { // you can pass an id or slug
+if ($user->isRole('admin')) { // you may pass an id or slug
     // or alternatively $user->hasRole('admin')
 }
 ```
 
-You can also do this:
+You may also do this:
 
 ```php
 if ($user->isAdmin()) {
@@ -180,7 +180,7 @@ if ($user->isRole('admin|moderator', true)) {
 
 ### Levels
 
-When you are creating roles, there is optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
+When you are creating roles, there is optional parameter `level`. It is set to `1` by default, but you may overwrite it and then you may do something like this:
  
 ```php
 if ($user->level() > 4) {
@@ -237,16 +237,14 @@ $user->detachAllPermissions();
 ### Checking For Permissions
 
 ```php
-if ($user->can('create.users') { // you can pass an id or slug
+if ($user->may('create.users') { // you can pass an id or slug
     //
 }
 
-if ($user->canDeleteUsers()) {
+if ($user->mayDeleteUsers()) {
     //
 }
 ```
-
-You can check for multiple permissions the same way as roles. You can make use of additional methods like `canOne`, `canAll` or `hasPermission`.
 
 ### Permissions Inheriting
 
@@ -254,7 +252,7 @@ Role with higher level is inheriting permission from roles with lower level.
 
 There is an example of this `magic`:
 
-You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. It means, moderator and administrator has also permission to read articles, but administrator can manage comments as well.
+You have three roles: `user`, `moderator` and `admin`. User has a permission to read articles, moderator can manage comments and admin can create articles. User has a level 1, moderator level 2 and admin level 3. It means, moderator and administrator has also permission to read articles, but administrator may manage comments as well.
 
 > If you don't want permissions inheriting feature in you application, simply ignore `level` parameter when you're creating roles.
 
@@ -298,8 +296,8 @@ There are four Blade extensions. Basically, it is replacement for classic if sta
     // user is admin
 @endrole
 
-@permission('edit.articles') // @if(Auth::check() && Auth::user()->can('edit.articles'))
-    // user can edit articles
+@permission('edit.articles') // @if(Auth::check() && Auth::user()->may('edit.articles'))
+    // user may edit articles
 @endpermission
 
 @level(2) // @if(Auth::check() && Auth::user()->level() >= 2)
@@ -337,7 +335,7 @@ protected $routeMiddleware = [
 ];
 ```
 
-Now you can easily protect your routes.
+Now you may easily protect your routes.
 
 ```php
 $router->get('/example', [
@@ -361,7 +359,7 @@ $router->get('/example', [
 
 It throws `\Bican\Roles\Exceptions\RoleDeniedException`, `\Bican\Roles\Exceptions\PermissionDeniedException` or `\Bican\Roles\Exceptions\LevelDeniedException` exceptions if it goes wrong.
 
-You can catch these exceptions inside `app/Exceptions/Handler.php` file and do whatever you want.
+You may catch these exceptions inside `app/Exceptions/Handler.php` file and do whatever you want.
 
 ```php
 /**
@@ -374,7 +372,7 @@ You can catch these exceptions inside `app/Exceptions/Handler.php` file and do w
 public function render($request, Exception $e)
 {
     if ($e instanceof \Bican\Roles\Exceptions\RoleDeniedException) {
-        // you can for example flash message, redirect...
+        // you may for example flash message, redirect...
         return redirect()->back();
     }
 
@@ -384,7 +382,7 @@ public function render($request, Exception $e)
 
 ## Config File
 
-You can change connection for models, slug separator, models path and there is also a handy pretend feature. Have a look at config file for more information.
+You may change connection for models, slug separator, models path and there is also a handy pretend feature. Have a look at config file for more information.
 
 ## More Information
 
