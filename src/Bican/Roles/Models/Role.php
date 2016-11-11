@@ -22,7 +22,6 @@ class Role extends Model implements RoleHasRelationsContract
      * Create a new model instance.
      *
      * @param array $attributes
-     * @return void
      */
     public function __construct(array $attributes = [])
     {

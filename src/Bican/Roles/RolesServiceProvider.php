@@ -44,7 +44,7 @@ class RolesServiceProvider extends ServiceProvider
         $blade = $this->app['view']->getEngineResolver()->resolve('blade')->getCompiler();
 
         $blade->directive('role', function ($expression) {
-            return "<?php if (Auth::check() && Auth::user()->is{$expression}): ?>";
+            return "<?php if (Auth::check() && Auth::user()->isRole({$expression})): ?>";
         });
 
         $blade->directive('endrole', function () {
@@ -52,7 +52,7 @@ class RolesServiceProvider extends ServiceProvider
         });
 
         $blade->directive('permission', function ($expression) {
-            return "<?php if (Auth::check() && Auth::user()->can{$expression}): ?>";
+            return "<?php if (Auth::check() && Auth::user()->can({$expression})): ?>";
         });
 
         $blade->directive('endpermission', function () {
@@ -62,7 +62,7 @@ class RolesServiceProvider extends ServiceProvider
         $blade->directive('level', function ($expression) {
             $level = trim($expression, '()');
 
-            return "<?php if (Auth::check() && Auth::user()->level() >= {$level}): ?>";
+            return "<?php if (Auth::check() && Auth::user()->level() >= ({$level})): ?>";
         });
 
         $blade->directive('endlevel', function () {
@@ -70,7 +70,7 @@ class RolesServiceProvider extends ServiceProvider
         });
 
         $blade->directive('allowed', function ($expression) {
-            return "<?php if (Auth::check() && Auth::user()->allowed{$expression}): ?>";
+            return "<?php if (Auth::check() && Auth::user()->allowed({$expression})): ?>";
         });
 
         $blade->directive('endallowed', function () {

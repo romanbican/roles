@@ -21,7 +21,7 @@ trait RoleHasRelations
      */
     public function users()
     {
-        return $this->belongsToMany(config('auth.model'))->withTimestamps();
+        return $this->belongsToMany(config('auth.providers.users.model'))->withTimestamps();
     }
 
     /**
