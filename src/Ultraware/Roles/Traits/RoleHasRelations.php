@@ -1,13 +1,16 @@
 <?php
 
-namespace Bican\Roles\Traits;
+namespace Ultraware\Roles\Traits;
+
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Ultraware\Roles\Models\Permission;
 
 trait RoleHasRelations
 {
     /**
      * Role belongs to many permissions.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function permissions()
     {
@@ -17,7 +20,7 @@ trait RoleHasRelations
     /**
      * Role belongs to many users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function users()
     {
@@ -27,7 +30,7 @@ trait RoleHasRelations
     /**
      * Attach permission to a role.
      *
-     * @param int|\Bican\Roles\Models\Permission $permission
+     * @param int|Permission $permission
      * @return int|bool
      */
     public function attachPermission($permission)
@@ -38,7 +41,7 @@ trait RoleHasRelations
     /**
      * Detach permission from a role.
      *
-     * @param int|\Bican\Roles\Models\Permission $permission
+     * @param int|Permission $permission
      * @return int
      */
     public function detachPermission($permission)

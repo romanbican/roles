@@ -1,6 +1,6 @@
 <?php
 
-namespace Bican\Roles;
+namespace Ultraware\Roles;
 
 use Illuminate\Support\ServiceProvider;
 

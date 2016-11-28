@@ -1,31 +1,36 @@
 <?php
 
-namespace Bican\Roles\Traits;
+namespace Ultraware\Roles\Traits;
 
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Ultraware\Roles\Models\Permission;
+use Ultraware\Roles\Models\Role;
 
 trait HasRoleAndPermission
 {
     /**
      * Property for caching roles.
      *
-     * @var \Illuminate\Database\Eloquent\Collection|null
+     * @var Collection|null
      */
     protected $roles;
 
     /**
      * Property for caching permissions.
      *
-     * @var \Illuminate\Database\Eloquent\Collection|null
+     * @var Collection|null
      */
     protected $permissions;
 
     /**
      * User belongs to many roles.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function roles()
     {
@@ -35,7 +40,7 @@ trait HasRoleAndPermission
     /**
      * Get all roles as collection.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function getRoles()
     {
@@ -108,7 +113,7 @@ trait HasRoleAndPermission
     /**
      * Attach role to a user.
      *
-     * @param int|\Bican\Roles\Models\Role $role
+     * @param int|Role $role
      * @return null|bool
      */
     public function attachRole($role)
@@ -119,7 +124,7 @@ trait HasRoleAndPermission
     /**
      * Detach role from a user.
      *
-     * @param int|\Bican\Roles\Models\Role $role
+     * @param int|Role $role
      * @return int
      */
     public function detachRole($role)
@@ -154,7 +159,7 @@ trait HasRoleAndPermission
     /**
      * Get all permissions from roles.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function rolePermissions()
     {
@@ -165,15 +170,15 @@ trait HasRoleAndPermission
         }
 
         return $permissionModel::select(['permissions.*', 'permission_role.created_at as pivot_created_at', 'permission_role.updated_at as pivot_updated_at'])
-                ->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')->join('roles', 'roles.id', '=', 'permission_role.role_id')
-                ->whereIn('roles.id', $this->getRoles()->lists('id')->toArray()) ->orWhere('roles.level', '<', $this->level())
-                ->groupBy(['permissions.id', 'pivot_created_at', 'pivot_updated_at']);
+            ->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')->join('roles', 'roles.id', '=', 'permission_role.role_id')
+            ->whereIn('roles.id', $this->getRoles()->lists('id')->toArray())->orWhere('roles.level', '<', $this->level())
+            ->groupBy(['permissions.id', 'pivot_created_at', 'pivot_updated_at']);
     }
 
     /**
      * User belongs to many permissions.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function userPermissions()
     {
@@ -183,7 +188,7 @@ trait HasRoleAndPermission
     /**
      * Get all permissions as collection.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function getPermissions()
     {
@@ -257,7 +262,7 @@ trait HasRoleAndPermission
      * Check if the user is allowed to manipulate with entity.
      *
      * @param string $providedPermission
-     * @param \Illuminate\Database\Eloquent\Model $entity
+     * @param Model $entity
      * @param bool $owner
      * @param string $ownerColumn
      * @return bool
@@ -279,7 +284,7 @@ trait HasRoleAndPermission
      * Check if the user is allowed to manipulate with provided entity.
      *
      * @param string $providedPermission
-     * @param \Illuminate\Database\Eloquent\Model $entity
+     * @param Model $entity
      * @return bool
      */
     protected function isAllowed($providedPermission, Model $entity)
@@ -298,7 +303,7 @@ trait HasRoleAndPermission
     /**
      * Attach permission to a user.
      *
-     * @param int|\Bican\Roles\Models\Permission $permission
+     * @param int|Permission $permission
      * @return null|bool
      */
     public function attachPermission($permission)
@@ -309,7 +314,7 @@ trait HasRoleAndPermission
     /**
      * Detach permission from a user.
      *
-     * @param int|\Bican\Roles\Models\Permission $permission
+     * @param int|Permission $permission
      * @return int
      */
     public function detachPermission($permission)
@@ -327,7 +332,7 @@ trait HasRoleAndPermission
     public function detachAllPermissions()
     {
         $this->permissions = null;
-        
+
         return $this->userPermissions()->detach();
     }
 
@@ -338,7 +343,7 @@ trait HasRoleAndPermission
      */
     private function isPretendEnabled()
     {
-        return (bool) config('roles.pretend.enabled');
+        return (bool)config('roles.pretend.enabled');
     }
 
     /**
@@ -349,7 +354,7 @@ trait HasRoleAndPermission
      */
     private function pretend($option)
     {
-        return (bool) config('roles.pretend.options.' . $option);
+        return (bool)config('roles.pretend.options.' . $option);
     }
 
     /**
@@ -361,7 +366,7 @@ trait HasRoleAndPermission
      */
     private function getMethodName($methodName, $all)
     {
-        return ((bool) $all) ? $methodName . 'All' : $methodName . 'One';
+        return ((bool)$all) ? $methodName . 'All' : $methodName . 'One';
     }
 
     /**

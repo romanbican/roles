@@ -1,6 +1,6 @@
 <?php
 
-namespace Bican\Roles\Traits;
+namespace Ultraware\Roles\Traits;
 
 use Illuminate\Support\Str;
 

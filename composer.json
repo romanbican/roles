@@ -5,17 +5,17 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Roman Bičan",
-            "email": "romanbican@seznam.cz"
+            "name": "Ultraware"
         }
     ],
     "require": {
         "php": ">=5.5.9",
-        "illuminate/support": "~5.0"
+        "illuminate/support": "5.1.*|5.2.*|5.3.*",
+        "illuminate/database": "5.1.*|5.2.*|5.3.*"
     },
     "autoload": {
         "psr-0": {
-            "Bican\\Roles": "src/"
+            "Ultraware\\Roles": "src/"
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bican\Roles\Exceptions;
+namespace Ultraware\Roles\Exceptions;
 
 class RoleDeniedException extends AccessDeniedException
 {

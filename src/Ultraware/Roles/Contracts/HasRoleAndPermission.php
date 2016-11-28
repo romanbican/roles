@@ -1,22 +1,27 @@
 <?php
 
-namespace Bican\Roles\Contracts;
+namespace Ultraware\Roles\Contracts;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Ultraware\Roles\Models\Permission;
+use Ultraware\Roles\Models\Role;
 
 interface HasRoleAndPermission
 {
     /**
      * User belongs to many roles.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function roles();
 
     /**
      * Get all roles as collection.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function getRoles();
 
@@ -56,7 +61,7 @@ interface HasRoleAndPermission
     /**
      * Attach role to a user.
      *
-     * @param int|\Bican\Roles\Models\Role $role
+     * @param int|Role $role
      * @return null|bool
      */
     public function attachRole($role);
@@ -64,7 +69,7 @@ interface HasRoleAndPermission
     /**
      * Detach role from a user.
      *
-     * @param int|\Bican\Roles\Models\Role $role
+     * @param int|Role $role
      * @return int
      */
     public function detachRole($role);
@@ -86,21 +91,21 @@ interface HasRoleAndPermission
     /**
      * Get all permissions from roles.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function rolePermissions();
 
     /**
      * User belongs to many permissions.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function userPermissions();
 
     /**
      * Get all permissions as collection.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function getPermissions();
 
@@ -141,7 +146,7 @@ interface HasRoleAndPermission
      * Check if the user is allowed to manipulate with entity.
      *
      * @param string $providedPermission
-     * @param \Illuminate\Database\Eloquent\Model $entity
+     * @param Model $entity
      * @param bool $owner
      * @param string $ownerColumn
      * @return bool
@@ -151,7 +156,7 @@ interface HasRoleAndPermission
     /**
      * Attach permission to a user.
      *
-     * @param int|\Bican\Roles\Models\Permission $permission
+     * @param int|Permission $permission
      * @return null|bool
      */
     public function attachPermission($permission);
@@ -159,7 +164,7 @@ interface HasRoleAndPermission
     /**
      * Detach permission from a user.
      *
-     * @param int|\Bican\Roles\Models\Permission $permission
+     * @param int|Permission $permission
      * @return int
      */
     public function detachPermission($permission);

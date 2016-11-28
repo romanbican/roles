@@ -1,20 +1,22 @@
 <?php
 
-namespace Bican\Roles\Contracts;
+namespace Ultraware\Roles\Contracts;
+
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 interface PermissionHasRelations
 {
     /**
      * Permission belongs to many roles.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function roles();
 
     /**
      * Permission belongs to many users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function users();
 }

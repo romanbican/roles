@@ -1,23 +1,23 @@
 <?php
 
-namespace Bican\Roles\Middleware;
+namespace Ultraware\Roles\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
-use Bican\Roles\Exceptions\RoleDeniedException;
+use Illuminate\Http\Request;
+use Ultraware\Roles\Exceptions\RoleDeniedException;
 
 class VerifyRole
 {
     /**
-     * @var \Illuminate\Contracts\Auth\Guard
+     * @var Guard
      */
     protected $auth;
 
     /**
      * Create a new filter instance.
      *
-     * @param \Illuminate\Contracts\Auth\Guard $auth
-     * @return void
+     * @param Guard $auth
      */
     public function __construct(Guard $auth)
     {
@@ -27,11 +27,11 @@ class VerifyRole
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param \Closure $next
      * @param int|string $role
      * @return mixed
-     * @throws \Bican\Roles\Exceptions\RoleDeniedException
+     * @throws RoleDeniedException
      */
     public function handle($request, Closure $next, $role)
     {

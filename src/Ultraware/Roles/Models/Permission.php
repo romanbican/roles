@@ -1,28 +1,27 @@
 <?php
 
-namespace Bican\Roles\Models;
+namespace Ultraware\Roles\Models;
 
-use Bican\Roles\Traits\Slugable;
 use Illuminate\Database\Eloquent\Model;
-use Bican\Roles\Traits\RoleHasRelations;
-use Bican\Roles\Contracts\RoleHasRelations as RoleHasRelationsContract;
+use Ultraware\Roles\Contracts\PermissionHasRelations as PermissionHasRelationsContract;
+use Ultraware\Roles\Traits\PermissionHasRelations;
+use Ultraware\Roles\Traits\Slugable;
 
-class Role extends Model implements RoleHasRelationsContract
+class Permission extends Model implements PermissionHasRelationsContract
 {
-    use Slugable, RoleHasRelations;
+    use Slugable, PermissionHasRelations;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['name', 'slug', 'description', 'level'];
+    protected $fillable = ['name', 'slug', 'description', 'model'];
 
     /**
      * Create a new model instance.
      *
      * @param array $attributes
-     * @return void
      */
     public function __construct(array $attributes = [])
     {
