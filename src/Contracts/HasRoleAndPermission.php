@@ -84,7 +84,7 @@ interface HasRoleAndPermission
     /**
      * Sync roles for a user.
      *
-     * @param array|\Bican\Roles\Models\Role[]|\Illuminate\Database\Eloquent\Collection $roles
+     * @param array|Role[]|Collection $roles
      * @return array
      */
     public function syncRoles($roles);
@@ -187,7 +187,7 @@ interface HasRoleAndPermission
     /**
      * Sync permissions for a user.
      *
-     * @param array|\Bican\Roles\Models\Permission[]|\Illuminate\Database\Eloquent\Collection $permissions
+     * @param array|Permission[]|Collection $permissions
      * @return array
      */
     public function syncPermissions($permissions);

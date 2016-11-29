@@ -2,6 +2,7 @@
 
 namespace Ultraware\Roles\Contracts;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Ultraware\Roles\Models\Permission;
 
@@ -47,7 +48,7 @@ interface RoleHasRelations
     /**
      * Sync permissions for a role.
      *
-     * @param array|\Bican\Roles\Models\Permission[]|\Illuminate\Database\Eloquent\Collection $permissions
+     * @param array|Permission[]|Collection $permissions
      * @return array
      */
     public function syncPermissions($permissions);

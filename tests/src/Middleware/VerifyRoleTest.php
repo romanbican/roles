@@ -10,7 +10,7 @@ class VerifyRoleTest extends TestCase
     public function testUserHasPermission()
     {
         $guard = \Mockery::mock(Guard::class);
-        $user = \Mockery::mock(\User::class);
+        $user = \Mockery::mock(User::class);
         $request = Request();
         $guard->shouldReceive('check')->once()->withNoArgs()->andReturn(true);
         $guard->shouldReceive('user')->once()->withNoArgs()->andReturn($user);
@@ -26,7 +26,7 @@ class VerifyRoleTest extends TestCase
     public function testUserHasPermission_throwsException()
     {
         $guard = \Mockery::mock(Guard::class);
-        $user = \Mockery::mock(\User::class);
+        $user = \Mockery::mock(User::class);
         $request = new Request();
         $guard->shouldReceive('check')->once()->withNoArgs()->andReturn(true);
         $guard->shouldReceive('user')->once()->withNoArgs()->andReturn($user);

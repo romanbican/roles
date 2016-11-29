@@ -42,5 +42,10 @@ class TestCase extends TestBenchTestCase
             '--database' => 'testbench',
             '--realpath' => realpath(__DIR__ . '/../migrations'),
         ]);
+
+        $this->loadMigrationsFrom([
+            '--database' => 'testbench',
+            '--realpath' => realpath(__DIR__ . '/database/migrations'),
+        ]);
     }
 }
