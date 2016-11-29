@@ -109,7 +109,7 @@ trait HasRoleAndPermission
      */
     public function checkRole($role)
     {
-        return $this->getRoles()->contains(function ($key, $value) use ($role) {
+        return $this->getRoles()->contains(function ($value) use ($role) {
             return $role == $value->id || Str::is($role, $value->slug);
         });
     }
@@ -277,7 +277,7 @@ trait HasRoleAndPermission
      */
     public function checkPermission($permission)
     {
-        return $this->getPermissions()->contains(function ($key, $value) use ($permission) {
+        return $this->getPermissions()->contains(function ($value) use ($permission) {
             return $permission == $value->id || Str::is($permission, $value->slug);
         });
     }

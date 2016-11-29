@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\ServiceProvider;
 use Orchestra\Testbench\TestCase as TestBenchTestCase;
 
 class TestCase extends TestBenchTestCase
@@ -11,7 +12,7 @@ class TestCase extends TestBenchTestCase
 
     protected function getPackageProviders($app)
     {
-        return [Ultraware\Roles\RolesServiceProvider::class];
+        return [Ultraware\Roles\RolesServiceProvider::class, TestMigrationsServiceProvider::class];
     }
 
     /**
@@ -40,12 +41,17 @@ class TestCase extends TestBenchTestCase
     {
         $this->loadMigrationsFrom([
             '--database' => 'testbench',
-            '--realpath' => realpath(__DIR__ . '/../migrations'),
         ]);
+    }
+}
 
+class TestMigrationsServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
         $this->loadMigrationsFrom([
-            '--database' => 'testbench',
-            '--realpath' => realpath(__DIR__ . '/database/migrations'),
+            realpath(__DIR__ . '/../migrations'),
+            realpath(__DIR__ . '/database/migrations')
         ]);
     }
 }
