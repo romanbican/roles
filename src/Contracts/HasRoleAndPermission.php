@@ -82,6 +82,14 @@ interface HasRoleAndPermission
     public function detachAllRoles();
 
     /**
+     * Sync roles for a user.
+     *
+     * @param array|\Bican\Roles\Models\Role[]|\Illuminate\Database\Eloquent\Collection $roles
+     * @return array
+     */
+    public function syncRoles($roles);
+
+    /**
      * Get role level of a user.
      *
      * @return int
@@ -175,4 +183,12 @@ interface HasRoleAndPermission
      * @return int
      */
     public function detachAllPermissions();
+
+    /**
+     * Sync permissions for a user.
+     *
+     * @param array|\Bican\Roles\Models\Permission[]|\Illuminate\Database\Eloquent\Collection $permissions
+     * @return array
+     */
+    public function syncPermissions($permissions);
 }

@@ -43,4 +43,12 @@ interface RoleHasRelations
      * @return int
      */
     public function detachAllPermissions();
+
+    /**
+     * Sync permissions for a role.
+     *
+     * @param array|\Bican\Roles\Models\Permission[]|\Illuminate\Database\Eloquent\Collection $permissions
+     * @return array
+     */
+    public function syncPermissions($permissions);
 }
