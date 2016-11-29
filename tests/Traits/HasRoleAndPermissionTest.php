@@ -90,4 +90,56 @@ class HasRoleAndPermissionTest extends \TestCase
 
         $this->assertFalse($user->hasAllPermissions(['permission1', 'permission2']));
     }
+
+    public function testHasAllPermissions_csv()
+    {
+        $user = \Mockery::mock(\User::class . '[checkPermission]');
+        $user->shouldReceive('checkPermission')
+            ->once()
+            ->with('permission1')
+            ->andReturn(true);
+
+        $user->shouldReceive('checkPermission')
+            ->once()
+            ->with('permission2')
+            ->andReturn(true);
+
+        $this->assertTrue($user->hasAllPermissions('permission1,permission2'));
+    }
+
+    public function testHasAllPermissions_pipe()
+    {
+        $user = \Mockery::mock(\User::class . '[checkPermission]');
+        $user->shouldReceive('checkPermission')
+            ->once()
+            ->with('permission1')
+            ->andReturn(true);
+
+        $user->shouldReceive('checkPermission')
+            ->once()
+            ->with('permission2')
+            ->andReturn(true);
+
+        $this->assertTrue($user->hasAllPermissions('permission1| permission2'));
+    }
+
+    public function testMagicCall()
+    {
+        $user = \Mockery::mock(\User::class . '[hasRole,hasPermission]');
+
+        //isMyRole
+        $user->shouldReceive('hasRole')
+            ->once()
+            ->with('my.role')
+            ->andReturn(true);
+        $this->assertTrue($user->callMagic('isMyRole', []));
+
+
+        //canMyPermission
+        $user->shouldReceive('hasPermission')
+            ->once()
+            ->with('my.permission')
+            ->andReturn(true);
+        $this->assertTrue($user->callMagic('canMyPermission', []));
+    }
 }

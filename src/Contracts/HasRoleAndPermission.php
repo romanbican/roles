@@ -32,7 +32,15 @@ interface HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function is($role, $all = false);
+    public function hasRole($role, $all = false);
+
+    /**
+     * Check if the user has at least one of the given roles.
+     *
+     * @param int|string|array $role
+     * @return bool
+     */
+    public function hasOneRole($role);
 
     /**
      * Check if the user has all roles.
@@ -40,15 +48,7 @@ interface HasRoleAndPermission
      * @param int|string|array $role
      * @return bool
      */
-    public function isAll($role);
-
-    /**
-     * Check if the user has at least one role.
-     *
-     * @param int|string|array $role
-     * @return bool
-     */
-    public function isOne($role);
+    public function hasAllRoles($role);
 
     /**
      * Check if the user has role.
@@ -56,7 +56,7 @@ interface HasRoleAndPermission
      * @param int|string $role
      * @return bool
      */
-    public function hasRole($role);
+    public function checkRole($role);
 
     /**
      * Attach role to a user.
@@ -119,7 +119,7 @@ interface HasRoleAndPermission
     public function hasPermission($permission, $all = false);
 
     /**
-     * Check if the user has at least one permission.
+     * Check if the user has at least one of the given permissions.
      *
      * @param int|string|array $permission
      * @return bool
@@ -133,6 +133,14 @@ interface HasRoleAndPermission
      * @return bool
      */
     public function hasAllPermissions($permission);
+
+    /**
+     * Check if the user has a permission.
+     *
+     * @param int|string $permission
+     * @return bool
+     */
+    public function checkPermission($permission);
 
     /**
      * Check if the user is allowed to manipulate with entity.

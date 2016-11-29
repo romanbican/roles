@@ -54,25 +54,29 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function is_($role, $all = false)
+    public function hasRole($role, $all = false)
     {
         if ($this->isPretendEnabled()) {
-            return $this->pretend('is');
+            return $this->pretend('hasRole');
         }
 
-        return $this->{$this->getMethodName('is', $all)}($role);
+        if (!$all) {
+            return $this->hasOneRole($role);
+        }
+
+        return $this->hasAllRoles($role);
     }
 
     /**
-     * Check if the user has at least one role.
+     * Check if the user has at least one of the given roles.
      *
      * @param int|string|array $role
      * @return bool
      */
-    public function isOne($role)
+    public function hasOneRole($role)
     {
         foreach ($this->getArrayFrom($role) as $role) {
-            if ($this->hasRole($role)) {
+            if ($this->checkRole($role)) {
                 return true;
             }
         }
@@ -86,10 +90,10 @@ trait HasRoleAndPermission
      * @param int|string|array $role
      * @return bool
      */
-    public function isAll($role)
+    public function hasAllRoles($role)
     {
         foreach ($this->getArrayFrom($role) as $role) {
-            if (!$this->hasRole($role)) {
+            if (!$this->checkRole($role)) {
                 return false;
             }
         }
@@ -103,7 +107,7 @@ trait HasRoleAndPermission
      * @param int|string $role
      * @return bool
      */
-    public function hasRole($role)
+    public function checkRole($role)
     {
         return $this->getRoles()->contains(function ($key, $value) use ($role) {
             return $role == $value->id || Str::is($role, $value->slug);
@@ -216,7 +220,7 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Check if the user has at least one permission.
+     * Check if the user has at least one of the given permissions.
      *
      * @param int|string|array $permission
      * @return bool
@@ -362,18 +366,6 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Get method name.
-     *
-     * @param string $methodName
-     * @param bool $all
-     * @return string
-     */
-    private function getMethodName($methodName, $all)
-    {
-        return ((bool)$all) ? $methodName . 'All' : $methodName . 'One';
-    }
-
-    /**
      * Get an array from argument.
      *
      * @param int|string|array $argument
@@ -384,22 +376,20 @@ trait HasRoleAndPermission
         return (!is_array($argument)) ? preg_split('/ ?[,|] ?/', $argument) : $argument;
     }
 
-    /**
-     * Handle dynamic method calls.
-     *
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
+    public function callMagic($method, $parameters)
     {
         if (starts_with($method, 'is')) {
-            return $this->is(snake_case(substr($method, 2), config('roles.separator')));
-        } elseif (starts_with($method, 'hasPermission')) {
+            return $this->hasRole(snake_case(substr($method, 2), config('roles.separator')));
+        } elseif (starts_with($method, 'can')) {
             return $this->hasPermission(snake_case(substr($method, 3), config('roles.separator')));
         } elseif (starts_with($method, 'allowed')) {
             return $this->allowed(snake_case(substr($method, 7), config('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
         }
         return parent::__call($method, $parameters);
+    }
+
+    public function __call($method, $parameters)
+    {
+        return $this->callMagic($method, $parameters);
     }
 }

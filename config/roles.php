@@ -51,7 +51,7 @@ return [
     |
     | You can pretend or simulate package behavior no matter what is in your
     | database. It is really useful when you are testing you application.
-    | Set up what will methods is(), hasPermission() and allowed() return.
+    | Set up what will methods hasRole(), hasPermission() and allowed() return.
     |
     */
 
@@ -60,7 +60,7 @@ return [
         'enabled' => false,
 
         'options' => [
-            'is' => true,
+            'hasRole' => true,
             'hasPermission' => true,
             'allowed' => true,
         ],

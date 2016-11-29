@@ -18,9 +18,9 @@ class VerifyPermissionTest extends TestCase
 
         $verifyPermission = new VerifyPermission($guard);
         $result = $verifyPermission->handle($request, function (Request $request) {
-            return 'next was calles';
+            return 'next was called';
         }, 'permission1');
-        $this->assertEquals('next was calles', $result);
+        $this->assertEquals('next was called', $result);
     }
 
     public function testUserHasPermission_throwsException()

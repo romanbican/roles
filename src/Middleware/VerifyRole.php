@@ -35,7 +35,7 @@ class VerifyRole
      */
     public function handle($request, Closure $next, $role)
     {
-        if ($this->auth->check() && $this->auth->user()->is($role)) {
+        if ($this->auth->check() && $this->auth->user()->hasRole($role)) {
             return $next($request);
         }
 

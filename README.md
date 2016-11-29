@@ -29,23 +29,13 @@ This package is very easy to set up. There are only couple of steps.
 
 ### Composer
 
-Pull this package in through Composer (file `composer.json`).
-
-```js
-{
-    "require": {
-        "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
-        "ultraware/roles": "2.1.*"
-    }
-}
+Pull this package in through Composer 
+```
+composer require ultraware/roles
 ```
 
 > If you are still using Laravel 5.0, you must pull in version `1.7.*`.
 
-Run this command inside your terminal.
-
-    composer update
 
 ### Service Provider
 
@@ -54,11 +44,6 @@ Add the package to your application service providers in `config/app.php` file.
 ```php
 'providers' => [
     
-    /*
-     * Laravel Framework Service Providers...
-     */
-    Illuminate\Foundation\Providers\ArtisanServiceProvider::class,
-    Illuminate\Auth\AuthServiceProvider::class,
     ...
     
     /**
@@ -85,17 +70,6 @@ And also run migrations.
 ### HasRoleAndPermission Trait And Contract
 
 Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` contract inside your `User` model.
-
-```php
-use Ultraware\Roles\Traits\HasRoleAndPermission;
-use Ultraware\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
-
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract
-{
-    use Authenticatable, CanResetPassword, HasRoleAndPermission;
-```
-
-And that's it!
 
 ## Usage
 
@@ -141,8 +115,8 @@ $user->detachAllRoles(); // in case you want to detach all roles
 You can now check if the user has required role.
 
 ```php
-if ($user->is('admin')) { // you can pass an id or slug
-    // or alternatively $user->hasRole('admin')
+if ($user->hasRole('admin')) { // you can pass an id or slug
+    //
 }
 ```
 
@@ -157,24 +131,24 @@ if ($user->isAdmin()) {
 And of course, there is a way to check for multiple roles:
 
 ```php
-if ($user->is('admin|moderator')) { 
+if ($user->hasRole(['admin', 'moderator'])) { 
     /*
     | Or alternatively:
-    | $user->is('admin, moderator'), $user->is(['admin', 'moderator']),
-    | $user->isOne('admin|moderator'), $user->isOne('admin, moderator'), $user->isOne(['admin', 'moderator'])
+    | $user->hasRole('admin, moderator'), $user->hasRole('admin|moderator'),
+    | $user->hasOneRole('admin, moderator'), $user->hasOneRole(['admin', 'moderator']), $user->hasOneRole('admin|moderator')
     */
 
-    // if user has at least one role
+    // The user has at least one of the roles
 }
 
-if ($user->is('admin|moderator', true)) {
+if ($user->hasRole(['admin', 'moderator'], true)) {
     /*
     | Or alternatively:
-    | $user->is('admin, moderator', true), $user->is(['admin', 'moderator'], true),
-    | $user->isAll('admin|moderator'), $user->isAll('admin, moderator'), $user->isAll(['admin', 'moderator'])
+    | $user->hasRole('admin, moderator', true), $user->hasRole('admin|moderator', true),
+    | $user->hasAllRoles('admin, moderator'), $user->hasAllRoles(['admin', 'moderator']), $user->hasAllRoles('admin|moderator')
     */
 
-    // if user has all roles
+    // The user has all roles
 }
 ```
 
@@ -237,7 +211,7 @@ $user->detachAllPermissions();
 ### Checking For Permissions
 
 ```php
-if ($user->can('create.users') { // you can pass an id or slug
+if ($user->hasPermission('create.users') { // you can pass an id or slug
     //
 }
 
@@ -294,12 +268,12 @@ if ($user->allowed('edit.articles', $article, false)) { // now owner check is di
 There are four Blade extensions. Basically, it is replacement for classic if statements.
 
 ```php
-@role('admin') // @if(Auth::check() && Auth::user()->is('admin'))
-    // user is admin
+@role('admin') // @if(Auth::check() && Auth::user()->hasRole('admin'))
+    // user has admin role
 @endrole
 
-@permission('edit.articles') // @if(Auth::check() && Auth::user()->can('edit.articles'))
-    // user can edit articles
+@permission('edit.articles') // @if(Auth::check() && Auth::user()->hasPermission('edit.articles'))
+    // user has edit articles permissison
 @endpermission
 
 @level(2) // @if(Auth::check() && Auth::user()->level() >= 2)
@@ -310,8 +284,8 @@ There are four Blade extensions. Basically, it is replacement for classic if sta
     // show edit button
 @endallowed
 
-@role('admin|moderator', 'all') // @if(Auth::check() && Auth::user()->is('admin|moderator', 'all'))
-    // user is admin and also moderator
+@role('admin|moderator', true) // @if(Auth::check() && Auth::user()->hasRole('admin|moderator', true))
+    // user has admin and moderator role
 @else
     // something else
 @endrole
