@@ -36,7 +36,7 @@ Pull this package in through Composer (file `composer.json`).
     "require": {
         "php": ">=5.5.9",
         "laravel/framework": "5.1.*",
-        "bican/roles": "2.1.*"
+        "ultraware/roles": "2.1.*"
     }
 }
 ```
@@ -64,7 +64,7 @@ Add the package to your application service providers in `config/app.php` file.
     /**
      * Third Party Service Providers...
      */
-    Bican\Roles\RolesServiceProvider::class,
+    Ultraware\Roles\RolesServiceProvider::class,
 
 ],
 ```
@@ -73,8 +73,8 @@ Add the package to your application service providers in `config/app.php` file.
 
 Publish the package config file and migrations to your application. Run these commands inside your terminal.
 
-    php artisan vendor:publish --provider="Bican\Roles\RolesServiceProvider" --tag=config
-    php artisan vendor:publish --provider="Bican\Roles\RolesServiceProvider" --tag=migrations
+    php artisan vendor:publish --provider="Ultraware\Roles\RolesServiceProvider" --tag=config
+    php artisan vendor:publish --provider="Ultraware\Roles\RolesServiceProvider" --tag=migrations
 
 And also run migrations.
 
@@ -87,8 +87,8 @@ And also run migrations.
 Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` contract inside your `User` model.
 
 ```php
-use Bican\Roles\Traits\HasRoleAndPermission;
-use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
+use Ultraware\Roles\Traits\HasRoleAndPermission;
+use Ultraware\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract
 {
@@ -102,7 +102,7 @@ And that's it!
 ### Creating Roles
 
 ```php
-use Bican\Roles\Models\Role;
+use Ultraware\Roles\Models\Role;
 
 $adminRole = Role::create([
     'name' => 'Admin',
@@ -197,7 +197,7 @@ if ($user->level() > 4) {
 It's very simple thanks to `Permission` model.
 
 ```php
-use Bican\Roles\Models\Permission;
+use Ultraware\Roles\Models\Permission;
 
 $createUsersPermission = Permission::create([
     'name' => 'Create users',
@@ -217,7 +217,7 @@ You can attach permissions to a role or directly to a specific user (and of cour
 
 ```php
 use App\User;
-use Bican\Roles\Models\Role;
+use Ultraware\Roles\Models\Role;
 
 $role = Role::find($roleId);
 $role->attachPermission($createUsersPermission); // permission attached to a role
@@ -246,7 +246,7 @@ if ($user->canDeleteUsers()) {
 }
 ```
 
-You can check for multiple permissions the same way as roles. You can make use of additional methods like `canOne`, `canAll` or `hasPermission`.
+You can check for multiple permissions the same way as roles. You can make use of additional methods like `hasOnePermission` or `hasAllPermissions`.
 
 ### Permissions Inheriting
 
@@ -264,7 +264,7 @@ Let's say you have an article and you want to edit it. This article belongs to a
 
 ```php
 use App\Article;
-use Bican\Roles\Models\Permission;
+use Ultraware\Roles\Models\Permission;
 
 $editArticlesPermission = Permission::create([
     'name' => 'Edit articles',
@@ -331,9 +331,9 @@ protected $routeMiddleware = [
     'auth' => \App\Http\Middleware\Authenticate::class,
     'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
     'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-    'role' => \Bican\Roles\Middleware\VerifyRole::class,
-    'permission' => \Bican\Roles\Middleware\VerifyPermission::class,
-    'level' => \Bican\Roles\Middleware\VerifyLevel::class,
+    'role' => \Ultraware\Roles\Middleware\VerifyRole::class,
+    'permission' => \Ultraware\Roles\Middleware\VerifyPermission::class,
+    'level' => \Ultraware\Roles\Middleware\VerifyLevel::class,
 ];
 ```
 
@@ -359,7 +359,7 @@ $router->get('/example', [
 ]);
 ```
 
-It throws `\Bican\Roles\Exceptions\RoleDeniedException`, `\Bican\Roles\Exceptions\PermissionDeniedException` or `\Bican\Roles\Exceptions\LevelDeniedException` exceptions if it goes wrong.
+It throws `\Ultraware\Roles\Exceptions\RoleDeniedException`, `\Ultraware\Roles\Exceptions\PermissionDeniedException` or `\Ultraware\Roles\Exceptions\LevelDeniedException` exceptions if it goes wrong.
 
 You can catch these exceptions inside `app/Exceptions/Handler.php` file and do whatever you want.
 
@@ -373,7 +373,7 @@ You can catch these exceptions inside `app/Exceptions/Handler.php` file and do w
  */
 public function render($request, Exception $e)
 {
-    if ($e instanceof \Bican\Roles\Exceptions\RoleDeniedException) {
+    if ($e instanceof \Ultraware\Roles\Exceptions\RoleDeniedException) {
         // you can for example flash message, redirect...
         return redirect()->back();
     }
@@ -388,7 +388,7 @@ You can change connection for models, slug separator, models path and there is a
 
 ## More Information
 
-For more information, please have a look at [HasRoleAndPermission](https://github.com/romanbican/roles/blob/master/src/Bican/Roles/Contracts/HasRoleAndPermission.php) contract.
+For more information, please have a look at [HasRoleAndPermission](https://github.com/ultraware/roles/blob/master/src/Contracts/HasRoleAndPermission.php) contract.
 
 ## License
 

@@ -54,7 +54,7 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function is($role, $all = false)
+    public function is_($role, $all = false)
     {
         if ($this->isPretendEnabled()) {
             return $this->pretend('is');
@@ -202,13 +202,17 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function can($permission, $all = false)
+    public function hasPermission($permission, $all = false)
     {
         if ($this->isPretendEnabled()) {
-            return $this->pretend('can');
+            return $this->pretend('hasPermission');
         }
 
-        return $this->{$this->getMethodName('can', $all)}($permission);
+        if (!$all) {
+            return $this->hasOnePermission($permission);
+        }
+
+        return $this->hasAllPermissions($permission);
     }
 
     /**
@@ -217,10 +221,10 @@ trait HasRoleAndPermission
      * @param int|string|array $permission
      * @return bool
      */
-    public function canOne($permission)
+    public function hasOnePermission($permission)
     {
         foreach ($this->getArrayFrom($permission) as $permission) {
-            if ($this->hasPermission($permission)) {
+            if ($this->checkPermission($permission)) {
                 return true;
             }
         }
@@ -234,10 +238,10 @@ trait HasRoleAndPermission
      * @param int|string|array $permission
      * @return bool
      */
-    public function canAll($permission)
+    public function hasAllPermissions($permission)
     {
         foreach ($this->getArrayFrom($permission) as $permission) {
-            if (!$this->hasPermission($permission)) {
+            if (!$this->checkPermission($permission)) {
                 return false;
             }
         }
@@ -251,7 +255,7 @@ trait HasRoleAndPermission
      * @param int|string $permission
      * @return bool
      */
-    public function hasPermission($permission)
+    public function checkPermission($permission)
     {
         return $this->getPermissions()->contains(function ($key, $value) use ($permission) {
             return $permission == $value->id || Str::is($permission, $value->slug);
@@ -391,12 +395,11 @@ trait HasRoleAndPermission
     {
         if (starts_with($method, 'is')) {
             return $this->is(snake_case(substr($method, 2), config('roles.separator')));
-        } elseif (starts_with($method, 'can')) {
-            return $this->can(snake_case(substr($method, 3), config('roles.separator')));
+        } elseif (starts_with($method, 'hasPermission')) {
+            return $this->hasPermission(snake_case(substr($method, 3), config('roles.separator')));
         } elseif (starts_with($method, 'allowed')) {
             return $this->allowed(snake_case(substr($method, 7), config('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
         }
-
         return parent::__call($method, $parameters);
     }
 }

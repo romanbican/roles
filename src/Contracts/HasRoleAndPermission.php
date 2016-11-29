@@ -116,15 +116,7 @@ interface HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function can($permission, $all = false);
-
-    /**
-     * Check if the user has all permissions.
-     *
-     * @param int|string|array $permission
-     * @return bool
-     */
-    public function canAll($permission);
+    public function hasPermission($permission, $all = false);
 
     /**
      * Check if the user has at least one permission.
@@ -132,15 +124,15 @@ interface HasRoleAndPermission
      * @param int|string|array $permission
      * @return bool
      */
-    public function canOne($permission);
+    public function hasOnePermission($permission);
 
     /**
-     * Check if the user has a permission.
+     * Check if the user has all permissions.
      *
-     * @param int|string $permission
+     * @param int|string|array $permission
      * @return bool
      */
-    public function hasPermission($permission);
+    public function hasAllPermissions($permission);
 
     /**
      * Check if the user is allowed to manipulate with entity.

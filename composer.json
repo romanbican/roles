@@ -1,21 +1,39 @@
 {
-    "name": "bican/roles",
-    "description": "Powerful package for handling roles and permissions in Laravel 5.",
-    "keywords": ["roles", "permissions", "acl", "auth", "laravel", "illuminate"],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Ultraware"
-        }
-    ],
-    "require": {
-        "php": ">=5.5.9",
-        "illuminate/support": "5.1.*|5.2.*|5.3.*",
-        "illuminate/database": "5.1.*|5.2.*|5.3.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Ultraware\\Roles\\": "src/"
-        }
+  "name": "Ultraware/roles",
+  "description": "Powerful package for handling roles and permissions in Laravel 5.",
+  "keywords": [
+    "roles",
+    "permissions",
+    "acl",
+    "auth",
+    "laravel",
+    "illuminate"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ultraware"
     }
+  ],
+  "require": {
+    "php": ">=5.5.9",
+    "illuminate/support": "5.1.*|5.2.*|5.3.*",
+    "illuminate/database": "5.1.*|5.2.*|5.3.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ultraware\\Roles\\": "src/"
+    }
+  },
+  "require-dev": {
+    "orchestra/testbench": "^3.3",
+    "mockery/mockery": "^0.9.6",
+    "phpunit/phpunit": "^5.6"
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests/TestCase.php",
+      "tests/User.php"
+    ]
+  }
 }
