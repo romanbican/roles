@@ -10,7 +10,7 @@ class PermissionHasRelationsTest extends \TestCase
     {
         parent::setUp();
         $this->withFactories(__DIR__ . '/../../database/factories');
-        config('auth.model', User::class);
+        config(['auth.providers.users.model' => User::class]);
         $this->runMigrations();
     }
 
@@ -39,7 +39,6 @@ class PermissionHasRelationsTest extends \TestCase
     {
         /** @var User $user */
         $user = factory(User::class)->create();
-
         $permission = factory(Permission::class)->create();
         $user->userPermissions()->attach($permission);
         $this->assertEquals($user->id, $permission->users->first()->id);
