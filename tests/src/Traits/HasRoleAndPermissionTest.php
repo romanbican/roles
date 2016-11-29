@@ -1,10 +1,88 @@
 <?php
 
+
+use Illuminate\Database\Eloquent\Collection;
+use Ultraware\Roles\Models\Permission;
+use Ultraware\Roles\Models\Role;
+
 class HasRoleAndPermissionTest extends \TestCase
 {
     public function setUp()
     {
         parent::setUp();
+        $this->withFactories(__DIR__ . '/../../factories');
+    }
+
+    /**
+     * Define environment setup.
+     *
+     * @param  \Illuminate\Foundation\Application $app
+     * @return void
+     */
+    protected function getEnvironmentSetUp($app)
+    {
+        $this->setupDbConfig($app);
+        parent::getEnvironmentSetUp($app);
+    }
+
+    public function testRolePermissions()
+    {
+        $this->runMigrations();
+
+
+        /** @var User $user */
+        $user = factory(User::class)->make();
+
+        // roles
+        $roles = new Collection([
+            factory(Role::class)->create(),
+            factory(Role::class)->create(),
+            factory(Role::class)->create(['level' => 2]),
+            factory(Role::class)->create(['level' => 3]),
+        ]);
+        // permissions
+        /** @var Collection $permissions */
+        $permissions = factory(Permission::class, 8)->create();
+
+        // attach permissions to role
+        $permissions->each(function ($permission, $key) use ($roles) {
+            switch ($key) {
+                case 0:
+                case 1:
+                    $roles->get(0)->attachPermission($permission);
+                    break;
+                case 2:
+                case 3:
+                    $roles->get(1)->attachPermission($permission);
+                    break;
+                case 4:
+                case 5:
+                    $roles->get(2)->attachPermission($permission);
+                    break;
+                case 6:
+                case 7:
+                    $roles->get(3)->attachPermission($permission);
+                    break;
+            }
+        });
+        // attach role 0 (without level)
+        $user->roles()->attach($roles->get(0));
+
+        // only permissions of role 0 should be found
+        $this->assertEquals(
+            $permissions->toBase()->only([0, 1])->pluck('id')->toArray(),
+            $user->rolePermissions()->get()->pluck('id')->toArray());
+
+        // reset cache
+        $user->detachRole(null);
+
+        // attach role 2 wich has a level and all lower role.permissions with lower level should also be found
+        $user->roles()->attach($roles->get(2));
+
+        $this->assertEquals(
+            $permissions->toBase()->only([0, 1, 2, 3, 4, 5])->pluck('id')->toArray(),
+            $user->rolePermissions()->get()->pluck('id')->toArray()
+        );
     }
 
     public function testHasPermission()
