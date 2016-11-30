@@ -380,7 +380,7 @@ trait HasRoleAndPermission
      */
     private function isPretendEnabled()
     {
-        return (bool)config('roles.pretend.enabled');
+        return (bool) config('roles.pretend.enabled');
     }
 
     /**
@@ -391,7 +391,7 @@ trait HasRoleAndPermission
      */
     private function pretend($option)
     {
-        return (bool)config('roles.pretend.options.' . $option);
+        return (bool) config('roles.pretend.options.' . $option);
     }
 
     /**
@@ -414,6 +414,7 @@ trait HasRoleAndPermission
         } elseif (starts_with($method, 'allowed')) {
             return $this->allowed(snake_case(substr($method, 7), config('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
         }
+
         return parent::__call($method, $parameters);
     }
 
