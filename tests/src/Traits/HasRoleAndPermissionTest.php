@@ -351,7 +351,6 @@ class HasRoleAndPermissionTest extends \TestCase
             ->andReturn(true);
         $this->assertTrue($user->callMagic('isMyRole', []));
 
-
         //canMyPermission
         $user->shouldReceive('hasPermission')
             ->once()

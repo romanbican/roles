@@ -14,11 +14,11 @@ class RolesServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../config/roles.php' => config_path('roles.php')
+            __DIR__ . '/../config/roles.php' => config_path('roles.php'),
         ], 'config');
 
         $this->publishes([
-            __DIR__ . '/../migrations/' => base_path('/database/migrations')
+            __DIR__ . '/../migrations/' => base_path('/database/migrations'),
         ], 'migrations');
 
         $this->registerBladeExtensions();
@@ -48,7 +48,7 @@ class RolesServiceProvider extends ServiceProvider
         });
 
         $blade->directive('endrole', function () {
-            return "<?php endif; ?>";
+            return '<?php endif; ?>';
         });
 
         $blade->directive('permission', function ($expression) {
@@ -56,7 +56,7 @@ class RolesServiceProvider extends ServiceProvider
         });
 
         $blade->directive('endpermission', function () {
-            return "<?php endif; ?>";
+            return '<?php endif; ?>';
         });
 
         $blade->directive('level', function ($expression) {
@@ -66,7 +66,7 @@ class RolesServiceProvider extends ServiceProvider
         });
 
         $blade->directive('endlevel', function () {
-            return "<?php endif; ?>";
+            return '<?php endif; ?>';
         });
 
         $blade->directive('allowed', function ($expression) {
@@ -74,7 +74,7 @@ class RolesServiceProvider extends ServiceProvider
         });
 
         $blade->directive('endallowed', function () {
-            return "<?php endif; ?>";
+            return '<?php endif; ?>';
         });
     }
 }
