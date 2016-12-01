@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/ultraware/roles.svg?branch=5.1)](https://travis-ci.org/ultraware/roles)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ultraware/roles/badges/quality-score.png?b=5.1)](https://scrutinizer-ci.com/g/ultraware/roles/?branch=5.1)
+[![StyleCI](https://styleci.io/repos/74971525/shield?branch=5.1)](https://styleci.io/repos/74971525)
+[![Coverage Status](https://coveralls.io/repos/github/ultraware/roles/badge.svg?branch=5.1)](https://coveralls.io/github/ultraware/roles?branch=5.1)
+
 # Roles And Permissions For Laravel 5
 
 Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5.0).
@@ -7,6 +12,7 @@ Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5
     - [Service Provider](#service-provider)
     - [Config File And Migrations](#config-file-and-migrations)
     - [HasRoleAndPermission Trait And Contract](#hasroleandpermission-trait-and-contract)
+    - [Migrate from Bican roles](#Migrate-from-bican-roles)
 - [Usage](#usage)
     - [Creating Roles](#creating-roles)
     - [Attaching, Detaching and Syncing Roles](#attaching-detaching-and-syncing-roles)
@@ -70,6 +76,11 @@ And also run migrations.
 ### HasRoleAndPermission Trait And Contract
 
 Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` contract inside your `User` model.
+
+## Migrate from bican roles
+If you migrate from bican/roles to ultraware/roles yoe need to update a few things.
+- Change all calls to `can`, `canOne` and `canAll` to `hasPermission`, `hasOnePermission`, `hasAllPermissions`.
+- Change all calls to `is`, `isOne` and `isAll` to `hasRole`, `hasOneRole`, `hasAllRoles`.
 
 ## Usage
 
