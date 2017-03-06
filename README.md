@@ -222,7 +222,7 @@ $user->syncPermissions($permissions); // you can pass Eloquent collection, or ju
 ### Checking For Permissions
 
 ```php
-if ($user->hasPermission('create.users') { // you can pass an id or slug
+if ($user->hasPermission('create.users')) { // you can pass an id or slug
     //
 }
 
