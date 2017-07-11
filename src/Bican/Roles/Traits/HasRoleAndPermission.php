@@ -43,7 +43,7 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Check if the user has a role or roles.
+     * Check if the user has a role or roles (should be deprecated, use hasRole instead).
      *
      * @param int|string|array $role
      * @param bool $all
@@ -55,7 +55,7 @@ trait HasRoleAndPermission
             return $this->pretend('is');
         }
 
-        return $this->{$this->getMethodName('is', $all)}($role);
+        return $this->hasRole($role, $all);
     }
 
     /**
@@ -66,13 +66,7 @@ trait HasRoleAndPermission
      */
     public function isOne($role)
     {
-        foreach ($this->getArrayFrom($role) as $role) {
-            if ($this->hasRole($role)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->hasRole($role);
     }
 
     /**
@@ -83,13 +77,7 @@ trait HasRoleAndPermission
      */
     public function isAll($role)
     {
-        foreach ($this->getArrayFrom($role) as $role) {
-            if (!$this->hasRole($role)) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->hasRole($role, true);
     }
 
     /**
@@ -98,10 +86,12 @@ trait HasRoleAndPermission
      * @param int|string $role
      * @return bool
      */
-    public function hasRole($role)
+    public function hasRole($role, $all = false)
     {
         return $this->getRoles()->contains(function ($key, $value) use ($role) {
-            return $role == $value->id || Str::is($role, $value->slug);
+            return $role == $value->id || $this->mapOrAnd($role, function ($role) use ($value) {
+                return Str::is($role, $value->slug);
+            }, $all);
         });
     }
 
@@ -203,41 +193,31 @@ trait HasRoleAndPermission
             return $this->pretend('can');
         }
 
-        return $this->{$this->getMethodName('can', $all)}($permission);
+        return $this->mapOrAnd($permission, function ($permission) {
+            return $this->hasPermission($permission);
+        }, $all);
     }
 
     /**
-     * Check if the user has at least one permission.
+     * Check if the user has at least one permission (deprecated).
      *
      * @param int|string|array $permission
      * @return bool
      */
     public function canOne($permission)
     {
-        foreach ($this->getArrayFrom($permission) as $permission) {
-            if ($this->hasPermission($permission)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->can($permission);
     }
 
     /**
-     * Check if the user has all permissions.
+     * Check if the user has all permissions (deprecated).
      *
      * @param int|string|array $permission
      * @return bool
      */
     public function canAll($permission)
     {
-        foreach ($this->getArrayFrom($permission) as $permission) {
-            if (!$this->hasPermission($permission)) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->can($permission, true);
     }
 
     /**
@@ -353,26 +333,40 @@ trait HasRoleAndPermission
     }
 
     /**
-     * Get method name.
-     *
-     * @param string $methodName
-     * @param bool $all
-     * @return string
-     */
-    private function getMethodName($methodName, $all)
-    {
-        return ((bool) $all) ? $methodName . 'All' : $methodName . 'One';
-    }
-
-    /**
-     * Get an array from argument.
+     * Get an array separated by the operator given.
      *
      * @param int|string|array $argument
      * @return array
      */
-    private function getArrayFrom($argument)
+    private function matchOperator($op, $argument)
     {
-        return (!is_array($argument)) ? preg_split('/ ?[,|] ?/', $argument) : $argument;
+        return (!is_array($argument)) ? preg_split('/\\s*['.preg_quote($op).']+\\s*/', $argument) : $argument;
+    }
+
+    /**
+     * Map argument using or-and operators (optional comma for "or" operator).
+     *
+     * @param int|string|array $argument
+     * @return array
+     */
+    private function mapOrAnd($argument, $match, $all = false)
+    {
+        //Old code support.
+        //Replace "or" operator in "all" methods.
+        //In old codes "or" is the default separator, so no need fixes for "one" methods.
+        if ($all) $argument = [(!is_array($argument) ? str_replace(['|', ','], '&', $argument) : $argument)];
+
+        foreach ($this->matchOperator('|,', $argument) as $or) {
+            $valid = true;
+            foreach ($this->matchOperator('&', $or) as $and) {
+                if (!empty($and) && !$match($and)) {
+                    $valid = false;
+                    break;
+                }
+            }
+            if ($valid) return true;
+        }
+        return false;
     }
 
     /**
