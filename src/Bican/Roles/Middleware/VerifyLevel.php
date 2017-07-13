@@ -39,6 +39,6 @@ class VerifyLevel
             return $next($request);
         }
 
-        throw new LevelDeniedException($level);
+        return response("Forbidden: Level $level Denied.", 403);
     }
 }

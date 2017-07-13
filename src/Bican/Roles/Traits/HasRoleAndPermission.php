@@ -49,7 +49,7 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function is($role, $all = false)
+    public function isRole($role, $all = false)
     {
         if ($this->isPretendEnabled()) {
             return $this->pretend('is');
@@ -100,7 +100,7 @@ trait HasRoleAndPermission
      */
     public function hasRole($role)
     {
-        return $this->getRoles()->contains(function ($key, $value) use ($role) {
+        return $this->getRoles()->contains(function ($value, $key) use ($role) {
             return $role == $value->id || Str::is($role, $value->slug);
         });
     }
@@ -166,8 +166,8 @@ trait HasRoleAndPermission
 
         return $permissionModel::select(['permissions.*', 'permission_role.created_at as pivot_created_at', 'permission_role.updated_at as pivot_updated_at'])
                 ->join('permission_role', 'permission_role.permission_id', '=', 'permissions.id')->join('roles', 'roles.id', '=', 'permission_role.role_id')
-                ->whereIn('roles.id', $this->getRoles()->lists('id')->toArray()) ->orWhere('roles.level', '<', $this->level())
-                ->groupBy(['permissions.id', 'pivot_created_at', 'pivot_updated_at']);
+                ->whereIn('roles.id', $this->getRoles()->pluck('id')->all()) ->orWhere('roles.level', '<', $this->level())
+                ->groupBy(['permissions.id','permissions.name', 'permissions.slug', 'permissions.description', 'permissions.model', 'permissions.created_at', 'permissions.updated_at', 'pivot_created_at', 'pivot_updated_at']);
     }
 
     /**
@@ -197,13 +197,13 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function can($permission, $all = false)
+    public function may($permission, $all = true)
     {
         if ($this->isPretendEnabled()) {
-            return $this->pretend('can');
+            return $this->pretend('may');
         }
 
-        return $this->{$this->getMethodName('can', $all)}($permission);
+        return $this->{$this->getMethodName('hasPermission', $all)}($permission);
     }
 
     /**
@@ -212,7 +212,7 @@ trait HasRoleAndPermission
      * @param int|string|array $permission
      * @return bool
      */
-    public function canOne($permission)
+    private function hasPermissionOne($permission)
     {
         foreach ($this->getArrayFrom($permission) as $permission) {
             if ($this->hasPermission($permission)) {
@@ -229,7 +229,7 @@ trait HasRoleAndPermission
      * @param int|string|array $permission
      * @return bool
      */
-    public function canAll($permission)
+    private function hasPermissionAll($permission)
     {
         foreach ($this->getArrayFrom($permission) as $permission) {
             if (!$this->hasPermission($permission)) {
@@ -248,7 +248,7 @@ trait HasRoleAndPermission
      */
     public function hasPermission($permission)
     {
-        return $this->getPermissions()->contains(function ($key, $value) use ($permission) {
+        return $this->getPermissions()->contains(function ($value, $key) use ($permission) {
             return $permission == $value->id || Str::is($permission, $value->slug);
         });
     }
@@ -386,8 +386,8 @@ trait HasRoleAndPermission
     {
         if (starts_with($method, 'is')) {
             return $this->is(snake_case(substr($method, 2), config('roles.separator')));
-        } elseif (starts_with($method, 'can')) {
-            return $this->can(snake_case(substr($method, 3), config('roles.separator')));
+        } elseif (starts_with($method, 'may')) {
+            return $this->may(snake_case(substr($method, 3), config('roles.separator')));
         } elseif (starts_with($method, 'allowed')) {
             return $this->allowed(snake_case(substr($method, 7), config('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
         }
