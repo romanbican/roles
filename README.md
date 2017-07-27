@@ -1,19 +1,25 @@
+[![Build Status](https://travis-ci.org/ultraware/roles.svg?branch=master)](https://travis-ci.org/ultraware/roles)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ultraware/roles/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ultraware/roles/?branch=5.1)
+[![StyleCI](https://styleci.io/repos/74971525/shield?branch=master)](https://styleci.io/repos/74971525)
+[![Coverage Status](https://coveralls.io/repos/github/ultraware/roles/badge.svg?branch=master)](https://coveralls.io/github/ultraware/roles?branch=5.1)
+
 # Roles And Permissions For Laravel 5
 
-Powerful package for handling roles and permissions in Laravel 5 (5.1 and also 5.0).
+Powerful package for handling roles and permissions in Laravel 5.
 
 - [Installation](#installation)
     - [Composer](#composer)
     - [Service Provider](#service-provider)
     - [Config File And Migrations](#config-file-and-migrations)
     - [HasRoleAndPermission Trait And Contract](#hasroleandpermission-trait-and-contract)
+    - [Migrate from Bican roles](#Migrate-from-bican-roles)
 - [Usage](#usage)
     - [Creating Roles](#creating-roles)
-    - [Attaching And Detaching Roles](#attaching-and-detaching-roles)
+    - [Attaching, Detaching and Syncing Roles](#attaching-detaching-and-syncing-roles)
     - [Checking For Roles](#checking-for-roles)
     - [Levels](#levels)
     - [Creating Permissions](#creating-permissions)
-    - [Attaching And Detaching Permissions](#attaching-and-detaching-permissions)
+    - [Attaching, Detaching and Syncing Permissions](#attaching-detaching-and-syncing-permissions)
     - [Checking For Permissions](#checking-for-permissions)
     - [Permissions Inheriting](#permissions-inheriting)
     - [Entity Check](#entity-check)
@@ -29,23 +35,13 @@ This package is very easy to set up. There are only couple of steps.
 
 ### Composer
 
-Pull this package in through Composer (file `composer.json`).
-
-```js
-{
-    "require": {
-        "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
-        "bican/roles": "2.1.*"
-    }
-}
+Pull this package in through Composer 
+```
+composer require ultraware/roles
 ```
 
 > If you are still using Laravel 5.0, you must pull in version `1.7.*`.
 
-Run this command inside your terminal.
-
-    composer update
 
 ### Service Provider
 
@@ -54,17 +50,12 @@ Add the package to your application service providers in `config/app.php` file.
 ```php
 'providers' => [
     
-    /*
-     * Laravel Framework Service Providers...
-     */
-    Illuminate\Foundation\Providers\ArtisanServiceProvider::class,
-    Illuminate\Auth\AuthServiceProvider::class,
     ...
     
     /**
      * Third Party Service Providers...
      */
-    Bican\Roles\RolesServiceProvider::class,
+    Ultraware\Roles\RolesServiceProvider::class,
 
 ],
 ```
@@ -73,8 +64,8 @@ Add the package to your application service providers in `config/app.php` file.
 
 Publish the package config file and migrations to your application. Run these commands inside your terminal.
 
-    php artisan vendor:publish --provider="Bican\Roles\RolesServiceProvider" --tag=config
-    php artisan vendor:publish --provider="Bican\Roles\RolesServiceProvider" --tag=migrations
+    php artisan vendor:publish --provider="Ultraware\Roles\RolesServiceProvider" --tag=config
+    php artisan vendor:publish --provider="Ultraware\Roles\RolesServiceProvider" --tag=migrations
 
 And also run migrations.
 
@@ -86,23 +77,17 @@ And also run migrations.
 
 Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` contract inside your `User` model.
 
-```php
-use Bican\Roles\Traits\HasRoleAndPermission;
-use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
-
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract
-{
-    use Authenticatable, CanResetPassword, HasRoleAndPermission;
-```
-
-And that's it!
+## Migrate from bican roles
+If you migrate from bican/roles to ultraware/roles yoe need to update a few things.
+- Change all calls to `can`, `canOne` and `canAll` to `hasPermission`, `hasOnePermission`, `hasAllPermissions`.
+- Change all calls to `is`, `isOne` and `isAll` to `hasRole`, `hasOneRole`, `hasAllRoles`.
 
 ## Usage
 
 ### Creating Roles
 
 ```php
-use Bican\Roles\Models\Role;
+use Ultraware\Roles\Models\Role;
 
 $adminRole = Role::create([
     'name' => 'Admin',
@@ -119,7 +104,7 @@ $moderatorRole = Role::create([
 
 > Because of `Slugable` trait, if you make a mistake and for example leave a space in slug parameter, it'll be replaced with a dot automatically, because of `str_slug` function.
 
-### Attaching And Detaching Roles
+### Attaching, Detaching and Syncing Roles
 
 It's really simple. You fetch a user from database and call `attachRole` method. There is `BelongsToMany` relationship between `User` and `Role` model.
 
@@ -129,11 +114,9 @@ use App\User;
 $user = User::find($id);
 
 $user->attachRole($adminRole); // you can pass whole object, or just an id
-```
-
-```php
 $user->detachRole($adminRole); // in case you want to detach role
 $user->detachAllRoles(); // in case you want to detach all roles
+$user->syncRoles($roles); // you can pass Eloquent collection, or just an array of ids
 ```
 
 ### Checking For Roles
@@ -141,8 +124,8 @@ $user->detachAllRoles(); // in case you want to detach all roles
 You can now check if the user has required role.
 
 ```php
-if ($user->is('admin')) { // you can pass an id or slug
-    // or alternatively $user->hasRole('admin')
+if ($user->hasRole('admin')) { // you can pass an id or slug
+    //
 }
 ```
 
@@ -157,31 +140,31 @@ if ($user->isAdmin()) {
 And of course, there is a way to check for multiple roles:
 
 ```php
-if ($user->is('admin|moderator')) { 
+if ($user->hasRole(['admin', 'moderator'])) { 
     /*
     | Or alternatively:
-    | $user->is('admin, moderator'), $user->is(['admin', 'moderator']),
-    | $user->isOne('admin|moderator'), $user->isOne('admin, moderator'), $user->isOne(['admin', 'moderator'])
+    | $user->hasRole('admin, moderator'), $user->hasRole('admin|moderator'),
+    | $user->hasOneRole('admin, moderator'), $user->hasOneRole(['admin', 'moderator']), $user->hasOneRole('admin|moderator')
     */
 
-    // if user has at least one role
+    // The user has at least one of the roles
 }
 
-if ($user->is('admin|moderator', true)) {
+if ($user->hasRole(['admin', 'moderator'], true)) {
     /*
     | Or alternatively:
-    | $user->is('admin, moderator', true), $user->is(['admin', 'moderator'], true),
-    | $user->isAll('admin|moderator'), $user->isAll('admin, moderator'), $user->isAll(['admin', 'moderator'])
+    | $user->hasRole('admin, moderator', true), $user->hasRole('admin|moderator', true),
+    | $user->hasAllRoles('admin, moderator'), $user->hasAllRoles(['admin', 'moderator']), $user->hasAllRoles('admin|moderator')
     */
 
-    // if user has all roles
+    // The user has all roles
 }
 ```
 
 ### Levels
 
 When you are creating roles, there is optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
- 
+
 ```php
 if ($user->level() > 4) {
     //
@@ -197,7 +180,7 @@ if ($user->level() > 4) {
 It's very simple thanks to `Permission` model.
 
 ```php
-use Bican\Roles\Models\Permission;
+use Ultraware\Roles\Models\Permission;
 
 $createUsersPermission = Permission::create([
     'name' => 'Create users',
@@ -211,13 +194,13 @@ $deleteUsersPermission = Permission::create([
 ]);
 ```
 
-### Attaching And Detaching Permissions
+### Attaching, Detaching and Syncing Permissions
 
 You can attach permissions to a role or directly to a specific user (and of course detach them as well).
 
 ```php
 use App\User;
-use Bican\Roles\Models\Role;
+use Ultraware\Roles\Models\Role;
 
 $role = Role::find($roleId);
 $role->attachPermission($createUsersPermission); // permission attached to a role
@@ -229,15 +212,17 @@ $user->attachPermission($deleteUsersPermission); // permission attached to a use
 ```php
 $role->detachPermission($createUsersPermission); // in case you want to detach permission
 $role->detachAllPermissions(); // in case you want to detach all permissions
+$role->syncPermissions($permissions); // you can pass Eloquent collection, or just an array of ids
 
 $user->detachPermission($deleteUsersPermission);
 $user->detachAllPermissions();
+$user->syncPermissions($permissions); // you can pass Eloquent collection, or just an array of ids
 ```
 
 ### Checking For Permissions
 
 ```php
-if ($user->can('create.users') { // you can pass an id or slug
+if ($user->hasPermission('create.users')) { // you can pass an id or slug
     //
 }
 
@@ -246,7 +231,7 @@ if ($user->canDeleteUsers()) {
 }
 ```
 
-You can check for multiple permissions the same way as roles. You can make use of additional methods like `canOne`, `canAll` or `hasPermission`.
+You can check for multiple permissions the same way as roles. You can make use of additional methods like `hasOnePermission` or `hasAllPermissions`.
 
 ### Permissions Inheriting
 
@@ -264,7 +249,7 @@ Let's say you have an article and you want to edit it. This article belongs to a
 
 ```php
 use App\Article;
-use Bican\Roles\Models\Permission;
+use Ultraware\Roles\Models\Permission;
 
 $editArticlesPermission = Permission::create([
     'name' => 'Edit articles',
@@ -294,12 +279,12 @@ if ($user->allowed('edit.articles', $article, false)) { // now owner check is di
 There are four Blade extensions. Basically, it is replacement for classic if statements.
 
 ```php
-@role('admin') // @if(Auth::check() && Auth::user()->is('admin'))
-    // user is admin
+@role('admin') // @if(Auth::check() && Auth::user()->hasRole('admin'))
+    // user has admin role
 @endrole
 
-@permission('edit.articles') // @if(Auth::check() && Auth::user()->can('edit.articles'))
-    // user can edit articles
+@permission('edit.articles') // @if(Auth::check() && Auth::user()->hasPermission('edit.articles'))
+    // user has edit articles permissison
 @endpermission
 
 @level(2) // @if(Auth::check() && Auth::user()->level() >= 2)
@@ -310,8 +295,8 @@ There are four Blade extensions. Basically, it is replacement for classic if sta
     // show edit button
 @endallowed
 
-@role('admin|moderator', 'all') // @if(Auth::check() && Auth::user()->is('admin|moderator', 'all'))
-    // user is admin and also moderator
+@role('admin|moderator', true) // @if(Auth::check() && Auth::user()->hasRole('admin|moderator', true))
+    // user has admin and moderator role
 @else
     // something else
 @endrole
@@ -331,9 +316,9 @@ protected $routeMiddleware = [
     'auth' => \App\Http\Middleware\Authenticate::class,
     'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
     'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-    'role' => \Bican\Roles\Middleware\VerifyRole::class,
-    'permission' => \Bican\Roles\Middleware\VerifyPermission::class,
-    'level' => \Bican\Roles\Middleware\VerifyLevel::class,
+    'role' => \Ultraware\Roles\Middleware\VerifyRole::class,
+    'permission' => \Ultraware\Roles\Middleware\VerifyPermission::class,
+    'level' => \Ultraware\Roles\Middleware\VerifyLevel::class,
 ];
 ```
 
@@ -359,7 +344,7 @@ $router->get('/example', [
 ]);
 ```
 
-It throws `\Bican\Roles\Exceptions\RoleDeniedException`, `\Bican\Roles\Exceptions\PermissionDeniedException` or `\Bican\Roles\Exceptions\LevelDeniedException` exceptions if it goes wrong.
+It throws `\Ultraware\Roles\Exceptions\RoleDeniedException`, `\Ultraware\Roles\Exceptions\PermissionDeniedException` or `\Ultraware\Roles\Exceptions\LevelDeniedException` exceptions if it goes wrong.
 
 You can catch these exceptions inside `app/Exceptions/Handler.php` file and do whatever you want.
 
@@ -373,7 +358,7 @@ You can catch these exceptions inside `app/Exceptions/Handler.php` file and do w
  */
 public function render($request, Exception $e)
 {
-    if ($e instanceof \Bican\Roles\Exceptions\RoleDeniedException) {
+    if ($e instanceof \Ultraware\Roles\Exceptions\RoleDeniedException) {
         // you can for example flash message, redirect...
         return redirect()->back();
     }
@@ -388,7 +373,7 @@ You can change connection for models, slug separator, models path and there is a
 
 ## More Information
 
-For more information, please have a look at [HasRoleAndPermission](https://github.com/romanbican/roles/blob/master/src/Bican/Roles/Contracts/HasRoleAndPermission.php) contract.
+For more information, please have a look at [HasRoleAndPermission](https://github.com/ultraware/roles/blob/master/src/Contracts/HasRoleAndPermission.php) contract.
 
 ## License
 
