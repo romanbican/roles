@@ -31,17 +31,11 @@ This package is very easy to set up. There are only couple of steps.
 
 Pull this package in through Composer (file `composer.json`).
 
-```js
-{
-    "require": {
-        "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
-        "bican/roles": "2.1.*"
-    }
-}
-```
+    composer require bican/roles
 
 > If you are still using Laravel 5.0, you must pull in version `1.7.*`.
+
+    composer require bican/roles:1.7.*
 
 Run this command inside your terminal.
 
