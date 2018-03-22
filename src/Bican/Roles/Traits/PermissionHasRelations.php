@@ -23,4 +23,30 @@ trait PermissionHasRelations
     {
         return $this->belongsToMany(config('auth.model'))->withTimestamps();
     }
+
+    /**
+     * Attach role to a permission.
+     */
+    public function attachRole($role)
+    {
+        return (!$this->roles()->get()->contains($role)) ? $this->roles()->attach($role) : true;
+    }
+
+    /**
+     * Detach role from a permission.
+     */
+    public function detachRole($role)
+    {
+        return $this->roles()->detach($role);
+    }
+
+    /**
+     * Detach all roles.
+     *
+     * @return int
+     */
+    public function detachAllRoles()
+    {
+        return $this->roles()->detach();
+    }
 }
