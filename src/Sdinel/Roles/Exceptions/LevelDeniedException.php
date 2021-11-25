@@ -1,6 +1,6 @@
 <?php
 
-namespace Bican\Roles\Exceptions;
+namespace Sdinel\Roles\Exceptions;
 
 class LevelDeniedException extends AccessDeniedException
 {

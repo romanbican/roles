@@ -1,6 +1,6 @@
 <?php
 
-namespace Bican\Roles;
+namespace Sdinel\Roles;
 
 use Illuminate\Support\ServiceProvider;
 

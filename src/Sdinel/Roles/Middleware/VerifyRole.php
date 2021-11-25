@@ -1,10 +1,10 @@
 <?php
 
-namespace Bican\Roles\Middleware;
+namespace Sdinel\Roles\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
-use Bican\Roles\Exceptions\RoleDeniedException;
+use Sdinel\Roles\Exceptions\RoleDeniedException;
 
 class VerifyRole
 {
@@ -31,7 +31,7 @@ class VerifyRole
      * @param \Closure $next
      * @param int|string $role
      * @return mixed
-     * @throws \Bican\Roles\Exceptions\RoleDeniedException
+     * @throws \Sdinel\Roles\Exceptions\RoleDeniedException
      */
     public function handle($request, Closure $next, $role)
     {

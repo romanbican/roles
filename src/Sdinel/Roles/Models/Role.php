@@ -1,22 +1,22 @@
 <?php
 
-namespace Bican\Roles\Models;
+namespace Sdinel\Roles\Models;
 
-use Bican\Roles\Traits\Slugable;
+use Sdinel\Roles\Traits\Slugable;
 use Illuminate\Database\Eloquent\Model;
-use Bican\Roles\Traits\PermissionHasRelations;
-use Bican\Roles\Contracts\PermissionHasRelations as PermissionHasRelationsContract;
+use Sdinel\Roles\Traits\RoleHasRelations;
+use Sdinel\Roles\Contracts\RoleHasRelations as RoleHasRelationsContract;
 
-class Permission extends Model implements PermissionHasRelationsContract
+class Role extends Model implements RoleHasRelationsContract
 {
-    use Slugable, PermissionHasRelations;
+    use Slugable, RoleHasRelations;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['name', 'slug', 'description', 'model'];
+    protected $fillable = ['name', 'slug', 'description', 'level'];
 
     /**
      * Create a new model instance.

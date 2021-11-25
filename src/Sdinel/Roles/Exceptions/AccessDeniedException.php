@@ -1,6 +1,6 @@
 <?php
 
-namespace Bican\Roles\Exceptions;
+namespace Sdinel\Roles\Exceptions;
 
 use Exception;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bican\Roles\Traits;
+namespace Sdinel\Roles\Traits;
 
 trait PermissionHasRelations
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Bican\Roles\Middleware;
+namespace Sdinel\Roles\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
-use Bican\Roles\Exceptions\PermissionDeniedException;
+use Sdinel\Roles\Exceptions\LevelDeniedException;
 
-class VerifyPermission
+class VerifyLevel
 {
     /**
      * @var \Illuminate\Contracts\Auth\Guard
@@ -29,16 +29,16 @@ class VerifyPermission
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
-     * @param int|string $permission
+     * @param int $level
      * @return mixed
-     * @throws \Bican\Roles\Exceptions\PermissionDeniedException
+     * @throws \Sdinel\Roles\Exceptions\LevelDeniedException
      */
-    public function handle($request, Closure $next, $permission)
+    public function handle($request, Closure $next, $level)
     {
-        if ($this->auth->check() && $this->auth->user()->can($permission)) {
+        if ($this->auth->check() && $this->auth->user()->level() >= $level) {
             return $next($request);
         }
 
-        throw new PermissionDeniedException($permission);
+        throw new LevelDeniedException($level);
     }
 }
